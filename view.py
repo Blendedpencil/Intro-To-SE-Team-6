@@ -31,7 +31,6 @@ class LoginView(APIView):
         # Whenever value is stored in the email variable, it'll pass as Django's username field for Auth
         user = authenticate(request, Username=email, password=password)
 
-        #Only accounts for if the login field is empty or not. Not made to handle a duplicate email yet because no database yet
         if user is not None:
             login(request, user)
             return Response(
@@ -42,4 +41,5 @@ class LoginView(APIView):
             return Response(
                 {"error": "Invalid credentials"},
                 status=status.HTTP_401_UNAUTHORIZED
+
             )
