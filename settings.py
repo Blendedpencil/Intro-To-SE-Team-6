@@ -13,3 +13,5 @@ INSTALLED_APPS = [
     #Our App
     "auth_api",
 ]
+
+#Handles entire Django Project, installed apps, authentication, etc.
