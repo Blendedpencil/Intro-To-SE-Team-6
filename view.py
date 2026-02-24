@@ -1,3 +1,7 @@
+#Basic Django api framework that handles only logging in. (Django REST API)
+
+#To-DO: add a way to log out at a later date. 
+#To-DO: add basic routing
 from django.contrib.auth import authenticate, login
 from rest_framework.views import APIView
 from rest_framework.response import Response
