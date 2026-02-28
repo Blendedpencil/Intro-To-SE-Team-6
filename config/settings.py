@@ -53,7 +53,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "homezapp_db",
         "USER": "homezapp_user",
-        "PASSWORD": "your_password",
+        "PASSWORD": "Zapping",
         "HOST": "localhost",
         "PORT": "5432",
     }
@@ -95,5 +95,6 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
 }
+
 
 #Handles entire Django Project, installed apps, authentication, etc.
