@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HomeZap Home Page</title>
+<link rel="stylesheet" href="generalPages.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+</head>
+<body>
+    <!--Navbar: login, logout, account home, filter options-->
+    <div class="navbarHome">
+        <h1>HomeZapp</h1>
+        <a href="#">Login</a>
+    </div>
+    <p class="homeTitle">Find Your Perfect Home!</p>
+    <!--search-->
+    <div class="searchHomeWrapper">
+
+        <form>
+            <label for="searchLocation">Location:</label>
+            <input type="text" id="searchLocation" name="searchLocation"><br><br>
+            
+            <label for="searchArchitectureType">Architecture Type:</label>
+            <select id="searchArchitectureType" name="searchArchitectureType">
+                <option value="colonial">Colonial</option>
+                <option value="victorian">Victorian</option>
+                <option value="farm">Farm</option>
+                <option value="mediterranean">Mediterranean</option>
+                <option value="craftsmen">Craftsmen</option>
+                <option value="modern">Modern</option>
+                <option value="other">Other</option>
+            </select><br><br>
+            
+            <p>Cost Range:</p>
+            <label for="searchCostMin">Min: $</label>
+            <input type="text" id="searchCostMin" name="searchCostMin"><br><br>
+            <label for="searchCostMax">Max: $</label>
+            <input type="text" id="searchCostMax" name="searchCostMax"><br><br>
+            
+            <p>Number of Bedrooms:</p>
+            <label for="searchBedsMin">Min: $</label>
+            <input type="text" id="searchBedsMin" name="searchBedsMin"><br><br>
+            <label for="searchBedsMax">Max: $</label>
+            <input type="text" id="searchBedsMax" name="searchBedsMax"><br><br>
+            
+            <p>Number of Bathrooms:</p>
+            <label for="searchBathMin">Min: $</label>
+            <input type="text" id="searchBathMin" name="searchBathMin"><br><br>
+            <label for="searchBathMax">Max: $</label>
+            <input type="text" id="searchBathMax" name="searchBathMax"><br><br>
+            
+            <p>Square Footage:</p>
+            <label for="searchSqFeetMin">Min: $</label>
+            <input type="text" id="searchSqFeetMin" name="searchSqFeetMin"><br><br>
+            <label for="searchCostMax">Max: $</label>
+            <input type="text" id="searchSqFeetMax" name="searchSqFeetMax"><br><br>
+            
+            
+            
+            <input type="submit">
+        </form>
+
+    </div>
+    <!--House Listings-->
+    <div class="houseListingHomeWrapper">
+<div class="houseListingHome row">
+    <div class="col-md-5">
+        <div class="houseListingHomeImageWrapper">
+            <img src="house-stock-photo.jpg">
+        </div>
+    </div>
+    <div class="col-md-7">
+        <h4>Address:</h4>
+        <p>Price:</p>
+        <p>Square Footage:</p>
+    </div>
+</div>
+
+<div class="houseListingHome row">
+    <div class="col-md-5">
+        <div class="houseListingHomeImageWrapper">
+            <img src="house-stock-photo.jpg">
+        </div>
+    </div>
+    <div class="col-md-7">
+        <h4>Address:</h4>
+        <p>Price:</p>
+        <p>Square Footage:</p>
+    </div>
+</div>
+
+
+    </div>
+
+</body>
+</html>
