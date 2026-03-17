@@ -1,0 +1,38 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Create Account</title>
+    <link rel="stylesheet" href="{% static 'css/adminPages.css' %}">
+</head>
+<body>
+    <h1>Admin Create Account</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <div>
+        <form action="{% url 'adminCreateAccount' %}" method="post">
+            {% csrf_token %}
+
+            <label for="adminName">Admin Name:</label><br>
+            <input type="text" id="adminName" name="adminName" required><br><br>
+
+            <label for="adminEmail">Email:</label><br>
+            <input type="text" id="adminEmail" name="adminEmail" required><br><br>
+
+            <label for="adminPass">Password:</label><br>
+            <input type="password" id="adminPass" name="adminPass" required><br><br>
+
+            <label for="confirmAdminPass">Confirm Password:</label><br>
+            <input type="password" id="confirmAdminPass" name="confirmAdminPass" required><br><br>
+
+            <input type="submit" value="Create Admin Account">
+        </form>
+    </div>
+</body>
+</html>
