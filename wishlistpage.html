@@ -1,0 +1,77 @@
+<<<<<<< HEAD
+<!DOCTYPE html>
+<html>
+<head><title>My Cart</title></head>
+<body style="font-family: 'Times New Roman', serif; padding: 20px;">
+    <h1>Your Saved Properties</h1>
+    <nav style="margin-bottom: 20px;"><a href="buyer_page.html">Return to Dashboard</a></nav>
+    <div id="wishlist-container"></div>
+
+    <script src="data.js"></script>
+    <script>
+        function loadWishlist() {
+            const cart = JSON.parse(localStorage.getItem('homeZappCart')) || [];
+            const container = document.getElementById('wishlist-container');
+            container.innerHTML = "";
+
+            if (cart.length === 0) {
+                container.innerHTML = "<p>Your cart is empty.</p>";
+            } else {
+                cart.forEach(item => {
+                    container.innerHTML += `
+                        <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; display: flex; align-items: center; gap: 20px; border-radius: 8px;">
+                            <img src="${item.image}" style="width: 150px; height: 100px; object-fit: cover; border-radius: 4px;">
+                            <div>
+                                <h3 style="margin: 0;">${item.title}</h3>
+                                <p style="margin: 5px 0;">${item.price} - ${item.location}</p>
+                                <button onclick="removeItem(${item.id})" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px;">Remove</button>
+                            </div>
+                        </div>`;
+                });
+            }
+        }
+        function removeItem(id) {
+            let cart = JSON.parse(localStorage.getItem('homeZappCart')) || [];
+            localStorage.setItem('homeZappCart', JSON.stringify(cart.filter(i => i.id != id)));
+            loadWishlist();
+            updateCartUI();
+        }
+        loadWishlist();
+    </script>
+</body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>HomeZapp - My Wishlist</title>
+</head>
+<body style="font-family: 'Times New Roman', serif; font-size: 11px;">
+
+    <h1 style="font-size: 24px; font-weight: bold;">My Wishlist</h1>
+
+    <p>Below are the listings you have saved for future reference.</p>
+
+    <div style="border: 1px solid black; padding: 10px; margin-bottom: 10px;">
+        <h3 style="font-size: 13px; font-weight: bold; font-style: italic;">123 Modern Way</h3>
+        
+        <p>Architectural Style: Modern</p> [cite: 15]
+        <p>Price: $500,000</p>
+        <p>Location: Seattle, WA</p>
+        
+        <button type="button">View Full Listing</button>
+        <button type="button">Remove from Wishlist</button>
+    </div>
+
+    <div style="border: 1px solid black; padding: 10px; margin-bottom: 10px;">
+        <h3 style="font-size: 13px; font-weight: bold; font-style: italic;">456 Victorian Ave</h3>
+        <p>Architectural Style: Victorian</p> [cite: 15]
+        <p>Price: $750,000</p>
+        <p>Location: San Francisco, CA</p>
+        
+        <button type="button">View Full Listing</button>
+        <button type="button">Remove from Wishlist</button>
+    </div>
+
+</body>
+>>>>>>> b1ec429c37da3897e3c450e31fd765efa5231c69
+</html>
