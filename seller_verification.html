@@ -3,38 +3,96 @@
 <head>
   <title>Seller Verification</title>
 </head>
-<body>
+<body onload="loadVerification()">
 
 <h1>Seller Verification</h1>
 
-<!-- Verification Info -->
 <section>
   <p>Verify your identity before creating listings.</p>
 </section>
 
-<!-- Upload Documents -->
 <section>
   <h2>Upload Documents</h2>
 
-  <input type="text" placeholder="Full Legal Name">
+  <input type="text" id="name" placeholder="Full Legal Name">
   <br><br>
 
-  <input type="text" placeholder="Business Name (optional)">
+  <input type="text" id="business" placeholder="Business Name (optional)">
   <br><br>
 
-  <input type="file">
+  <input type="file" id="file">
   <br><br>
 
-  <button>Submit Verification</button>
+  <button onclick="submitVerification()">Submit Verification</button>
+
+  <p id="message"></p>
 </section>
 
-<!-- Status -->
 <section>
   <h2>Status</h2>
-  <p>Status: Not Verified</p>
+  <p id="status">Status: Not Verified</p>
 </section>
 
 <p><a href="seller_dashboard.html">Back to Dashboard</a></p>
 
+<script>
+
+function getVerification() {
+    let data = localStorage.getItem("verification");
+    if (data) {
+        return JSON.parse(data);
+    } else {
+        return {
+            name: "",
+            business: "",
+            status: "Not Verified"
+        };
+    }
+}
+
+function saveVerification(data) {
+    localStorage.setItem("verification", JSON.stringify(data));
+}
+
+function loadVerification() {
+    let info = getVerification();
+
+    document.getElementById("status").innerText = "Status: " + info.status;
+
+    if (info.name != "") {
+        document.getElementById("name").value = info.name;
+    }
+
+    if (info.business != "") {
+        document.getElementById("business").value = info.business;
+    }
+}
+
+function submitVerification() {
+    let name = document.getElementById("name").value;
+    let business = document.getElementById("business").value;
+    let message = document.getElementById("message");
+
+    if (name == "") {
+        message.innerText = "Enter your name";
+        return;
+    }
+
+    let data = {
+        name: name,
+        business: business,
+        status: "Pending"
+    };
+
+    saveVerification(data);
+
+    message.innerText = "Verification submitted";
+    loadVerification();
+}
+
+</script>
+
+</body>
+</html>
 </body>
 </html>
