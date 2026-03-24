@@ -7,13 +7,14 @@ class Users(models.Model):
     password = models.BinaryField()
     loginStatus = models.BooleanField()
     published_at = models.DateTimeField(auto_now_add=True)
+    deleted_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
 
 class Buyers(models.Model):
     id = models.BigIntegerField()
-    
+    userID = models.ForeignKey(Users, on_delete=models.CASCADE)  
 
     def __str__(self):
         return self.title
@@ -21,7 +22,9 @@ class Buyers(models.Model):
 
 class Sellers(models.Model):
     id = models.BigIntegerField()
-    published_at = models.DateTimeField(auto_now_add=True)
+    userID = models.ForeignKey(Users, on_delete=models.CASCADE)  
+    #subject to change
+    bankingInfo = models.BinaryField()
 
     def __str__(self):
         return self.title
@@ -29,7 +32,7 @@ class Sellers(models.Model):
 
 class Admins(models.Model):
     id = models.BigIntegerField()
-    published_at = models.DateTimeField(auto_now_add=True)
+    userID = models.ForeignKey(Users, on_delete=models.CASCADE)  
 
     def __str__(self):
         return self.title
@@ -38,6 +41,9 @@ class Admins(models.Model):
 class Reports(models.Model):
     id = models.BigIntegerField()
     published_at = models.DateTimeField(auto_now_add=True)
+    ListingID = models.ForeignKey(Users, on_delete=models.PROTECT)  
+    reporterID = models.ForeignKey(Users, on_delete=models.PROTECT)  
+    user_reportedID = models.ForeignKey(Users, on_delete=models.PROTECT)  
 
     def __str__(self):
         return self.title
@@ -46,16 +52,27 @@ class Reports(models.Model):
 class Listings(models.Model):
     id = models.BigIntegerField()
     published_at = models.DateTimeField(auto_now_add=True)
+    address = models.CharField(max_length=300)
+    description = models.CharField(max_length=500)
+    price = models.IntegerField()
+    image = models.ImageField()
+    seller = models.ForeignKey(Sellers, on_delete=models.CASCADE)
+    deleted_on = models.DateTimeField(auto_now_add=True)
+
 
     def __str__(self):
         return self.title
 
 class Saved_Listings(models.Model):
     id = models.BigIntegerField()
-    published_at = models.DateTimeField(auto_now_add=True)
+    saved_on = models.DateTimeField(auto_now_add=True)
+    buyer = models.ForeignKey(Buyers, on_delete=models.CASCADE)
+    listing = models.ForeignKey(Listings, on_delete=models.CASCADE)
+
 
     def __str__(self):
         return self.title
+
 
 
 class Applications(models.Model):
@@ -64,7 +81,7 @@ class Applications(models.Model):
     bargained_price = models.IntegerField()
     document = models.FileField()
     buyer = models.ForeignKey(Buyers, on_delete=models.CASCADE)
-    seller = models.ForeignKey(Sellers, on_delete=models.CASCADE)
+    listing = models.ForeignKey(Listings, on_delete=models.CASCADE)
     initial_notes_buyer = models.CharField(max_length=400)
 
     accepted_by_seller = models.BooleanField()
