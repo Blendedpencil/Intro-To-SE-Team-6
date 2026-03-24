@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit Listing</title>
+</head>
+<body onload="loadDropdown()">
+
+<h1>Edit Listing</h1>
+
+<section>
+  <h2>Choose Listing</h2>
+
+  <select id="listingSelect">
+    <option value="">Select a listing</option>
+  </select>
+
+  <button onclick="loadSelectedListing()">Load</button>
+</section>
+
+<section>
+  <h2>Update Details</h2>
+
+  <label>Title</label><br>
+  <input type="text" id="title"><br><br>
+
+  <label>Price</label><br>
+  <input type="number" id="price"><br><br>
+
+  <label>Location</label><br>
+  <input type="text" id="location"><br><br>
+
+  <label>Description</label><br>
+  <textarea id="description"></textarea><br><br>
+
+  <button onclick="saveChanges()">Save Changes</button>
+  <button onclick="cancelEdit()">Cancel</button>
+</section>
+
+<p id="message"></p>
+
+<p><a href="seller_dashboard.html">Back to Dashboard</a></p>
+
+<script>
+function getListings() {
+    let data = localStorage.getItem("listings");
+    if (data) {
+        return JSON.parse(data);
+    } else {
+        return [];
+    }
+}
+
+function saveListings(list) {
+    localStorage.setItem("listings", JSON.stringify(list));
+}
+
+function loadDropdown() {
+    let listings = getListings();
+    let select = document.getElementById("listingSelect");
+
+    select.innerHTML = "<option value=''>Select a listing</option>";
+
+    for (let i = 0; i < listings.length; i++) {
+        select.innerHTML += "<option value='" + listings[i].id + "'>" + listings[i].title + "</option>";
+    }
+}
+
+function loadSelectedListing() {
+    let listings = getListings();
+    let selectedId = document.getElementById("listingSelect").value;
+    let message = document.getElementById("message");
+
+    if (selectedId == "") {
+        message.innerText = "Please choose a listing";
+        return;
+    }
+
+    let foundItem = null;
+
+    for (let i = 0; i < listings.length; i++) {
+        if (listings[i].id == selectedId) {
+            foundItem = listings[i];
+        }
+    }
+
+    if (foundItem != null) {
+        document.getElementById("title").value = foundItem.title;
+        document.getElementById("price").value = foundItem.price;
+        document.getElementById("location").value = foundItem.location;
+        document.getElementById("description").value = foundItem.description;
+        message.innerText = "";
+    }
+}
+
+function saveChanges() {
+    let listings = getListings();
+    let selectedId = document.getElementById("listingSelect").value;
+    let message = document.getElementById("message");
+
+    let title = document.getElementById("title").value;
+    let price = document.getElementById("price").value;
+    let location = document.getElementById("location").value;
+    let description = document.getElementById("description").value;
+
+    if (selectedId == "") {
+        message.innerText = "Choose a listing first";
+        return;
+    }
+
+    if (title == "" || price == "" || location == "" || description == "") {
+        message.innerText = "Fill in all fields";
+        return;
+    }
+
+    if (price <= 0) {
+        message.innerText = "Enter a valid price";
+        return;
+    }
+
+    for (let i = 0; i < listings.length; i++) {
+        if (listings[i].id == selectedId) {
+            listings[i].title = title;
+            listings[i].price = price;
+            listings[i].location = location;
+            listings[i].description = description;
+        }
+    }
+
+    saveListings(listings);
+    message.innerText = "Listing updated";
+    loadDropdown();
+}
+
+function cancelEdit() {
+    window.location.href = "seller_dashboard.html";
+}
+</script>
+
+</body>
+</html>
