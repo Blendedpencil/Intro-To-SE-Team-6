@@ -3,38 +3,103 @@
 <head>
   <title>Seller Negotiation</title>
 </head>
-<body>
+<body onload="loadOffer()">
 
 <h1>Negotiation / Offers</h1>
 
-<!-- Listing -->
 <section>
   <h2>Listing</h2>
-  <p>Property: Property Title</p>
-  <p>Asking Price: $XXX,XXX</p>
+  <p id="property">Property: House</p>
+  <p id="price">Asking Price: $200000</p>
 </section>
 
-<!-- Incoming Offer -->
 <section>
   <h2>Buyer Offer</h2>
-  <p>Offer Amount: $XXX,XXX</p>
-  <p>Buyer Note: (optional message)</p>
+  <p id="offerAmount">Offer Amount: $180000</p>
+  <p>Buyer Note: Interested buyer</p>
 
-  <button>Accept Offer</button>
-  <button>Reject Offer</button>
+  <button onclick="acceptOffer()">Accept Offer</button>
+  <button onclick="rejectOffer()">Reject Offer</button>
 </section>
 
-<!-- Counter Offer -->
 <section>
   <h2>Counter Offer</h2>
 
-  <input type="number" placeholder="Counter Offer Amount">
+  <input type="number" id="counter" placeholder="Counter Offer Amount">
   <br><br>
 
-  <button>Send Counter</button>
+  <button onclick="sendCounter()">Send Counter</button>
 </section>
 
+<h3 id="status"></h3>
+
 <p><a href="seller_dashboard.html">Back to Dashboard</a></p>
+
+<script>
+
+function getOffer() {
+    let data = localStorage.getItem("offer");
+    if (data) {
+        return JSON.parse(data);
+    } else {
+        return {
+            status: "Pending",
+            counter: ""
+        };
+    }
+}
+
+function saveOffer(data) {
+    localStorage.setItem("offer", JSON.stringify(data));
+}
+
+function loadOffer() {
+    let offer = getOffer();
+    updateStatus(offer);
+}
+
+function updateStatus(offer) {
+    let statusText = "Status: " + offer.status;
+
+    if (offer.status == "Counter Sent") {
+        statusText += " ($" + offer.counter + ")";
+    }
+
+    document.getElementById("status").innerText = statusText;
+}
+
+function acceptOffer() {
+    let offer = getOffer();
+    offer.status = "Accepted";
+    saveOffer(offer);
+    updateStatus(offer);
+}
+
+function rejectOffer() {
+    let offer = getOffer();
+    offer.status = "Rejected";
+    saveOffer(offer);
+    updateStatus(offer);
+}
+
+function sendCounter() {
+    let amount = document.getElementById("counter").value;
+
+    if (amount == "" || amount <= 0) {
+        document.getElementById("status").innerText = "Enter a valid counter offer";
+        return;
+    }
+
+    let offer = {
+        status: "Counter Sent",
+        counter: amount
+    };
+
+    saveOffer(offer);
+    updateStatus(offer);
+}
+
+</script>
 
 </body>
 </html>
