@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+       <title>
+        Buyer Application Form
+       </title> 
+       <form>
+        <label for="fname">First name:</label><br>
+        <input type="text" id="fname" name="fname"><br>
+        <label for="lname">Last name:</label><br>
+        <input type="text" id="lname" name="lname"><br>
+        <label for="emailID">Email ID:</label><br>
+        <input type="text" id="emailID" name="emailID"><br>
+        <form action="/upload-documents" method="POST" enctype="multipart/form-data">
+  
+  <div class="form-group">
+    <label for="gov-id">Government Issued ID:</label>
+    <input type="file" id="gov-id" name="gov_id" accept="image/*,.pdf" required>
+  </div>
+
+  <br>
+
+  <div class="form-group">
+    <label for="mortgage-docs">Mortgage Pre-approval Documents:</label>
+    <input type="file" id="mortgage-docs" name="mortgage_pre_approval" accept=".pdf,.doc,.docx" required>
+  </div>
+
+  <br>
+
+  <div class="form-group">
+    <label for="bank-statements">Bank Statements (Last 3 Months):</label>
+    <input type="file" id="bank-statements" name="bank_statements[]" multiple accept=".pdf">
+    <small>You can select multiple files at once.</small>
+  </div>
+
+  <br>
+
+  <button type="submit">Submit Application</button>
+</form>
+        </form>
+
+       </form>
+    </head>
+</html>
