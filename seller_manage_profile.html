@@ -4,37 +4,107 @@
 <title>Manage Seller Profile</title>
 </head>
 
-<body>
+<body onload="loadProfile()">
 
 <h1>Manage Profile</h1>
 
-<!-- Profile Info -->
 <section>
   <h2>Profile</h2>
 
-  <input type="text" placeholder="Display Name">
+  <input type="text" id="name" placeholder="Display Name">
   <br><br>
 
-  <input type="email" placeholder="Email">
+  <input type="email" id="email" placeholder="Email">
   <br><br>
 
-  <input type="text" placeholder="Phone Number">
+  <input type="text" id="phone" placeholder="Phone Number">
   <br><br>
 
-  <textarea placeholder="Bio / About Seller"></textarea>
+  <textarea id="bio" placeholder="Bio / About Seller"></textarea>
   <br><br>
 
-  <button>Save Profile</button>
+  <button onclick="saveProfile()">Save Profile</button>
+
+  <p id="message"></p>
 </section>
 
-<!-- Account -->
 <section>
   <h2>Account</h2>
-  <button>Change Password</button>
-  <button>Deactivate Account</button>
+  <button onclick="changePassword()">Change Password</button>
+  <button onclick="deactivateAccount()">Deactivate Account</button>
 </section>
 
 <p><a href="seller_dashboard.html">Back to Dashboard</a></p>
+
+<script>
+
+function getProfile() {
+    let data = localStorage.getItem("profile");
+    if (data) {
+        return JSON.parse(data);
+    } else {
+        return {
+            name: "",
+            email: "",
+            phone: "",
+            bio: ""
+        };
+    }
+}
+
+function saveProfileData(profile) {
+    localStorage.setItem("profile", JSON.stringify(profile));
+}
+
+function loadProfile() {
+    let profile = getProfile();
+
+    document.getElementById("name").value = profile.name;
+    document.getElementById("email").value = profile.email;
+    document.getElementById("phone").value = profile.phone;
+    document.getElementById("bio").value = profile.bio;
+}
+
+function saveProfile() {
+    let name = document.getElementById("name").value;
+    let email = document.getElementById("email").value;
+    let phone = document.getElementById("phone").value;
+    let bio = document.getElementById("bio").value;
+
+    let message = document.getElementById("message");
+
+    if (name == "" || email == "" || phone == "") {
+        message.innerText = "Fill in required fields";
+        return;
+    }
+
+    let profile = {
+        name: name,
+        email: email,
+        phone: phone,
+        bio: bio
+    };
+
+    saveProfileData(profile);
+
+    message.innerText = "Profile saved";
+}
+
+function changePassword() {
+    alert("Password change feature not implemented");
+}
+
+function deactivateAccount() {
+    let confirmAction = confirm("Are you sure you want to deactivate your account?");
+    
+    if (confirmAction) {
+        localStorage.removeItem("profile");
+        alert("Account deactivated");
+        window.location.href = "index.html";
+    }
+}
+
+</script>
 
 </body>
 </html>
