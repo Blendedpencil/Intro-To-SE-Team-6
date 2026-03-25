@@ -93,12 +93,6 @@ class Applications(models.Model):
     buyer_rejected_on = models.DateField()
     buyer_accepted_on = models.DateField()
     
-    
-
-
-
-
-
     def __str__(self):
         return self.title
     

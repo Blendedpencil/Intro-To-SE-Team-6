@@ -183,3 +183,43 @@ def logout_bearer(request):
         Token.objects.filter(key=token_key).delete()
 
     return redirect("loginPage")
+
+#database functions
+from backend.models import Saved_Listings, Listings, Reports, Admins, Sellers, Buyers, Users
+
+#USER
+#verifyLogin
+
+#logout
+#reportUser
+#updateProfile
+#changeUsername
+#changePassword
+
+#BUYER
+#addToSavedListings
+#removeFromSavedListings
+#registerBuyerAccount
+
+#BUYER VIEW APPLICATIONS
+#addApplicationToBuyerList
+#removeApplicationFromBuyerList
+
+#SELLER
+#addListing
+
+#deleteListing
+
+#editListing
+#sellerAcceptOffer
+#sellerRejectOffer
+
+
+#SELLER VIEW APPLICATIONS
+#addApplicationToSellerList
+def addApplicationToSellerList():
+    Saved_Listings.objects.create(id=1, buyer=1, listing=1)
+#removeApplicationFromSellerList
+def removeApplicationFromSellerList():
+    Saved_Listings.objects.delete(id=1)
+
