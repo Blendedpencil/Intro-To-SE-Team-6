@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Manage Profile</title>
+    <link rel="stylesheet" href="{% static 'adminpanel/css/adminPages.css' %}">
+</head>
+<body>
+    <h1>Admin Manage Profile</h1>
+
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+    {% if success %}
+        <p style="color:green;">{{ success }}</p>
+    {% endif %}
+
+    <div>
+        <div class="manageProfileSection">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="change_name">
+                <h3>Change Admin Name</h3>
+                <p>Current Admin Name: {{ request.user.first_name }} {{ request.user.last_name }}</p>
+                <label for="newAdminName">New Admin Name:</label><br>
+                <input type="text" id="newAdminName" name="newAdminName"><br><br>
+                <label for="adminPass1">Input Password for Verification:</label><br>
+                <input type="password" id="adminPass1" name="adminPass1"><br><br><br>
+                <input type="submit" value="Update Name">
+            </form>
+        </div>
+
+        <div class="manageProfileSection">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="change_email">
+                <h3>Change Email</h3>
+                <p>Current Email: {{ request.user.email }}</p>
+                <label for="adminEmail">New Email:</label><br>
+                <input type="text" id="adminEmail" name="adminEmail"><br><br>
+                <label for="adminPass2">Input Password for Verification:</label><br>
+                <input type="password" id="adminPass2" name="adminPass2"><br><br><br>
+                <input type="submit" value="Update Email">
+            </form>
+        </div>
+
+        <div class="manageProfileSection">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="change_password">
+                <h3>Change Password</h3>
+                <label for="adminPassNew">New Password:</label><br>
+                <input type="password" id="adminPassNew" name="adminPassNew"><br><br><br>
+                <label for="adminPass3">Input Current Password for Verification:</label><br>
+                <input type="password" id="adminPass3" name="adminPass3"><br><br><br>
+                <input type="submit" value="Update Password">
+            </form>
+        </div>
+    </div>
+</body>
+</html>

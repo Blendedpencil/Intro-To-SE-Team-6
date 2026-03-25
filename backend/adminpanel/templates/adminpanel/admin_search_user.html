@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Search User</title>
+    <link rel="stylesheet" href="{% static 'adminpanel/css/adminPages.css' %}">
+</head>
+<body>
+    <h1>Admin Search Users Page</h1>
+
+    <form method="get">
+        <label for="searchUsers">Search User (email)</label>
+        <input type="search" id="searchUsers" name="searchUsers" value="{{ query }}">
+        <button type="submit">Search</button>
+    </form>
+
+    {% if query %}
+        <hr>
+        {% for user in users %}
+            <div style="margin-bottom: 15px; border: 1px solid #ccc; padding: 10px;">
+                <p><strong>Email:</strong> {{ user.username }}</p>
+                <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                <p><strong>Active:</strong> {{ user.is_active }}</p>
+            </div>
+        {% empty %}
+            <p>No users found.</p>
+        {% endfor %}
+    {% endif %}
+</body>
+</html>

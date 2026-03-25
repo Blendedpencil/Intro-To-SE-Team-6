@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>HomeZapp - Manage Profile</title>
+</head>
+<body style="font-family: 'Times New Roman', serif; font-size: 11px;">
+
+    <nav style="font-size: 14px; margin-bottom: 20px;">
+        <a href="{% url 'buyer_page' %}">Home</a> | 
+        <a href="{% url 'wishlist_page' %}">Cart</a> |
+        <a href="{% url 'logoutPage' %}">Logout</a>
+    </nav>
+
+    <h1 style="font-size: 24px; font-weight: bold;">Manage Profile</h1>
+    <h2 style="font-size: 18px; font-weight: bold; font-style: italic;">Edit Account Information</h2>
+
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+    {% if success %}
+        <p style="color:green;">{{ success }}</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <p>
+            <label>First Name:</label><br>
+            <input type="text" name="first_name" value="{{ request.user.first_name }}" required>
+        </p>
+        
+        <p>
+            <label>Last Name:</label><br>
+            <input type="text" name="last_name" value="{{ request.user.last_name }}" required>
+        </p>
+
+        <p>
+            <label>Email Address:</label><br>
+            <input type="email" name="email" value="{{ request.user.email }}" required>
+        </p>
+
+        <button type="submit" style="font-weight: bold; font-style: italic; padding: 5px 15px;">
+            Save Changes
+        </button>
+    </form>
+
+</body>
+</html>
