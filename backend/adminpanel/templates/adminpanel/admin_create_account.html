@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Create Account</title>
+    <link rel="stylesheet" href="{% static 'adminpanel/css/adminPages.css' %}">
+</head>
+<body>
+    <h1>Admin Create Account</h1>
+
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+    {% if success %}
+        <p style="color:green;">{{ success }}</p>
+    {% endif %}
+
+    <div>
+        <form method="post">
+            {% csrf_token %}
+            <label for="adminName">Admin Name:</label><br>
+            <input type="text" id="adminName" name="adminName"><br><br>
+
+            <label for="adminEmail">Email:</label><br>
+            <input type="text" id="adminEmail" name="adminEmail"><br><br>
+
+            <label for="adminPass">Password:</label><br>
+            <input type="password" id="adminPass" name="adminPass"><br><br><br>
+
+            <input type="submit" value="Create Admin Account">
+        </form>
+    </div>
+</body>
+</html>

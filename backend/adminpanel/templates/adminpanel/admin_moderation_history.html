@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Moderation History</title>
+    <link rel="stylesheet" href="{% static 'adminpanel/css/adminPages.css' %}">
+</head>
+<body>
+    <h1>Moderation History</h1>
+
+    <nav style="margin-bottom: 20px;">
+        <a href="{% url 'admin_home' %}">Home</a> |
+        <a href="{% url 'admin_ban_user' %}">Ban / Unban User</a> |
+        <a href="{% url 'logoutPage' %}">Logout</a>
+    </nav>
+
+    <table border="1" style="width: 100%;">
+        <tr>
+            <th>Date</th>
+            <th>Admin</th>
+            <th>Action</th>
+            <th>Target User</th>
+            <th>Target Listing</th>
+            <th>Reason</th>
+        </tr>
+
+        {% for item in history %}
+        <tr>
+            <td>{{ item.created_at }}</td>
+            <td>
+                {% if item.admin_user %}
+                    {{ item.admin_user.username }}
+                {% else %}
+                    Unknown
+                {% endif %}
+            </td>
+            <td>{{ item.get_action_display }}</td>
+            <td>
+                {% if item.target_user %}
+                    {{ item.target_user.username }}
+                {% else %}
+                    None
+                {% endif %}
+            </td>
+            <td>
+                {% if item.target_listing_title %}
+                    {{ item.target_listing_title }}
+                {% else %}
+                    None
+                {% endif %}
+            </td>
+            <td>{{ item.reason }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No moderation history yet.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

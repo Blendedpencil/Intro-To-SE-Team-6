@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Cart</title>
+</head>
+<body style="font-family: 'Times New Roman', serif; padding: 20px;">
+    <h1>Your Saved Properties</h1>
+    <nav style="margin-bottom: 20px;">
+        <a href="{% url 'buyer_page' %}">Return to Dashboard</a>
+    </nav>
+    <div id="wishlist-container"></div>
+
+    <script src="{% static 'listings/js/data.js' %}"></script>
+    <script>
+        function loadWishlist() {
+            const cart = JSON.parse(localStorage.getItem('homeZappCart')) || [];
+            const container = document.getElementById('wishlist-container');
+            container.innerHTML = "";
+
+            if (cart.length === 0) {
+                container.innerHTML = "<p>Your cart is empty.</p>";
+            } else {
+                cart.forEach(item => {
+                    container.innerHTML += `
+                        <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; display: flex; align-items: center; gap: 20px; border-radius: 8px;">
+                            <img src="${item.image}" style="width: 150px; height: 100px; object-fit: cover; border-radius: 4px;">
+                            <div>
+                                <h3 style="margin: 0;">${item.title}</h3>
+                                <p style="margin: 5px 0;">${item.price} - ${item.location}</p>
+                                <button onclick="removeItem(${item.id})" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px;">Remove</button>
+                            </div>
+                        </div>`;
+                });
+            }
+        }
+
+        function removeItem(id) {
+            let cart = JSON.parse(localStorage.getItem('homeZappCart')) || [];
+            localStorage.setItem('homeZappCart', JSON.stringify(cart.filter(i => i.id != id)));
+            loadWishlist();
+            updateCartUI();
+        }
+
+        loadWishlist();
+    </script>
+</body>
+</html>
