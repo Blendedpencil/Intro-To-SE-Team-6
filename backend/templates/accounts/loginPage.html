@@ -1,0 +1,76 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Login</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loginPage.css' %}">
+</head>
+
+<body>
+
+    <h1>Login to HomeZapp</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <div>
+        <form action="{% url 'loginPage' %}" method="post">
+            {% csrf_token %}
+
+            <p>
+                <label for="login_email">Email:</label><br>
+                <input type="text" id="login_email" name="email" placeholder="Enter your email" required>
+            </p>
+
+            <p>
+                <label for="login_password">Password:</label><br>
+                <input type="password" id="login_password" name="password" placeholder="Enter your password" required>
+            </p>
+
+            <p>
+                <button type="submit">Login</button>
+            </p>
+        </form>
+    </div>
+
+    <h2>Create your HomeZapp account!</h2>
+
+    <div>
+        <form action="{% url 'registerPage' %}" method="post">
+            {% csrf_token %}
+
+            <p>
+                <label for="register_email">Email:</label><br>
+                <input type="text" id="register_email" name="email" placeholder="Enter your email" required>
+            </p>
+
+            <p>
+                <label for="register_password">Password:</label><br>
+                <input type="password" id="register_password" name="password" placeholder="Enter your password" required>
+            </p>
+
+            <p>
+                <label for="confirm_password">Confirm Password:</label><br>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+            </p>
+
+            <p>
+                <button type="submit">Create Buyer Account</button>
+            </p>
+        </form>
+    </div>
+
+    <div>
+        <p>
+            <a href="{% url 'adminCreateAccount' %}">
+                <button type="button">Create Admin Account</button>
+            </a>
+        </p>
+    </div>
+
+</body>
+</html>

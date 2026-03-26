@@ -1,0 +1,48 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Manage Profile</title>
+<link rel="stylesheet" href="{% static 'css/adminPages.css' %}">
+</head>
+<body>
+    <h1>Admin Manage Profile</h1>
+    <div>
+        <div class="manageProfileSection">
+        <form>
+            <h3>Change Admin Name</h3>
+            <p>Current Admin Name: Tom</p>
+            <label for="newAdminName">New Admin Name:</label><br>
+            <input type="text" id="newAdminName" name="newAdminName"><br><br>
+            <label for="adminPass1">Input Password for Verification:</label><br>
+            <input type="password" id="adminPass1" name="adminPass1"><br><br><br>
+            <input type="submit">
+        </form>
+        </div>
+<div class="manageProfileSection">
+        <form>
+            <h3>Change Email</h3>
+            <p>Current Email: tom@jerry.com</p>
+            <label for="adminEmail">New Email:</label><br>
+            <input type="text" id="adminEmail" name="adminEmail"><br><br>
+            <label for="adminPass2">Input Password for Verification:</label><br>
+            <input type="password" id="adminPass2" name="adminPass2"><br><br><br>
+            
+            <input type="submit">
+        </form>
+</div>
+<div class="manageProfileSection">
+        <form>
+            <h3>Change Password</h3>
+            <label for="adminPassNew">New Password:</label><br>
+            <input type="password" id="adminPassNew" name="adminPassNew"><br><br><br>
+            <label for="adminPass1">Input Current Password for Verification:</label><br>
+            <input type="password" id="adminPass3" name="adminPass3"><br><br><br>
+            
+            <input type="submit">
+        </form>
+        </div>
+    </div>
+   </body>
+</html>

@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Home</title>
+    <link rel="stylesheet" href="{% static 'adminpanel/css/adminPages.css' %}">
+</head>
+<body>
+    <h1>Admin Home</h1>
+
+    <nav style="margin-bottom: 20px;">
+        <a href="{% url 'admin_home' %}">Home</a> |
+        <a href="{% url 'admin_create_account_page' %}">Register new administrative account</a> |
+        <a href="{% url 'admin_search_user' %}">Search Users</a> |
+        <a href="{% url 'admin_ban_user' %}">Ban User</a> |
+        <a href="{% url 'admin_manage_profile' %}">Manage Profile</a> |
+        <a href="{% url 'logoutPage' %}">Logout</a>
+        <p><a href="{% url 'admin_moderation_history' %}">Moderation History</a></p>
+    </nav>
+
+    <h2>User Reports</h2>
+    <table style="width: 100%" border="1">
+        <thead>
+            <tr>
+                <th style="width: 20%">Report Number</th>
+                <th style="width: 20%">User</th>
+                <th style="width: 20%">Listing</th>
+                <th style="width: 20%">Date</th>
+                <th style="width: 20%">View Link</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for complaint in complaints %}
+            <tr>
+                <td>{{ complaint.id }}</td>
+                <td>{{ complaint.reporter.username }}</td>
+                <td>
+                    {% if complaint.listing %}
+                        {{ complaint.listing.title }}
+                    {% else %}
+                        None
+                    {% endif %}
+                </td>
+                <td>{{ complaint.created_at }}</td>
+                <td><a href="{% url 'admin_report_detail' complaint.id %}">View</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No complaints submitted yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h2>Search Listings</h2>
+
+    <form method="get" action="{% url 'admin_home' %}">
+        <label for="listing_search">Search listings by title, style, or location:</label><br>
+        <input type="text" id="listing_search" name="listing_search" value="{{ listing_search }}">
+        <button type="submit">Search</button>
+    </form>
+
+    <br>
+
+    <table style="width: 100%" border="1">
+        <thead>
+            <tr>
+                <th>Listing ID</th>
+                <th>Title</th>
+                <th>Seller</th>
+                <th>Style</th>
+                <th>Location</th>
+                <th>Price</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for listing in listings %}
+            <tr>
+                <td>{{ listing.id }}</td>
+                <td>{{ listing.title }}</td>
+                <td>{{ listing.seller.username }}</td>
+                <td>{{ listing.style }}</td>
+                <td>{{ listing.location }}</td>
+                <td>${{ listing.price }}</td>
+                <td>
+                    <form method="post" action="{% url 'admin_delete_listing' listing.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">No listings found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

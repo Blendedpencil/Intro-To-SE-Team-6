@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Report Page</title>
+    <link rel="stylesheet" href="{% static 'adminpanel/css/adminPages.css' %}">
+</head>
+<body>
+    <h1>Admin Report Page</h1>
+    <p><a href="{% url 'admin_home' %}">Return</a></p>
+    <p>Report #{{ complaint.id }}</p>
+    <p>Date: {{ complaint.created_at }}</p>
+    <p>Reported By: {{ complaint.reporter.username }}</p>
+    <p>
+        User Reported:
+        {% if complaint.reported_user %}
+            {{ complaint.reported_user.username }}
+        {% else %}
+            None
+        {% endif %}
+    </p>
+    <p>
+        Listing:
+        {% if complaint.listing %}
+            {{ complaint.listing.title }}
+        {% else %}
+            None
+        {% endif %}
+    </p>
+    <p>Description: {{ complaint.message }}</p>
+</body>
+</html>

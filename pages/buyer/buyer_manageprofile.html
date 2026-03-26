@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>HomeZapp - Manage Profile</title>
+</head>
+<body style="font-family: 'Times New Roman', serif; font-size: 11px;">
+
+    <nav style="font-size: 14px; margin-bottom: 20px;">
+        <a href="buyer_page.html">Home</a> | 
+        <a href="wishlistpage.html">Cart (<span id="cart-count">0</span>)</a> |
+        <a href="#">Logout</a>
+    </nav>
+
+    <h1 style="font-size: 24px; font-weight: bold;">Manage Profile</h1>
+    <h2 style="font-size: 18px; font-weight: bold; font-style: italic;">Edit Account Information</h2>
+
+    <form id="profileForm">
+        <p>
+            <label>First Name:</label><br>
+            <input type="text" id="first_name" required>
+        </p>
+        
+        <p>
+            <label>Last Name:</label><br>
+            <input type="text" id="last_name" required>
+        </p>
+
+        <p>
+            <label>Email Address:</label><br>
+            <input type="email" id="email" required>
+        </p>
+
+        <button type="submit" style="font-weight: bold; font-style: italic; padding: 5px 15px;">Save Changes</button>
+    </form>
+
+    <script src="data.js"></script>
+    <script>
+        // 1. Load existing data when the page opens [cite: 183]
+        window.addEventListener('DOMContentLoaded', () => {
+            const userData = JSON.parse(localStorage.getItem('homeZappUser')) || {
+                first: "Pragati",
+                last: "Gautam",
+                email: "pgautam@msstate.edu"
+            };
+            
+            document.getElementById('first_name').value = userData.first;
+            document.getElementById('last_name').value = userData.last;
+            document.getElementById('email').value = userData.email;
+        });
+
+        // 2. Save data when the button is clicked [cite: 184]
+        document.getElementById('profileForm').onsubmit = function(e) {
+            e.preventDefault(); // Stop page from refreshing
+            
+            const updatedUser = {
+                first: document.getElementById('first_name').value,
+                last: document.getElementById('last_name').value,
+                email: document.getElementById('email').value
+            };
+
+            // Save to LocalStorage
+            localStorage.setItem('homeZappUser', JSON.stringify(updatedUser));
+            alert("Profile updated successfully!");
+        };
+    </script>
+
+</body>
+</html>

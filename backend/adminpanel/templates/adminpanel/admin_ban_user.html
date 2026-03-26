@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Ban User</title>
+    <link rel="stylesheet" href="{% static 'adminpanel/css/adminPages.css' %}">
+</head>
+<body>
+
+    <h1>Ban User</h1>
+
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+    {% if success %}
+        <p style="color:green;">{{ success }}</p>
+    {% endif %}
+
+    <!-- BAN FORM -->
+    <div>
+        <form method="post">
+            {% csrf_token %}
+
+            <label>Username:</label><br>
+            <input type="text" name="uName"><br><br>
+
+            <label>Reason for ban:</label><br>
+            <input type="text" name="banReason"><br><br>
+
+            <button type="submit" name="ban_user">Ban User</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <!-- UNBAN SECTION -->
+    <h2>Banned Users</h2>
+
+    <table border="1" style="width: 100%;">
+        <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Action</th>
+        </tr>
+
+        {% for user in banned_users %}
+        <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <button type="submit" name="unban_user">Unban</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">No banned users.</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+</html>
