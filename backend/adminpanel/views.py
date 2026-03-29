@@ -296,7 +296,38 @@ def admin_search_user(request):
     if query:
         users = User.objects.filter(username__icontains=query).order_by('username')
 
+    seller_requests = UserProfile.objects.filter(
+        role='Seller',
+        seller_request_pending=True,
+        seller_approved=False
+    ).select_related('user').order_by('user__username')
+
     return render(request, 'adminpanel/admin_search_user.html', {
         'query': query,
-        'users': users
+        'users': users,
+        'seller_requests': seller_requests
     })
+
+
+def approve_seller_request(request, user_id):
+    if 'bearer_token' not in request.session or not is_admin(request.user):
+        return redirect('admin_login_page')
+
+    profile = get_object_or_404(UserProfile, user_id=user_id, role='Seller')
+    profile.seller_approved = True
+    profile.seller_request_pending = False
+    profile.user.is_active = True
+    profile.user.save()
+    profile.save()
+
+    return redirect('admin_search_user')
+
+
+def reject_seller_request(request, user_id):
+    if 'bearer_token' not in request.session or not is_admin(request.user):
+        return redirect('admin_login_page')
+
+    profile = get_object_or_404(UserProfile, user_id=user_id, role='Seller')
+    profile.user.delete()
+
+    return redirect('admin_search_user')

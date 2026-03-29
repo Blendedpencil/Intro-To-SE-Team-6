@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Seller Dashboard</title>
+</head>
+<body>
+
+<h1>Seller Dashboard</h1>
+
+<nav>
+    <a href="{% url 'seller_dashboard' %}">Dashboard</a> |
+    <a href="{% url 'create_listing' %}">Create Listing</a> |
+    <a href="{% url 'seller_manage_profile' %}">Profile</a> |
+    <a href="{% url 'logoutPage' %}">Logout</a>
+</nav>
+
+<section>
+    <h2>Quick Actions</h2>
+    <a href="{% url 'seller_dashboard' %}">View Applications</a>
+</section>
+
+<section>
+    <h2>My Listings</h2>
+    {% if listings %}
+        <ul>
+            {% for listing in listings %}
+                <li>
+                    <a href="{% url 'seller_edit_listing' listing.id %}">{{ listing.title }}</a>
+                    - {{ listing.status }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have no listings. <a href="{% url 'create_listing' %}">Create your first listing!</a></p>
+    {% endif %}
+</section>
+
+<section>
+    <h2>Applications / Offers</h2>
+
+    {% for application in applications %}
+        <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+            <p><strong>Listing:</strong> {{ application.listing.title }}</p>
+            <p><strong>Buyer:</strong> {{ application.buyer.username }}</p>
+            <p><strong>Status:</strong> {{ application.status }}</p>
+            <a href="{% url 'seller_negotiation' %}?application_id={{ application.id }}">Open Negotiation</a>
+        </div>
+    {% empty %}
+        <p>No buyer applications yet.</p>
+    {% endfor %}
+</section>
+
+</body>
+</html>

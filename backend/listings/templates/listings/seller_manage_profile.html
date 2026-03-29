@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Seller Profile</title>
+</head>
+<body>
+
+<h1>Manage Profile</h1>
+
+{% if error %}
+<p style="color:red;">{{ error }}</p>
+{% endif %}
+
+{% if success %}
+<p style="color:green;">{{ success }}</p>
+{% endif %}
+
+<section>
+    <h2>Profile</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <input type="text" name="name" placeholder="Display Name" value="{{ request.user.first_name }} {{ request.user.last_name }}">
+        <br><br>
+
+        <input type="email" name="email" placeholder="Email" value="{{ request.user.email }}">
+        <br><br>
+
+        <input type="text" name="phone" placeholder="Phone Number" value="{{ profile.phone|default:'' }}">
+        <br><br>
+
+        <textarea name="bio" placeholder="Bio / About Seller">{{ profile.bio|default:'' }}</textarea>
+        <br><br>
+
+        <button type="submit">Save Profile</button>
+    </form>
+</section>
+
+<section>
+    <h2>Account</h2>
+    <p>Password change can be added later.</p>
+</section>
+
+<p><a href="{% url 'seller_dashboard' %}">Back to Dashboard</a></p>
+
+</body>
+</html>

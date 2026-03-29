@@ -1,42 +1,46 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>HomeZapp - Dashboard</title>
+    <title>Buyer - Dashboard</title>
 </head>
 <body style="font-family: 'Times New Roman', serif; padding: 20px;">
     <nav style="font-size: 16px; margin-bottom: 20px;">
-        <strong>HomeZapp</strong> | 
-        <a href="{% url 'buyer_page' %}">Home</a> | 
-        <a href="{% url 'wishlist_page' %}">Cart (<span id="cart-count">0</span>)</a> |
-        <a href="{% url 'buyer_manageprofile' %}">Profile</a>
+        <strong>HomeZapp</strong> |
+        <a href="{% url 'buyer_page' %}">Home</a> |
+        <a href="{% url 'wishlist_page' %}">Cart</a> |
+        <a href="{% url 'buyer_manageprofile' %}">Profile</a> |
+        <a href="{% url 'logoutPage' %}">Logout</a>
     </nav>
 
     <h1>Buyer Dashboard</h1>
-    <input type="text" id="searchBar" placeholder="Search by style (e.g. Victorian, Colonial)..." style="padding: 10px; width: 400px; margin-bottom: 20px;">
 
-    <section id="listing-container" style="display: flex; flex-wrap: wrap; gap: 20px;"></section>
+    <form method="get" action="{% url 'buyer_page' %}">
+        <input
+            type="text"
+            name="search"
+            value="{{ search }}"
+            placeholder="Search by style (e.g. Victorian, Colonial)..."
+            style="padding: 10px; width: 400px; margin-bottom: 20px;"
+        >
+        <button type="submit">Search</button>
+    </form>
 
-    <script src="{% static 'listings/js/data.js' %}"></script>
-    <script>
-        const container = document.getElementById('listing-container');
-
-        function render(filter = "") {
-            container.innerHTML = "";
-            const filtered = houses.filter(h => h.style.toLowerCase().includes(filter.toLowerCase()));
-            filtered.forEach(house => {
-                container.innerHTML += `
-                    <div style="border: 1px solid #ccc; width: 280px; padding: 10px; box-shadow: 2px 2px 8px #ddd; border-radius: 8px;">
-                        <img src="${house.image}" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
-                        <h3>${house.title}</h3>
-                        <p><strong>${house.style}</strong> - ${house.price}</p>
-                        <a href="{% url 'buyer_subpage' %}?id=${house.id}" style="text-decoration: none; color: #007bff; font-weight: bold;">View Details</a>
-                    </div>`;
-            });
-        }
-
-        document.getElementById('searchBar').oninput = (e) => render(e.target.value);
-        render();
-    </script>
+    <section style="display: flex; flex-wrap: wrap; gap: 20px;">
+        {% for listing in listings %}
+            <div style="border: 1px solid #ccc; width: 280px; padding: 10px; box-shadow: 2px 2px 8px #ddd; border-radius: 8px;">
+                {% if listing.image %}
+                    <img src="{{ listing.image.url }}">
+                {% endif %}
+                <h3>{{ listing.title }}</h3>
+                <p><strong>{{ listing.style }}</strong> - ${{ listing.price }}</p>
+                <p>{{ listing.location }}</p>
+                <a href="{% url 'buyer_subpage' listing.id %}" style="text-decoration: none; color: #007bff; font-weight: bold;">
+                    View Details
+                </a>
+            </div>
+        {% empty %}
+            <p>No listings found.</p>
+        {% endfor %}
+    </section>
 </body>
 </html>
