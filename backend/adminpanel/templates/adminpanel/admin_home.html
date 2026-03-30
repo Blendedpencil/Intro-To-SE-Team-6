@@ -54,50 +54,58 @@
 
     <hr>
 
-    <h2>Search Listings</h2>
+<hr>
 
-    <form method="get" action="{% url 'admin_home' %}">
-        <label for="listing_search">Search listings by title, style, or location:</label><br>
-        <input type="text" id="listing_search" name="listing_search" value="{{ listing_search }}">
-        <button type="submit">Search</button>
-    </form>
+<h2>Search Active Listings</h2>
 
-    <br>
+<form method="get" action="{% url 'admin_home' %}">
+    <label for="listing_search">Search listings by title, style, or location:</label><br>
+    <input type="text" id="listing_search" name="listing_search" value="{{ listing_search }}">
+    <button type="submit">Search</button>
+</form>
 
-    <table style="width: 100%" border="1">
-        <thead>
-            <tr>
-                <th>Listing ID</th>
-                <th>Title</th>
-                <th>Seller</th>
-                <th>Style</th>
-                <th>Location</th>
-                <th>Price</th>
-                <th>Delete</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for listing in listings %}
-            <tr>
-                <td>{{ listing.id }}</td>
-                <td>{{ listing.title }}</td>
-                <td>{{ listing.seller.username }}</td>
-                <td>{{ listing.style }}</td>
-                <td>{{ listing.location }}</td>
-                <td>${{ listing.price }}</td>
-                <td>
-                    <form method="post" action="{% url 'admin_delete_listing' listing.id %}">
-                        {% csrf_token %}
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="7">No listings found.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<br>
+
+<table style="width: 100%" border="1">
+    <thead>
+        <tr>
+            <th>Listing ID</th>
+            <th>Image</th>
+            <th>Title</th>
+            <th>Seller</th>
+            <th>Style</th>
+            <th>Location</th>
+            <th>Price</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for listing in listings %}
+        <tr>
+            <td>{{ listing.id }}</td>
+            <td>
+                {% if listing.image %}
+                    <img src="{{ listing.image.url }}" style="width:120px; height:auto;">
+                {% endif %}
+            </td>
+            <td>{{ listing.title }}</td>
+            <td>{{ listing.seller.username }}</td>
+            <td>{{ listing.style }}</td>
+            <td>{{ listing.location }}</td>
+            <td>${{ listing.price }}</td>
+            <td>
+                <form method="post" action="{% url 'admin_delete_listing' listing.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8">No active listings found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 </body>
 </html>

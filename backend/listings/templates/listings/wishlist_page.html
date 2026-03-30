@@ -5,19 +5,25 @@
 </head>
 <body style="font-family: 'Times New Roman', serif; padding: 20px;">
     <h1>Your Saved Properties</h1>
+
     <nav style="margin-bottom: 20px;">
-        <a href="{% url 'buyer_page' %}">Return to Dashboard</a>
+        <a href="{% url 'buyer_page' %}">Return to Dashboard</a> |
+        <a href="{% url 'notifications_page' %}">Notifications</a> |
+        <a href="{% url 'buyer_manageprofile' %}">Profile</a> |
+        <a href="{% url 'logoutPage' %}">Logout</a>
     </nav>
 
     {% for item in saved_items %}
         <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; display: flex; align-items: center; gap: 20px; border-radius: 8px;">
             {% if item.listing.image %}
-                <img src="{{ item.listing.image }}" style="width: 150px; height: 100px; object-fit: cover; border-radius: 4px;">
+                <img src="{{ item.listing.image.url }}" style="width: 150px; height: 100px; object-fit: cover; border-radius: 4px;">
             {% endif %}
             <div>
                 <h3 style="margin: 0;">{{ item.listing.title }}</h3>
                 <p style="margin: 5px 0;">${{ item.listing.price }} - {{ item.listing.location }}</p>
-                <a href="{% url 'listing_details' item.listing.id %}">View Details</a>
+
+                <a href="{% url 'listing_details' item.listing.id %}">View Details</a> |
+                <a href="{% url 'buyer_application_form' item.listing.id %}">Apply</a>
 
                 <form method="post" action="{% url 'remove_saved_listing' item.listing.id %}" style="margin-top: 10px;">
                     {% csrf_token %}

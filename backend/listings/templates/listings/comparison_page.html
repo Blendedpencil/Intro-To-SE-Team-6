@@ -1,9 +1,9 @@
-{% {% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Comparison Page</title>
-    <link rel="stylesheet" href="{% static 'listings/css/generalPages.css' %}">
+    <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -13,7 +13,7 @@
         <div class="col-sm-6">
             {% if first_listing %}
                 {% if first_listing.image %}
-                    <div class="listingImage"><img src="{{ first_listing.image }}"></div>
+                    <div class="listingImage"><img src="{{ first_listing.image.url }}"></div>
                 {% endif %}
                 <p>Listing Number: {{ first_listing.id }}</p>
                 <p>Date Added: {{ first_listing.created_at }}</p>
@@ -33,7 +33,7 @@
         <div class="col-sm-6">
             {% if second_listing %}
                 {% if second_listing.image %}
-                    <div class="listingImage"><img src="{{ second_listing.image }}"></div>
+                    <div class="listingImage"><img src="{{ second_listing.image.url }}"></div>
                 {% endif %}
                 <p>Listing Number: {{ second_listing.id }}</p>
                 <p>Date Added: {{ second_listing.created_at }}</p>

@@ -4,7 +4,7 @@
 <head>
     <title>HomeZapp Home Page</title>
     <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="navbarHome">
@@ -54,7 +54,7 @@
                 <div class="col-md-5">
                     <div class="houseListingHomeImageWrapper">
                         {% if listing.image %}
-                            <img src="{{ listing.image }}" alt="{{ listing.title }}">
+                            <img src="{{ listing.image.url }}" alt="{{ listing.title }}">
                         {% else %}
                             <img src="{% static 'images/house-stock-photo.jpg' %}" alt="House">
                         {% endif %}
@@ -72,20 +72,24 @@
                     </p>
 
                     {% if request.user.is_authenticated and is_buyer %}
-                        <form method="get" action="{% url 'comparison_page' %}">
-                            <input type="hidden" name="first" value="{{ listing.id }}">
+                        {% if saved_items %}
+                            <form method="get" action="{% url 'comparison_page' %}">
+                                <input type="hidden" name="first" value="{{ listing.id }}">
 
-                            <label>Select Saved Listing to Compare:</label><br>
-                            <select name="second">
-                                {% for item in saved_items %}
-                                    {% if item.listing.id != listing.id %}
-                                        <option value="{{ item.listing.id }}">{{ item.listing.title }}</option>
-                                    {% endif %}
-                                {% endfor %}
-                            </select>
-                            <br><br>
-                            <button type="submit">Compare</button>
-                        </form>
+                                <label>Select Saved Listing to Compare:</label><br>
+                                <select name="second">
+                                    {% for item in saved_items %}
+                                        {% if item.listing.id != listing.id %}
+                                            <option value="{{ item.listing.id }}">{{ item.listing.title }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                                <br><br>
+                                <button type="submit">Compare</button>
+                            </form>
+                        {% else %}
+                            <p>Save a listing first to compare.</p>
+                        {% endif %}
                     {% else %}
                         <p><a href="{% url 'error_access_denied' %}">Compare</a></p>
                     {% endif %}
@@ -100,6 +104,5 @@
             </div>
         {% endfor %}
     </div>
-
 </body>
 </html>

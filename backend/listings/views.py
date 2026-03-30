@@ -1,20 +1,161 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from accounts.models import UserProfile
+from django.db.models import Q
 from .models import Listing, SavedListing
+from interactions.models import BuyerApplication, Notification
 
 
-# Create your views here.
+def is_buyer(user):
+    return user.groups.filter(name='Buyer').exists()
 
-#Seller specific views
+
 def is_seller(user):
     return user.groups.filter(name='Seller').exists()
+
+
+def buyer_page(request):
+    search = request.GET.get('search', '').strip()
+
+    listings = Listing.objects.filter(is_active=True, is_sold=False).order_by('-created_at')
+
+    if search:
+        listings = listings.filter(
+            Q(title__icontains=search) |
+            Q(style__icontains=search) |
+            Q(location__icontains=search)
+        )
+
+    return render(request, 'listings/buyer_page.html', {
+        'listings': listings,
+        'search': search
+    })
+
+
+def listing_details(request, listing_id):
+    listing = get_object_or_404(Listing, id=listing_id, is_active=True, is_sold=False)
+
+    saved_listings = []
+    already_saved = False
+    can_compare = False
+
+    if request.user.is_authenticated and is_buyer(request.user):
+        saved_listings = SavedListing.objects.filter(
+            buyer=request.user
+        ).select_related('listing')
+        already_saved = saved_listings.filter(listing=listing).exists()
+        can_compare = saved_listings.exclude(listing=listing).exists()
+
+    return render(request, 'listings/listing_details.html', {
+        'listing': listing,
+        'saved_listings': saved_listings,
+        'already_saved': already_saved,
+        'can_compare': can_compare
+    })
+
+
+def save_listing(request, listing_id):
+    if not request.user.is_authenticated or not is_buyer(request.user):
+        return redirect('error_access_denied')
+
+    listing = get_object_or_404(Listing, id=listing_id, is_active=True, is_sold=False)
+
+    SavedListing.objects.get_or_create(
+        buyer=request.user,
+        listing=listing
+    )
+
+    return redirect('listing_details', listing_id=listing.id)
+
+
+def wishlist_page(request):
+    if not request.user.is_authenticated or not is_buyer(request.user):
+        return redirect('error_access_denied')
+
+    saved_items = SavedListing.objects.filter(
+        buyer=request.user,
+        listing__is_sold=False
+    ).select_related('listing').order_by('-saved_at')
+
+    return render(request, 'listings/wishlist_page.html', {
+        'saved_items': saved_items
+    })
+
+
+def remove_saved_listing(request, listing_id):
+    if not request.user.is_authenticated or not is_buyer(request.user):
+        return redirect('error_access_denied')
+
+    SavedListing.objects.filter(
+        buyer=request.user,
+        listing_id=listing_id
+    ).delete()
+
+    return redirect('wishlist_page')
+
+
+def comparison_page(request):
+    if not request.user.is_authenticated or not is_buyer(request.user):
+        return redirect('error_access_denied')
+
+    first_id = request.GET.get('first')
+    second_id = request.GET.get('second')
+
+    first_listing = get_object_or_404(Listing, id=first_id, is_active=True, is_sold=False) if first_id else None
+    second_listing = get_object_or_404(Listing, id=second_id, is_active=True, is_sold=False) if second_id else None
+
+    return render(request, 'listings/comparison_page.html', {
+        'first_listing': first_listing,
+        'second_listing': second_listing
+    })
+
+
+def create_listing(request):
+    if not request.user.is_authenticated or not is_seller(request.user):
+        return redirect('seller_login_page')
+
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        price = request.POST.get('price', '').strip()
+        location = request.POST.get('location', '').strip()
+        style = request.POST.get('style', '').strip()
+        description = request.POST.get('description', '').strip()
+        bedrooms = request.POST.get('bedrooms', '0').strip()
+        bathrooms = request.POST.get('bathrooms', '0').strip()
+        square_footage = request.POST.get('square_footage', '0').strip()
+        image = request.FILES.get('image')
+
+        if not title or not price or not location or not description:
+            return render(request, 'listings/seller_create_listing.html', {
+                'error': 'Please fill in all required fields.'
+            })
+
+        Listing.objects.create(
+            seller=request.user,
+            title=title,
+            price=price,
+            location=location,
+            style=style if style else 'Other',
+            description=description,
+            bedrooms=bedrooms or 0,
+            bathrooms=bathrooms or 0,
+            square_footage=square_footage or 0,
+            image=image
+        )
+
+        return render(request, 'listings/seller_create_listing.html', {
+            'success': 'Listing created successfully.'
+        })
+
+    return render(request, 'listings/seller_create_listing.html')
+
 
 def seller_dashboard(request):
     if not request.user.is_authenticated or not is_seller(request.user):
         return redirect('seller_login_page')
 
     listings = Listing.objects.filter(seller=request.user).order_by('-created_at')
-    applications = BuyerApplication.objects.filter(seller=request.user).select_related('listing', 'buyer').order_by('-created_at')
+    applications = BuyerApplication.objects.filter(
+        seller=request.user
+    ).select_related('listing', 'buyer').order_by('-created_at')
 
     return render(request, 'listings/seller_dashboard.html', {
         'listings': listings,
@@ -86,7 +227,8 @@ def seller_negotiation(request):
                 recipient=application.buyer,
                 sender=request.user,
                 title='Application Accepted',
-                message=f'Your application for "{application.listing.title}" was accepted by the seller.'
+                message=f'Your application for "{application.listing.title}" was accepted by the seller.',
+                application=application
             )
 
         elif action == 'reject':
@@ -111,7 +253,8 @@ def seller_negotiation(request):
                     recipient=application.buyer,
                     sender=request.user,
                     title='Counter Offer Sent',
-                    message=f'The seller sent a counter offer for "{application.listing.title}".'
+                    message=f'The seller sent a counter offer for "{application.listing.title}".',
+                    application=application
                 )
 
         return redirect(f'/listings/seller/negotiation/?application_id={application.id}')
@@ -119,139 +262,3 @@ def seller_negotiation(request):
     return render(request, 'listings/seller_negotiation.html', {
         'application': application
     })
-    
-#Buyer specific views
-def is_buyer(user):
-    return user.groups.filter(name='Buyer').exists()
-
-
-def buyer_page(request):
-    search = request.GET.get('search', '').strip()
-
-    listings = Listing.objects.filter(is_active=True).order_by('-created_at')
-
-    if search:
-        listings = listings.filter(
-            Q(title__icontains=search) |
-            Q(style__icontains=search) |
-            Q(location__icontains=search)
-        )
-
-    return render(request, 'listings/buyer_page.html', {
-        'listings': listings,
-        'search': search
-    })
-
-
-def listing_details(request, listing_id):
-    listing = get_object_or_404(Listing, id=listing_id, is_active=True)
-
-    saved_listings = []
-    already_saved = False
-
-    if request.user.is_authenticated and is_buyer(request.user):
-        saved_listings = SavedListing.objects.filter(
-            buyer=request.user
-        ).select_related('listing')
-        already_saved = saved_listings.filter(listing=listing).exists()
-
-    return render(request, 'listings/listing_details.html', {
-        'listing': listing,
-        'saved_listings': saved_listings,
-        'already_saved': already_saved
-    })
-
-
-def save_listing(request, listing_id):
-    if not request.user.is_authenticated or not is_buyer(request.user):
-        return redirect('error_access_denied')
-
-    listing = get_object_or_404(Listing, id=listing_id, is_active=True)
-
-    SavedListing.objects.get_or_create(
-        buyer=request.user,
-        listing=listing
-    )
-
-    return redirect('listing_details', listing_id=listing.id)
-
-
-def wishlist_page(request):
-    if not request.user.is_authenticated or not is_buyer(request.user):
-        return redirect('error_access_denied')
-
-    saved_items = SavedListing.objects.filter(
-        buyer=request.user
-    ).select_related('listing').order_by('-saved_at')
-
-    return render(request, 'listings/wishlist_page.html', {
-        'saved_items': saved_items
-    })
-
-
-def remove_saved_listing(request, listing_id):
-    if not request.user.is_authenticated or not is_buyer(request.user):
-        return redirect('error_access_denied')
-
-    SavedListing.objects.filter(
-        buyer=request.user,
-        listing_id=listing_id
-    ).delete()
-
-    return redirect('wishlist_page')
-
-
-def comparison_page(request):
-    if not request.user.is_authenticated or not is_buyer(request.user):
-        return redirect('error_access_denied')
-
-    first_id = request.GET.get('first')
-    second_id = request.GET.get('second')
-
-    first_listing = get_object_or_404(Listing, id=first_id, is_active=True) if first_id else None
-    second_listing = get_object_or_404(Listing, id=second_id, is_active=True) if second_id else None
-
-    return render(request, 'listings/comparison_page.html', {
-        'first_listing': first_listing,
-        'second_listing': second_listing
-    })
-
-
-def create_listing(request):
-    if not request.user.is_authenticated or not is_seller(request.user):
-        return redirect('seller_login_page')
-
-    if request.method == 'POST':
-        title = request.POST.get('title', '').strip()
-        price = request.POST.get('price', '').strip()
-        location = request.POST.get('location', '').strip()
-        style = request.POST.get('style', '').strip()
-        description = request.POST.get('description', '').strip()
-        bedrooms = request.POST.get('bedrooms', '0').strip()
-        bathrooms = request.POST.get('bathrooms', '0').strip()
-        square_footage = request.POST.get('square_footage', '0').strip()
-        image = request.FILES.get('image')
-
-        if not title or not price or not location or not description:
-            return render(request, 'listings/seller_create_listing.html', {
-                'error': 'Please fill in all required fields.'
-            })
-
-        Listing.objects.create(
-            seller=request.user,
-            title=title,
-            price=price,
-            location=location,
-            style=style if style else 'Other',
-            description=description,
-            bedrooms=bedrooms or 0,
-            bathrooms=bathrooms or 0,
-            square_footage=square_footage or 0,
-            image=image
-        )
-
-        return render(request, 'listings/seller_create_listing.html', {
-            'success': 'Listing created successfully.'
-        })
-
-    return render(request, 'listings/seller_create_listing.html')

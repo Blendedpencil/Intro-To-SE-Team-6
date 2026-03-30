@@ -3,7 +3,7 @@ from listings.models import Listing, SavedListing
 
 
 def homepage(request):
-    listings = Listing.objects.filter(is_active=True).order_by('-created_at')
+    listings = Listing.objects.filter(is_active=True, is_sold=False).order_by('-created_at')
 
     location = request.GET.get('location', '').strip()
     style = request.GET.get('style', '').strip()
@@ -35,7 +35,8 @@ def homepage(request):
         is_buyer = request.user.groups.filter(name='Buyer').exists()
         if is_buyer:
             saved_items = SavedListing.objects.filter(
-                buyer=request.user
+                buyer=request.user,
+                listing__is_sold=False
             ).select_related('listing')
 
     return render(request, 'core/homepage.html', {
@@ -47,7 +48,8 @@ def homepage(request):
         'min_price': min_price,
         'max_price': max_price,
     })
-    
+
+
 def contact_page(request):
     return render(request, 'core/contact_page.html')
 

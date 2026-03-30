@@ -21,17 +21,18 @@
 
 <section>
     <h2>My Listings</h2>
+
     {% if listings %}
         <ul>
             {% for listing in listings %}
                 <li>
-                    <a href="{% url 'seller_edit_listing' listing.id %}">{{ listing.title }}</a>
-                    - {{ listing.status }}
+                    <a href="{% url 'seller_edit_listing' %}?listing_id={{ listing.id }}">{{ listing.title }}</a>
+                    - ${{ listing.price }} - {{ listing.location }}
                 </li>
             {% endfor %}
         </ul>
     {% else %}
-        <p>You have no listings. <a href="{% url 'create_listing' %}">Create your first listing!</a></p>
+        <p>You do not have any listings yet.</p>
     {% endif %}
 </section>
 

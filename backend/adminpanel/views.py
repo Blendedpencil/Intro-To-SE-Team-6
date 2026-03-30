@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.models import User, Group
+from django.db.models import Q
+
 from accounts.models import UserProfile
 from interactions.models import Complaint
-from .models import BanRecord, ModerationHistory
 from listings.models import Listing
-from django.db.models import Q
+from .models import BanRecord, ModerationHistory
+
 
 def is_admin(user):
     return user.is_authenticated and user.groups.filter(name='Admin').exists()
@@ -37,7 +39,15 @@ def admin_login_page(request):
         request.session['bearer_token'] = 'admin-session'
         request.session['bearer_email'] = email
 
-        profile, _ = UserProfile.objects.get_or_create(user=user, defaults={'role': 'Admin'})
+        profile, _ = UserProfile.objects.get_or_create(
+            user=user,
+            defaults={
+                'role': 'Admin',
+                'login_status': False,
+                'seller_approved': False,
+                'seller_request_pending': False
+            }
+        )
         profile.login_status = True
         profile.save()
 
@@ -63,7 +73,7 @@ def admin_create_account_page(request):
             })
 
         parts = admin_name.split(maxsplit=1)
-        first_name = parts[0]
+        first_name = parts[0] if parts else ''
         last_name = parts[1] if len(parts) > 1 else ''
 
         user = User.objects.create_user(
@@ -80,7 +90,9 @@ def admin_create_account_page(request):
         UserProfile.objects.create(
             user=user,
             role='Admin',
-            login_status=False
+            login_status=False,
+            seller_approved=False,
+            seller_request_pending=False
         )
 
         return render(request, 'adminpanel/admin_create_account.html', {
@@ -97,7 +109,7 @@ def admin_home(request):
     complaints = Complaint.objects.order_by('-created_at')
 
     search = request.GET.get('listing_search', '').strip()
-    listings = Listing.objects.order_by('-created_at')
+    listings = Listing.objects.filter(is_active=True, is_sold=False).order_by('-created_at')
 
     if search:
         listings = listings.filter(
@@ -113,98 +125,77 @@ def admin_home(request):
     })
 
 
-def admin_delete_listing(request, listing_id):
-    if 'bearer_token' not in request.session or not is_admin(request.user):
-        return redirect('admin_login_page')
-
-    listing = get_object_or_404(Listing, id=listing_id)
-
-    if request.method == 'POST':
-        listing.delete()
-        return redirect('admin_home')
-
-    return redirect('admin_home')
-
-
-from django.contrib.auth.models import User
-from .models import BanRecord
-
-
 def admin_ban_user(request):
     if 'bearer_token' not in request.session or not is_admin(request.user):
         return redirect('admin_login_page')
 
-    message = None
+    success = None
     error = None
 
     if request.method == 'POST' and 'ban_user' in request.POST:
         username = request.POST.get('uName', '').strip()
         reason = request.POST.get('banReason', '').strip()
 
-        try:
-            user = User.objects.get(username=username)
+        if not username or not reason:
+            error = 'Username and ban reason are required.'
+        else:
+            try:
+                user = User.objects.get(username=username)
+                user.is_active = False
+                user.save()
 
-            user.is_active = False
-            user.save()
+                BanRecord.objects.create(
+                    user=user,
+                    banned_by=request.user,
+                    reason=reason
+                )
 
-            BanRecord.objects.create(
-                user=user,
-                banned_by=request.user,
-                reason=reason
-            )
+                ModerationHistory.objects.create(
+                    admin_user=request.user,
+                    target_user=user,
+                    action='BAN_USER',
+                    reason=reason
+                )
 
-            ModerationHistory.objects.create(
-                admin_user=request.user,
-                target_user=user,
-                action='BAN_USER',
-                reason=reason
-            )
-
-            message = "User banned successfully."
-
-        except User.DoesNotExist:
-            error = "User not found."
+                success = 'User banned successfully.'
+            except User.DoesNotExist:
+                error = 'User not found.'
 
     if request.method == 'POST' and 'unban_user' in request.POST:
         user_id = request.POST.get('user_id')
 
         try:
             user = User.objects.get(id=user_id)
-
             user.is_active = True
             user.save()
 
             BanRecord.objects.filter(user=user).delete()
 
+            profile = UserProfile.objects.filter(user=user, role='Seller').first()
+            if profile and profile.seller_request_pending and not profile.seller_approved:
+                profile.seller_approved = True
+                profile.seller_request_pending = False
+                profile.save()
+
             ModerationHistory.objects.create(
                 admin_user=request.user,
                 target_user=user,
                 action='UNBAN_USER',
-                reason='User account restored by admin.'
+                reason='User unbanned by admin.'
             )
 
-            message = "User unbanned successfully."
-
+            success = 'User unbanned successfully.'
         except User.DoesNotExist:
-            error = "User not found."
+            error = 'User not found.'
 
-    banned_users = User.objects.filter(is_active=False)
+    banned_users = User.objects.filter(is_active=False).order_by('username')
 
     return render(request, 'adminpanel/admin_ban_user.html', {
         'banned_users': banned_users,
-        'success': message,
+        'success': success,
         'error': error
     })
-    
-def admin_moderation_history(request):
-    if 'bearer_token' not in request.session or not is_admin(request.user):
-        return redirect('admin_login_page')
 
-    history = ModerationHistory.objects.order_by('-created_at')
-
-    return render(request, 'adminpanel/admin_moderation_history.html', {
-        'history': history
-    })
 
 def admin_manage_profile(request):
     if 'bearer_token' not in request.session or not is_admin(request.user):
@@ -317,8 +308,16 @@ def approve_seller_request(request, user_id):
     profile.seller_approved = True
     profile.seller_request_pending = False
     profile.user.is_active = True
+
     profile.user.save()
     profile.save()
+
+    ModerationHistory.objects.create(
+        admin_user=request.user,
+        target_user=profile.user,
+        action='UNBAN_USER',
+        reason='Seller account approved by admin.'
+    )
 
     return redirect('admin_search_user')
 
@@ -328,6 +327,44 @@ def reject_seller_request(request, user_id):
         return redirect('admin_login_page')
 
     profile = get_object_or_404(UserProfile, user_id=user_id, role='Seller')
-    profile.user.delete()
 
+    ModerationHistory.objects.create(
+        admin_user=request.user,
+        target_user=profile.user,
+        action='BAN_USER',
+        reason='Seller account request rejected by admin.'
+    )
+
+    profile.user.delete()
     return redirect('admin_search_user')
+
+
+def admin_delete_listing(request, listing_id):
+    if 'bearer_token' not in request.session or not is_admin(request.user):
+        return redirect('admin_login_page')
+
+    listing = get_object_or_404(Listing, id=listing_id)
+
+    if request.method == 'POST':
+        listing.is_active = False
+        listing.save()
+
+        ModerationHistory.objects.create(
+            admin_user=request.user,
+            action='DELETE_LISTING',
+            target_listing_title=listing.title,
+            reason='Listing removed by admin.'
+        )
+
+    return redirect('admin_home')
+
+
+def admin_moderation_history(request):
+    if 'bearer_token' not in request.session or not is_admin(request.user):
+        return redirect('admin_login_page')
+
+    history = ModerationHistory.objects.order_by('-created_at')
+
+    return render(request, 'adminpanel/admin_moderation_history.html', {
+        'history': history
+    })
