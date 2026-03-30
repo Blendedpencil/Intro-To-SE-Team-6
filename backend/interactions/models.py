@@ -53,3 +53,24 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.recipient.username} - {self.title}"
+
+class Payment(models.Model):
+    id = models.BigIntegerField(primary_key=True)
+    listing = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='listing'
+    )
+    buyer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='buyer'
+    )
+    cardNumber = models.IntegerField()
+    cardEXP = models.IntegerField()
+    cardSecurityCode = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+    def __str__(self):
+        return f"{self.buyer.username} - {self.title}"
