@@ -58,12 +58,12 @@ class Payment(models.Model):
     id = models.BigIntegerField(primary_key=True)
     listing = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='listing'
     )
     buyer = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='buyer'
     )
     cardNumber = models.IntegerField()
