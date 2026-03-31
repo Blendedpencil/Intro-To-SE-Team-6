@@ -6,6 +6,17 @@
     <link rel="stylesheet" href="{% static 'adminpanel/css/adminPages.css' %}">
 </head>
 <body>
+        <div class="navbarZap">
+        <nav>
+        <h2><a href="{% url 'homepage' %}">HomeZapp</a></h2>
+        <div>
+            
+            <a href="{% url 'contact_page' %}">Contact</a>
+            
+        </div>
+        </nav>
+    </div>
+
     <h1>Admin Manage Profile</h1>
 
     {% if error %}

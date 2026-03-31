@@ -7,6 +7,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+    <a href="{% url 'buyer_page' %}">Home</a> |
+        <a href="{% url 'wishlist_page' %}">Cart</a> |
+        <a href="{% url 'notifications_page' %}">Notifications</a> |
+        <a href="{% url 'buyer_manageprofile' %}">Profile</a> |
+        <a href="{% url 'logoutPage' %}">Logout</a>
     <h1>Comparison Page</h1><br>
 
     <div class="row">

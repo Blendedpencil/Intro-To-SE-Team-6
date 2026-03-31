@@ -6,6 +6,11 @@
     <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
 </head>
 <body>
+    <a href="{% url 'buyer_page' %}">Home</a> |
+        <a href="{% url 'wishlist_page' %}">Cart</a> |
+        <a href="{% url 'notifications_page' %}">Notifications</a> |
+        <a href="{% url 'buyer_manageprofile' %}">Profile</a> |
+        <a href="{% url 'logoutPage' %}">Logout</a>
     <h1>Listing Details Page</h1>
 
     {% if listing.image %}

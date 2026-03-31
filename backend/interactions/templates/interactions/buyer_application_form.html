@@ -4,6 +4,17 @@
     <title>Buyer Application Form</title>
 </head>
 <body style="font-family: 'Times New Roman', serif; padding: 20px;">
+       <div class="navbarZap">
+        <nav>
+        <h2><a href="{% url 'homepage' %}">HomeZapp</a></h2>
+        <div>
+            
+            <a href="{% url 'contact_page' %}">Contact</a>
+            
+        </div>
+        </nav>
+    </div>
+
     <h1>Buyer Application Form</h1>
 
     <p><strong>Property:</strong> {{ listing.title }}</p>

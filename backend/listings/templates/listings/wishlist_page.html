@@ -4,6 +4,11 @@
     <title>My Cart</title>
 </head>
 <body style="font-family: 'Times New Roman', serif; padding: 20px;">
+   <a href="{% url 'buyer_page' %}">Home</a> |
+        <a href="{% url 'wishlist_page' %}">Cart</a> |
+        <a href="{% url 'notifications_page' %}">Notifications</a> |
+        <a href="{% url 'buyer_manageprofile' %}">Profile</a> |
+        <a href="{% url 'logoutPage' %}">Logout</a>
     <h1>Your Saved Properties</h1>
 
     <nav style="margin-bottom: 20px;">
