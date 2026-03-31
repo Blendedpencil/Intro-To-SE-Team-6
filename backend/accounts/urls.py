@@ -17,4 +17,5 @@ urlpatterns = [
 
     path('profile/', views.buyer_manageprofile, name='buyer_manageprofile'),
     path('logout/', views.logout_bearer, name='logoutPage'),
+    path('dashboard/', views.dashboard_redirect, name='dashboard_redirect'),
 ]

@@ -15,7 +15,7 @@ def is_seller(user):
 def buyer_page(request):
     search = request.GET.get('search', '').strip()
 
-    listings = Listing.objects.filter(is_active=True, is_sold=False).order_by('-created_at')
+    listings = Listing.objects.filter(is_active=True, is_sold=False, is_approved=True, approval_pending=False).order_by('-created_at')
 
     if search:
         listings = listings.filter(
@@ -31,7 +31,7 @@ def buyer_page(request):
 
 
 def listing_details(request, listing_id):
-    listing = get_object_or_404(Listing, id=listing_id, is_active=True, is_sold=False)
+    listing = get_object_or_404(Listing, id=listing_id, is_active=True, is_sold=False, is_approved=True, approval_pending=False)
 
     saved_listings = []
     already_saved = False
@@ -56,7 +56,7 @@ def save_listing(request, listing_id):
     if not request.user.is_authenticated or not is_buyer(request.user):
         return redirect('error_access_denied')
 
-    listing = get_object_or_404(Listing, id=listing_id, is_active=True, is_sold=False)
+    listing = get_object_or_404(Listing, id=listing_id, is_active=True, is_sold=False, is_approved=True, approval_pending=False)
 
     SavedListing.objects.get_or_create(
         buyer=request.user,
@@ -99,8 +99,8 @@ def comparison_page(request):
     first_id = request.GET.get('first')
     second_id = request.GET.get('second')
 
-    first_listing = get_object_or_404(Listing, id=first_id, is_active=True, is_sold=False) if first_id else None
-    second_listing = get_object_or_404(Listing, id=second_id, is_active=True, is_sold=False) if second_id else None
+    first_listing = get_object_or_404(Listing, id=first_id, is_active=True, is_sold=False, is_approved=True, approval_pending=False) if first_id else None
+    second_listing = get_object_or_404(Listing, id=second_id, is_active=True, is_sold=False, is_approved=True, approval_pending=False) if second_id else None
 
     return render(request, 'listings/comparison_page.html', {
         'first_listing': first_listing,
@@ -138,11 +138,15 @@ def create_listing(request):
             bedrooms=bedrooms or 0,
             bathrooms=bathrooms or 0,
             square_footage=square_footage or 0,
-            image=image
+            image=image,
+            is_active=True,
+            is_sold=False,
+            is_approved=False,
+            approval_pending=True
         )
 
         return render(request, 'listings/seller_create_listing.html', {
-            'success': 'Listing created successfully.'
+            'success': 'Listing submitted successfully. It must be approved by an admin before it becomes visible.'
         })
 
     return render(request, 'listings/seller_create_listing.html')

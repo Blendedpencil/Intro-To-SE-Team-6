@@ -17,8 +17,13 @@ class Listing(models.Model):
     image = models.ImageField(upload_to='listing_images/', blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+
     is_active = models.BooleanField(default=True)
     is_sold = models.BooleanField(default=False)
+
+    is_approved = models.BooleanField(default=False)
+    approval_pending = models.BooleanField(default=True)
+    rejection_reason = models.TextField(blank=True)
 
     def __str__(self):
         return self.title

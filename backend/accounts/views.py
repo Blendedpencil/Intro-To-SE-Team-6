@@ -410,3 +410,18 @@ def logout_bearer(request):
     logout(request)
     request.session.flush()
     return redirect('homepage')
+
+def dashboard_redirect(request):
+    if not request.user.is_authenticated:
+        return redirect('error_access_denied')
+
+    if is_admin(request.user):
+        return redirect('admin_home')
+
+    if is_seller(request.user):
+        return redirect('seller_dashboard')
+
+    if is_buyer(request.user):
+        return redirect('buyer_page')
+
+    return redirect('homepage')

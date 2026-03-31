@@ -6,7 +6,11 @@
     <link rel="stylesheet" href="{% static 'adminpanel/css/adminPages.css' %}">
 </head>
 <body>
+
+    <a href="{% url 'dashboard_redirect' %}">Return to Dashboard</a> |
+
     <h1>Admin Search Users Page</h1>
+    
 
     <form method="get">
         <label for="searchUsers">Search User (email)</label>
@@ -48,5 +52,7 @@
     {% empty %}
         <p>No pending seller requests.</p>
     {% endfor %}
+
+    
 </body>
 </html>

@@ -46,7 +46,7 @@ def buyer_application_form(request, listing_id):
     if not request.user.is_authenticated or not is_buyer(request.user):
         return redirect('error_access_denied')
 
-    listing = get_object_or_404(Listing, id=listing_id, is_active=True, is_sold=False)
+    listing = get_object_or_404(Listing, id=listing_id, is_active=True, is_sold=False, is_approved=True, approval_pending=False)
 
     if request.method == 'POST':
         bank_files = request.FILES.getlist('bank_statements')

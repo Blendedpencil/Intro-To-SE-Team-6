@@ -3,7 +3,7 @@ from listings.models import Listing, SavedListing
 
 
 def homepage(request):
-    listings = Listing.objects.filter(is_active=True, is_sold=False).order_by('-created_at')
+    listings = Listing.objects.filter(is_active=True, is_sold=False, is_approved=True, approval_pending=False).order_by('-created_at')
 
     location = request.GET.get('location', '').strip()
     style = request.GET.get('style', '').strip()

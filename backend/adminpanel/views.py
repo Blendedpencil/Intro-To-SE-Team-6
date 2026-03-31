@@ -4,7 +4,7 @@ from django.contrib.auth.models import User, Group
 from django.db.models import Q
 
 from accounts.models import UserProfile
-from interactions.models import Complaint
+from interactions.models import Complaint, Notification
 from listings.models import Listing
 from .models import BanRecord, ModerationHistory
 
@@ -109,10 +109,22 @@ def admin_home(request):
     complaints = Complaint.objects.order_by('-created_at')
 
     search = request.GET.get('listing_search', '').strip()
-    listings = Listing.objects.filter(is_active=True, is_sold=False).order_by('-created_at')
+    pending_listings = Listing.objects.filter(
+        approval_pending=True,
+        is_approved=False,
+        is_active=True,
+        is_sold=False
+    ).order_by('-created_at')
+
+    active_listings = Listing.objects.filter(
+        is_active=True,
+        is_sold=False,
+        is_approved=True,
+        approval_pending=False
+    ).order_by('-created_at')
 
     if search:
-        listings = listings.filter(
+        active_listings = active_listings.filter(
             Q(title__icontains=search) |
             Q(style__icontains=search) |
             Q(location__icontains=search)
@@ -120,7 +132,8 @@ def admin_home(request):
 
     return render(request, 'adminpanel/admin_home.html', {
         'complaints': complaints,
-        'listings': listings,
+        'pending_listings': pending_listings,
+        'listings': active_listings,
         'listing_search': search,
     })
 
@@ -338,6 +351,64 @@ def reject_seller_request(request, user_id):
     profile.user.delete()
     return redirect('admin_search_user')
 
+def approve_listing(request, listing_id):
+    if 'bearer_token' not in request.session or not is_admin(request.user):
+        return redirect('admin_login_page')
+
+    listing = get_object_or_404(Listing, id=listing_id)
+
+    listing.is_approved = True
+    listing.approval_pending = False
+    listing.rejection_reason = ''
+    listing.save()
+
+    Notification.objects.create(
+        recipient=listing.seller,
+        sender=request.user,
+        title='Listing Approved',
+        message=f'Your listing "{listing.title}" has been approved and is now visible.'
+    )
+
+    ModerationHistory.objects.create(
+        admin_user=request.user,
+        action='RESTORE_LISTING',
+        target_listing_title=listing.title,
+        reason='Listing approved by admin.'
+    )
+
+    return redirect('admin_home')
+
+
+def reject_listing(request, listing_id):
+    if 'bearer_token' not in request.session or not is_admin(request.user):
+        return redirect('admin_login_page')
+
+    listing = get_object_or_404(Listing, id=listing_id)
+
+    reason = ''
+    if request.method == 'POST':
+        reason = request.POST.get('reason', '').strip()
+
+    listing.is_approved = False
+    listing.approval_pending = False
+    listing.rejection_reason = reason
+    listing.save()
+
+    Notification.objects.create(
+        recipient=listing.seller,
+        sender=request.user,
+        title='Listing Rejected',
+        message=f'Your listing "{listing.title}" was rejected by admin.'
+    )
+
+    ModerationHistory.objects.create(
+        admin_user=request.user,
+        action='DELETE_LISTING',
+        target_listing_title=listing.title,
+        reason=reason if reason else 'Listing rejected by admin.'
+    )
+
+    return redirect('admin_home')
 
 def admin_delete_listing(request, listing_id):
     if 'bearer_token' not in request.session or not is_admin(request.user):
