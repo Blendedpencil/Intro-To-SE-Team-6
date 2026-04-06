@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'listings',
     'interactions',
     'adminpanel',
+    'django_seed',
 ]
 
 MIDDLEWARE = [
