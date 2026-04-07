@@ -25,8 +25,6 @@ for i in range(5):
                 seller_approved=False,
                 seller_request_pending=False
             )
-
-print("Test")
 i = 0
 for i in range(5):
     person = 'buyer' + str(i)
@@ -44,9 +42,7 @@ for i in range(5):
                 role='Buyer',
                 login_status=False,
             )
-
-
-print("test")    
+  
 i=0
 for i in range(7):
     person = 'seller' + str(i)
@@ -66,25 +62,25 @@ for i in range(7):
                 seller_approved=True,
                 seller_request_pending=False
             )
-print("test")
 
-'''
 i=0
 for i in range(7):
     id = i
     listing = 'listing' + str(i)
+    userName = 'seller' + str(id) + '@gmail.com'
     Listing.objects.create(
-            seller=sellers[i],
+            seller=User.objects.get(username=userName),
             title="House " + str(id),
-            price=i+100000,
+            price=id+100000,
             location=str(id) + " Lane",
             style='Other',
             description="Accurate Description",
             bedrooms=0,
             bathrooms=0,
             square_footage=0,
-            image=Image.open("static/images/house-stock-photo.jpg")
-        )'''
+        )
+
+#image=(Image.open("static/images/house-stock-photo.jpg"))
 
 #adminpanel
 #-banrecords
