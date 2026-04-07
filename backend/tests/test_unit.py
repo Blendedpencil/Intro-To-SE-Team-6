@@ -108,11 +108,11 @@ class testCreateAccount(TestCase):
         self.assertEqual(is_admin(User.objects.get(email="admin0@gmail.com")), True)
 
     def testIsNotBuyer(self):
-        self.assertEqual(is_buyer(User.objects.get(email="admin0@gmail.com")), True)
+        self.assertEqual(is_buyer(User.objects.get(email="admin0@gmail.com")), False)
     def testIsNotSeller(self):
-        self.assertEqual(is_seller(User.objects.get(email="buyer0@gmail.com")), True)
+        self.assertEqual(is_seller(User.objects.get(email="buyer0@gmail.com")), False)
     def testIsNotAdmin(self):
-        self.assertEqual(is_admin(User.objects.get(email="seller0@gmail.com")), True)
+        self.assertEqual(is_admin(User.objects.get(email="seller0@gmail.com")), False)
 
 #class testLoginBearer(TestCase):
 #    def setup(self):
