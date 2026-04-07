@@ -11,7 +11,6 @@ urlpatterns = [
 
     path('admin-create-account/', views.admin_create_account, name='adminCreateAccount'),
 
-    path('buyer/', views.buyer_page, name='buyer_page'),
     path('seller/', views.seller_page, name='seller_page'),
     path('admin-home/', views.admin_page, name='adminHome'),
 
