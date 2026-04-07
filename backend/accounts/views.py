@@ -1,3 +1,4 @@
+from django.views.decorators.cache import never_cache
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
@@ -15,7 +16,6 @@ def is_seller(user):
 
 def is_admin(user):
     return user.groups.filter(name='Admin').exists()
-
 
 def login_bearer(request):
     if request.user.is_authenticated:
@@ -74,6 +74,7 @@ def login_bearer(request):
             return redirect('buyer_page')
 
     return render(request, 'accounts/auth.html')
+
 
 
 def register_page(request):
@@ -283,6 +284,7 @@ def buyer_page(request):
     return render(request, 'listings/buyer_page.html')
 
 
+
 def seller_page(request):
     if 'bearer_token' not in request.session or not request.user.is_authenticated:
         return redirect('seller_login_page')
@@ -295,7 +297,6 @@ def seller_page(request):
         return redirect('seller_login_page')
 
     return render(request, 'listings/seller_dashboard.html')
-
 
 def admin_page(request):
     if 'bearer_token' not in request.session or not request.user.is_authenticated:
@@ -340,7 +341,6 @@ def buyer_manageprofile(request):
         })
 
     return render(request, 'accounts/buyer_manageprofile.html')
-
 
 def seller_manage_profile(request):
     if 'bearer_token' not in request.session or not request.user.is_authenticated:
@@ -415,13 +415,13 @@ def dashboard_redirect(request):
     if not request.user.is_authenticated:
         return redirect('error_access_denied')
 
-    if is_admin(request.user):
+    if request.user.groups.filter(name='Admin').exists():
         return redirect('admin_home')
 
-    if is_seller(request.user):
+    if request.user.groups.filter(name='Seller').exists():
         return redirect('seller_dashboard')
 
-    if is_buyer(request.user):
+    if request.user.groups.filter(name='Buyer').exists():
         return redirect('buyer_page')
 
     return redirect('homepage')

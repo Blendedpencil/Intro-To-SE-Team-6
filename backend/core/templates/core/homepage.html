@@ -9,14 +9,36 @@
 <body>
     <div class="navbarHome">
         <h1>HomeZapp</h1>
+
         <div>
-            <a href="{% url 'homepage' %}">Homepage</a> |
-            <a href="{% url 'loginPage' %}">Register/Login</a> |
-            <a href="{% url 'seller_login_page' %}">Seller Login</a> |
-            <a href="{% url 'seller_register_page' %}">Create Seller Account</a> |
-            <a href="{% url 'dashboard_redirect' %}">Dashboard</a> |
-            <a href="{% url 'contact_page' %}">Contact</a>
-            
+            {% if not nav_is_authenticated %}
+                <a href="{% url 'loginPage' %}">Buyer Login</a> |
+                <a href="{% url 'registerPage' %}">Buyer Register</a> |
+                <a href="{% url 'seller_login_page' %}">Seller Login</a> |
+                <a href="{% url 'seller_register_page' %}">Create Seller Account</a> |
+                <a href="{% url 'admin_login_page' %}">Admin Login</a> |
+                <a href="{% url 'contact_page' %}">Contact</a>
+            {% elif nav_is_buyer %}
+                <a href="{% url 'dashboard_redirect' %}">Dashboard</a> |
+                <a href="{% url 'wishlist_page' %}">Cart</a> |
+                <a href="{% url 'notifications_page' %}">Notifications</a> |
+                <a href="{% url 'buyer_manageprofile' %}">Profile</a> |
+                <a href="{% url 'contact_page' %}">Contact</a> |
+                <a href="{% url 'logoutPage' %}">Logout</a>
+            {% elif nav_is_seller %}
+                <a href="{% url 'dashboard_redirect' %}">Dashboard</a> |
+                <a href="{% url 'create_listing' %}">Create Listing</a> |
+                <a href="{% url 'seller_manage_profile' %}">Profile</a> |
+                <a href="{% url 'contact_page' %}">Contact</a> |
+                <a href="{% url 'logoutPage' %}">Logout</a>
+            {% elif nav_is_admin %}
+                <a href="{% url 'dashboard_redirect' %}">Dashboard</a> |
+                <a href="{% url 'admin_search_user' %}">Search Users</a> |
+                <a href="{% url 'admin_ban_user' %}">Ban User</a> |
+                <a href="{% url 'admin_manage_profile' %}">Manage Profile</a> |
+                <a href="{% url 'contact_page' %}">Contact</a> |
+                <a href="{% url 'logoutPage' %}">Logout</a>
+            {% endif %}
         </div>
     </div>
 
@@ -26,7 +48,7 @@
         <form method="get" action="{% url 'homepage' %}">
             <label for="searchLocation">Location:</label>
             <input type="text" id="searchLocation" name="location" value="{{ location }}"><br><br>
-            
+
             <label for="searchArchitectureType">Architecture Type:</label>
             <select id="searchArchitectureType" name="style">
                 <option value="">Any</option>
@@ -38,7 +60,7 @@
                 <option value="Modern" {% if style == "Modern" %}selected{% endif %}>Modern</option>
                 <option value="Other" {% if style == "Other" %}selected{% endif %}>Other</option>
             </select><br><br>
-            
+
             <p>Cost Range:</p>
             <label for="searchCostMin">Min: $</label>
             <input type="text" id="searchCostMin" name="min_price" value="{{ min_price }}"><br><br>
@@ -72,11 +94,10 @@
                         <a href="{% url 'listing_details' listing.id %}">View Details</a>
                     </p>
 
-                    {% if request.user.is_authenticated and is_buyer %}
+                    {% if nav_is_buyer %}
                         {% if saved_items %}
                             <form method="get" action="{% url 'comparison_page' %}">
                                 <input type="hidden" name="first" value="{{ listing.id }}">
-
                                 <label>Select Saved Listing to Compare:</label><br>
                                 <select name="second">
                                     {% for item in saved_items %}
@@ -91,7 +112,7 @@
                         {% else %}
                             <p>Save a listing first to compare.</p>
                         {% endif %}
-                    {% else %}
+                    {% elif not nav_is_authenticated %}
                         <p><a href="{% url 'error_access_denied' %}">Compare</a></p>
                     {% endif %}
                 </div>

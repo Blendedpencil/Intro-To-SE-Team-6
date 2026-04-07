@@ -2,6 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from .models import Listing, SavedListing
 from interactions.models import BuyerApplication, Notification
+from django.views.decorators.cache import never_cache
+from interactions.utils import (
+    is_valid_uploaded_file,
+    ALLOWED_LISTING_IMAGE_MIME_TYPES,
+    ALLOWED_LISTING_IMAGE_EXTENSIONS,
+)
+
 
 
 def is_buyer(user):
@@ -11,7 +18,7 @@ def is_buyer(user):
 def is_seller(user):
     return user.groups.filter(name='Seller').exists()
 
-
+@never_cache
 def buyer_page(request):
     search = request.GET.get('search', '').strip()
 
@@ -29,7 +36,7 @@ def buyer_page(request):
         'search': search
     })
 
-
+@never_cache
 def listing_details(request, listing_id):
     listing = get_object_or_404(Listing, id=listing_id, is_active=True, is_sold=False, is_approved=True, approval_pending=False)
 
@@ -65,7 +72,7 @@ def save_listing(request, listing_id):
 
     return redirect('listing_details', listing_id=listing.id)
 
-
+@never_cache
 def wishlist_page(request):
     if not request.user.is_authenticated or not is_buyer(request.user):
         return redirect('error_access_denied')
@@ -91,7 +98,7 @@ def remove_saved_listing(request, listing_id):
 
     return redirect('wishlist_page')
 
-
+@never_cache
 def comparison_page(request):
     if not request.user.is_authenticated or not is_buyer(request.user):
         return redirect('error_access_denied')
@@ -107,7 +114,7 @@ def comparison_page(request):
         'second_listing': second_listing
     })
 
-
+@never_cache
 def create_listing(request):
     if not request.user.is_authenticated or not is_seller(request.user):
         return redirect('seller_login_page')
@@ -126,6 +133,15 @@ def create_listing(request):
         if not title or not price or not location or not description:
             return render(request, 'listings/seller_create_listing.html', {
                 'error': 'Please fill in all required fields.'
+            })
+
+        if image and not is_valid_uploaded_file(
+            image,
+            ALLOWED_LISTING_IMAGE_MIME_TYPES,
+            ALLOWED_LISTING_IMAGE_EXTENSIONS
+        ):
+            return render(request, 'listings/seller_create_listing.html', {
+                'error': 'Listing images must be PNG, JPG, or JPEG files only.'
             })
 
         Listing.objects.create(
@@ -151,7 +167,7 @@ def create_listing(request):
 
     return render(request, 'listings/seller_create_listing.html')
 
-
+@never_cache
 def seller_dashboard(request):
     if not request.user.is_authenticated or not is_seller(request.user):
         return redirect('seller_login_page')
@@ -166,7 +182,7 @@ def seller_dashboard(request):
         'applications': applications
     })
 
-
+@never_cache
 def seller_edit_listing(request):
     if not request.user.is_authenticated or not is_seller(request.user):
         return redirect('seller_login_page')
@@ -193,6 +209,16 @@ def seller_edit_listing(request):
 
         new_image = request.FILES.get('image')
         if new_image:
+            if not is_valid_uploaded_file(
+                new_image,
+                ALLOWED_LISTING_IMAGE_MIME_TYPES,
+                ALLOWED_LISTING_IMAGE_EXTENSIONS
+            ):
+                return render(request, 'listings/seller_edit_listing.html', {
+                    'listings': listings,
+                    'selected_listing': selected_listing,
+                    'error': 'Listing images must be PNG, JPG, or JPEG files only.'
+                })
             selected_listing.image = new_image
 
         selected_listing.save()
@@ -208,7 +234,7 @@ def seller_edit_listing(request):
         'selected_listing': selected_listing
     })
 
-
+@never_cache
 def seller_negotiation(request):
     if not request.user.is_authenticated or not is_seller(request.user):
         return redirect('seller_login_page')

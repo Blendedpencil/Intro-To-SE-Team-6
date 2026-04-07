@@ -8,8 +8,8 @@ class UserProfile(models.Model):
         ('Seller', 'Seller'),
         ('Admin', 'Admin'),
     ]
-
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    session_key = models.CharField(max_length=40, blank=True, null=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='Buyer')
     login_status = models.BooleanField(default=False)
     seller_approved = models.BooleanField(default=False)

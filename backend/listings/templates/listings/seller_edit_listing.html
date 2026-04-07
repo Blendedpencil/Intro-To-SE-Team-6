@@ -7,8 +7,12 @@
 
 <h1>Edit Listing</h1>
 
+{% if error %}
+    <p style="color:red;">{{ error }}</p>
+{% endif %}
+
 {% if success %}
-<p style="color:green;">{{ success }}</p>
+    <p style="color:green;">{{ success }}</p>
 {% endif %}
 
 <section>
@@ -61,7 +65,7 @@
         <textarea name="description">{{ selected_listing.description }}</textarea><br><br>
 
         <label>Replace Image</label><br>
-        <input type="file" name="image"><br><br>
+        <input type="file" name="image" accept=".png,.jpg,.jpeg,image/png,image/jpeg">
 
         <button type="submit">Save Changes</button>
         <a href="{% url 'seller_dashboard' %}">Cancel</a>

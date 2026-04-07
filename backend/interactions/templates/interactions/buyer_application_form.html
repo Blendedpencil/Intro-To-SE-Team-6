@@ -5,6 +5,9 @@
 </head>
 <body style="font-family: 'Times New Roman', serif; padding: 20px;">
     <h1>Buyer Application Form</h1>
+{% if error %}
+    <p style="color:red;">{{ error }}</p>
+{% endif %}
 
     <p><strong>Property:</strong> {{ listing.title }}</p>
     <p><strong>Location:</strong> {{ listing.location }}</p>
@@ -24,21 +27,21 @@
 
         <div>
             <label for="gov-id">Government Issued ID:</label><br>
-            <input type="file" id="gov-id" name="gov_id" accept="image/*,.pdf" required>
+            <input type="file" id="gov-id" name="gov_id" accept=".png,.jpg,.jpeg,.pdf,image/png,image/jpeg,application/pdf" required>
         </div>
 
         <br>
 
         <div>
             <label for="mortgage-docs">Mortgage Pre-approval Documents:</label><br>
-            <input type="file" id="mortgage-docs" name="mortgage_pre_approval" accept=".pdf,.doc,.docx" required>
+            <input type="file" id="mortgage-docs" name="mortgage_pre_approval" accept=".pdf,application/pdf" required>
         </div>
 
         <br>
 
         <div>
             <label for="bank-statements">Bank Statements (Last 3 Months):</label><br>
-            <input type="file" id="bank-statements" name="bank_statements" multiple accept=".pdf">
+            <input type="file" id="bank-statements" name="bank_statements" multiple accept=".pdf,application/pdf">
             <small>You can select multiple files at once.</small>
         </div>
 

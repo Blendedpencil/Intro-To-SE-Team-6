@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.models import User, Group
 from django.db.models import Q
+from django.views.decorators.cache import never_cache
 
 from accounts.models import UserProfile
 from interactions.models import Complaint, Notification
@@ -101,7 +102,7 @@ def admin_create_account_page(request):
 
     return render(request, 'adminpanel/admin_create_account.html')
 
-
+@never_cache
 def admin_home(request):
     if 'bearer_token' not in request.session or not is_admin(request.user):
         return redirect('admin_login_page')
@@ -137,7 +138,7 @@ def admin_home(request):
         'listing_search': search,
     })
 
-
+@never_cache
 def admin_ban_user(request):
     if 'bearer_token' not in request.session or not is_admin(request.user):
         return redirect('admin_login_page')
@@ -209,7 +210,7 @@ def admin_ban_user(request):
         'error': error
     })
 
-
+@never_cache
 def admin_manage_profile(request):
     if 'bearer_token' not in request.session or not is_admin(request.user):
         return redirect('admin_login_page')
@@ -278,7 +279,7 @@ def admin_manage_profile(request):
 
     return render(request, 'adminpanel/admin_manage_profile.html')
 
-
+@never_cache
 def admin_report_detail(request, complaint_id):
     if 'bearer_token' not in request.session or not is_admin(request.user):
         return redirect('admin_login_page')
@@ -289,7 +290,7 @@ def admin_report_detail(request, complaint_id):
         'complaint': complaint
     })
 
-
+@never_cache
 def admin_search_user(request):
     if 'bearer_token' not in request.session or not is_admin(request.user):
         return redirect('admin_login_page')
@@ -429,7 +430,7 @@ def admin_delete_listing(request, listing_id):
 
     return redirect('admin_home')
 
-
+@never_cache
 def admin_moderation_history(request):
     if 'bearer_token' not in request.session or not is_admin(request.user):
         return redirect('admin_login_page')

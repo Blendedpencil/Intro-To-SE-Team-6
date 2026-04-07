@@ -2,6 +2,13 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from listings.models import Listing
 from .models import BuyerApplication, Notification, Complaint
+from .utils import (
+    is_valid_uploaded_file,
+    ALLOWED_GOV_ID_MIME_TYPES,
+    ALLOWED_GOV_ID_EXTENSIONS,
+    ALLOWED_PDF_MIME_TYPES,
+    ALLOWED_PDF_EXTENSIONS,
+)
 # Create your views here.
 
 def is_buyer(user):
@@ -46,20 +53,75 @@ def buyer_application_form(request, listing_id):
     if not request.user.is_authenticated or not is_buyer(request.user):
         return redirect('error_access_denied')
 
-    listing = get_object_or_404(Listing, id=listing_id, is_active=True, is_sold=False, is_approved=True, approval_pending=False)
+    listing = get_object_or_404(Listing, id=listing_id, is_active=True, is_sold=False)
 
     if request.method == 'POST':
+        first_name = request.POST.get('fname', '').strip()
+        last_name = request.POST.get('lname', '').strip()
+        email = request.POST.get('emailID', '').strip()
+
+        gov_id = request.FILES.get('gov_id')
+        mortgage_pre_approval = request.FILES.get('mortgage_pre_approval')
         bank_files = request.FILES.getlist('bank_statements')
+
+        if not first_name or not last_name or not email:
+            return render(request, 'interactions/buyer_application_form.html', {
+                'listing': listing,
+                'error': 'Please fill in all required text fields.'
+            })
+
+        if not gov_id:
+            return render(request, 'interactions/buyer_application_form.html', {
+                'listing': listing,
+                'error': 'Government issued ID is required.'
+            })
+
+        if not is_valid_uploaded_file(
+            gov_id,
+            ALLOWED_GOV_ID_MIME_TYPES,
+            ALLOWED_GOV_ID_EXTENSIONS
+        ):
+            return render(request, 'interactions/buyer_application_form.html', {
+                'listing': listing,
+                'error': 'Government issued ID must be a PNG, JPG, JPEG, or PDF file.'
+            })
+
+        if not mortgage_pre_approval:
+            return render(request, 'interactions/buyer_application_form.html', {
+                'listing': listing,
+                'error': 'Mortgage pre-approval document is required.'
+            })
+
+        if not is_valid_uploaded_file(
+            mortgage_pre_approval,
+            ALLOWED_PDF_MIME_TYPES,
+            ALLOWED_PDF_EXTENSIONS
+        ):
+            return render(request, 'interactions/buyer_application_form.html', {
+                'listing': listing,
+                'error': 'Mortgage pre-approval document must be a PDF file.'
+            })
+
+        for bank_file in bank_files:
+            if not is_valid_uploaded_file(
+                bank_file,
+                ALLOWED_PDF_MIME_TYPES,
+                ALLOWED_PDF_EXTENSIONS
+            ):
+                return render(request, 'interactions/buyer_application_form.html', {
+                    'listing': listing,
+                    'error': 'All bank statements must be PDF files.'
+                })
 
         application = BuyerApplication.objects.create(
             buyer=request.user,
             seller=listing.seller,
             listing=listing,
-            first_name=request.POST.get('fname', '').strip(),
-            last_name=request.POST.get('lname', '').strip(),
-            email=request.POST.get('emailID', '').strip(),
-            gov_id=request.FILES.get('gov_id'),
-            mortgage_pre_approval=request.FILES.get('mortgage_pre_approval'),
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            gov_id=gov_id,
+            mortgage_pre_approval=mortgage_pre_approval,
             bank_statement_1=bank_files[0] if len(bank_files) > 0 else None,
             bank_statement_2=bank_files[1] if len(bank_files) > 1 else None,
             bank_statement_3=bank_files[2] if len(bank_files) > 2 else None,
