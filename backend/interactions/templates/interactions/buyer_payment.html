@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Bank Transfer</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .payment-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 400px; }
+        h2 { margin-top: 0; color: #1a1a1a; font-size: 1.5rem; text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 8px; }
+        input { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        .pay-btn { width: 100%; background-color: #059669; color: white; padding: 14px; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .pay-btn:hover { background-color: #047857; }
+        .security-badge { text-align: center; margin-top: 20px; font-size: 0.75rem; color: #9ca3af; }
+    </style>
+</head>
+<body>
+
+<div class="payment-card">
+    <h2>Bank Transfer Details</h2>
+
+    <p><strong>Property:</strong> {{ application.listing.title }}</p>
+    <p><strong>Amount:</strong> ${{ application.counter_amount|default:application.offer_amount|default:application.listing.price }}</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="account-holder">Account Holder Name</label>
+            <input type="text" id="account-holder" name="account_holder" placeholder="John or Jane Doe" required>
+        </div>
+
+        <div class="form-group">
+            <label for="routing-number">Routing Number</label>
+            <input type="text" id="routing-number" name="routing_number" placeholder="9-digit routing number" maxlength="9" pattern="\d{9}" title="Please enter a valid 9-digit routing number" required>
+        </div>
+
+        <div class="form-group">
+            <label for="account-number">Account Number</label>
+            <input type="text" id="account-number" name="account_number" placeholder="Bank account number" maxlength="17" required>
+        </div>
+
+        <button type="submit" class="pay-btn">Authorize Transfer</button>
+        
+        <div class="security-badge">
+            🔒 Direct Bank Payment (ACH) Securely Encrypted
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
