@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Seller Negotiation</title>
+</head>
+<body>
+
+<h1>Negotiation / Offers</h1>
+
+<section>
+    <h2>Listing</h2>
+    <p>Property: {{ application.listing.title }}</p>
+    <p>Asking Price: ${{ application.listing.price }}</p>
+</section>
+
+<section>
+    <h2>Buyer Offer</h2>
+    <p>Offer Amount: ${{ application.offer_amount|default:"Not provided" }}</p>
+    <p>Buyer Note: {{ application.buyer_note|default:"No note" }}</p>
+
+    <form method="post" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="accept">
+        <button type="submit">Accept Offer</button>
+    </form>
+
+    <form method="post" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="reject">
+        <button type="submit">Reject Offer</button>
+    </form>
+</section>
+
+<section>
+    <h2>Counter Offer</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="counter">
+        <input type="number" step="0.01" name="counter_amount" placeholder="Counter Offer Amount">
+        <br><br>
+        <button type="submit">Send Counter</button>
+    </form>
+</section>
+
+<h3>Status: {{ application.status }}</h3>
+
+<p><a href="{% url 'seller_dashboard' %}">Back to Dashboard</a></p>
+
+</body>
+</html>

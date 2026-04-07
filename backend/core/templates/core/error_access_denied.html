@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Access Denied</title>
+</head>
+<body style="font-family: 'Times New Roman', serif; padding: 20px;">
+    <h1>Please Login</h1>
+    <p>You must be logged in to save or compare listings.</p>
+
+    <p><a href="{% url 'loginPage' %}">Buyer Login</a></p>
+    <p><a href="{% url 'seller_login_page' %}">Seller Login</a></p>
+    <p><a href="{% url 'homepage' %}">Return Home</a></p>
+</body>
+</html>

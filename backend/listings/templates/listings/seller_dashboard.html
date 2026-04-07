@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Seller Dashboard</title>
+</head>
+<body>
+
+<h1>Seller Dashboard</h1>
+
+<nav>
+    <a href="{% url 'homepage' %}">Homepage</a> |
+    <a href="{% url 'seller_dashboard' %}">Dashboard</a> |
+    <a href="{% url 'create_listing' %}">Create Listing</a> |
+    <a href="{% url 'seller_manage_profile' %}">Profile</a> |
+    <a href="{% url 'logoutPage' %}">Logout</a>
+</nav>
+
+<section>
+    <h2>Quick Actions</h2>
+    <a href="{% url 'seller_dashboard' %}">View Applications</a>
+</section>
+
+<section>
+    <h2>My Listings</h2>
+
+    {% for listing in listings %}
+        <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+            <p><strong>{{ listing.title }}</strong></p>
+            <p>${{ listing.price }} - {{ listing.location }}</p>
+
+            {% if listing.is_approved %}
+                <p style="color:green;">Approved</p>
+            {% elif listing.approval_pending %}
+                <p style="color:orange;">Pending Admin Approval</p>
+            {% else %}
+                <p style="color:red;">Rejected</p>
+                {% if listing.rejection_reason %}
+                    <p><strong>Reason:</strong> {{ listing.rejection_reason }}</p>
+                {% endif %}
+            {% endif %}
+
+            <a href="{% url 'seller_edit_listing' %}?listing_id={{ listing.id }}">Edit Listing</a>
+        </div>
+    {% empty %}
+        <p>You do not have any listings yet.</p>
+    {% endfor %}
+</section>
+
+<section>
+    <h3>Applications / Offers</h3>
+
+    {% for application in applications %}
+        <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+            <p><strong>Listing:</strong> {{ application.listing.title }}</p>
+            <p><strong>Buyer:</strong> {{ application.buyer.username }}</p>
+            <p><strong>Status:</strong> {{ application.status }}</p>
+            <a href="{% url 'seller_negotiation' %}?application_id={{ application.id }}">Open Negotiation</a>
+        </div>
+    {% empty %}
+        <p>No buyer applications yet.</p>
+    {% endfor %}
+</section>
+
+</body>
+</html>

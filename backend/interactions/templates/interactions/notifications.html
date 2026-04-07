@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notifications</title>
+</head>
+<body style="font-family: 'Times New Roman', serif; padding: 20px;">
+    <h1>Your Notifications</h1>
+
+    <nav style="margin-bottom: 20px;">
+        <a href="{% url 'homepage' %}">Home</a> |
+        <a href="{% url 'buyer_page' %}">Buyer Dashboard</a> |
+        <a href="{% url 'wishlist_page' %}">Cart</a> |
+        <a href="{% url 'logoutPage' %}">Logout</a>
+    </nav>
+
+    {% for notification in notifications %}
+        <div style="border:1px solid #ccc; padding:15px; margin-bottom:15px; {% if not notification.is_read %}background:#f8f8ff;{% endif %}">
+            <p><strong>{{ notification.title }}</strong></p>
+            <p>{{ notification.message }}</p>
+            <p><small>{{ notification.created_at }}</small></p>
+
+            {% if notification.application %}
+                {% if notification.application.status == 'AcceptedBySeller' and request.user == notification.application.buyer %}
+                    <form method="post" action="{% url 'buyer_application_decision' notification.application.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="accept">
+                        <button type="submit">Accept and Continue to Payment</button>
+                    </form>
+
+                    <form method="post" action="{% url 'buyer_application_decision' notification.application.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="reject">
+                        <button type="submit">Reject</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+
+            {% if not notification.is_read %}
+                <form method="post" action="{% url 'mark_notification_read' notification.id %}" style="margin-top:10px;">
+                    {% csrf_token %}
+                    <button type="submit">Mark as Read</button>
+                </form>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>No notifications yet.</p>
+    {% endfor %}
+</body>
+</html>

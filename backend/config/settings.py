@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'listings',
     'interactions',
     'adminpanel',
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.SingleSessionMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -67,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'accounts.context_processors.role_links',
             ],
         },
     },
@@ -122,3 +125,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+#Files for user-uploaded content (e.g. listing images)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
