@@ -1,8 +1,10 @@
+from re import search
+from urllib import request
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.models import User, Group
 from django.db.models import Q
-from django.views.decorators.cache import never_cache
 
 from accounts.models import UserProfile
 from interactions.models import Complaint, Notification
@@ -15,6 +17,9 @@ def is_admin(user):
 
 
 def admin_login_page(request):
+    if request.user.is_authenticated and is_admin(request.user):
+        return redirect('admin_home')
+
     if request.method == 'POST':
         email = request.POST.get('adminEmail', '').strip()
         password = request.POST.get('adminPass', '').strip()
@@ -102,7 +107,7 @@ def admin_create_account_page(request):
 
     return render(request, 'adminpanel/admin_create_account.html')
 
-@never_cache
+
 def admin_home(request):
     if 'bearer_token' not in request.session or not is_admin(request.user):
         return redirect('admin_login_page')
@@ -110,6 +115,8 @@ def admin_home(request):
     complaints = Complaint.objects.order_by('-created_at')
 
     search = request.GET.get('listing_search', '').strip()
+    sort = request.GET.get('sort', '').strip()
+
     pending_listings = Listing.objects.filter(
         approval_pending=True,
         is_approved=False,
@@ -122,7 +129,7 @@ def admin_home(request):
         is_sold=False,
         is_approved=True,
         approval_pending=False
-    ).order_by('-created_at')
+    )
 
     if search:
         active_listings = active_listings.filter(
@@ -131,14 +138,28 @@ def admin_home(request):
             Q(location__icontains=search)
         )
 
+    if sort == 'price_low':
+        active_listings = active_listings.order_by('price')
+    elif sort == 'price_high':
+        active_listings = active_listings.order_by('-price')
+    elif sort == 'newest':
+        active_listings = active_listings.order_by('-created_at')
+    elif sort == 'location':
+        active_listings = active_listings.order_by('location')
+    elif sort == 'style':
+        active_listings = active_listings.order_by('style')
+    else:
+        active_listings = active_listings.order_by('-created_at')
+
     return render(request, 'adminpanel/admin_home.html', {
         'complaints': complaints,
         'pending_listings': pending_listings,
         'listings': active_listings,
         'listing_search': search,
+        'sort': sort,
     })
 
-@never_cache
+
 def admin_ban_user(request):
     if 'bearer_token' not in request.session or not is_admin(request.user):
         return redirect('admin_login_page')
@@ -210,7 +231,7 @@ def admin_ban_user(request):
         'error': error
     })
 
-@never_cache
+
 def admin_manage_profile(request):
     if 'bearer_token' not in request.session or not is_admin(request.user):
         return redirect('admin_login_page')
@@ -279,7 +300,7 @@ def admin_manage_profile(request):
 
     return render(request, 'adminpanel/admin_manage_profile.html')
 
-@never_cache
+
 def admin_report_detail(request, complaint_id):
     if 'bearer_token' not in request.session or not is_admin(request.user):
         return redirect('admin_login_page')
@@ -290,7 +311,7 @@ def admin_report_detail(request, complaint_id):
         'complaint': complaint
     })
 
-@never_cache
+
 def admin_search_user(request):
     if 'bearer_token' not in request.session or not is_admin(request.user):
         return redirect('admin_login_page')
@@ -352,6 +373,7 @@ def reject_seller_request(request, user_id):
     profile.user.delete()
     return redirect('admin_search_user')
 
+
 def approve_listing(request, listing_id):
     if 'bearer_token' not in request.session or not is_admin(request.user):
         return redirect('admin_login_page')
@@ -385,8 +407,8 @@ def reject_listing(request, listing_id):
         return redirect('admin_login_page')
 
     listing = get_object_or_404(Listing, id=listing_id)
-
     reason = ''
+
     if request.method == 'POST':
         reason = request.POST.get('reason', '').strip()
 
@@ -411,6 +433,7 @@ def reject_listing(request, listing_id):
 
     return redirect('admin_home')
 
+
 def admin_delete_listing(request, listing_id):
     if 'bearer_token' not in request.session or not is_admin(request.user):
         return redirect('admin_login_page')
@@ -430,7 +453,7 @@ def admin_delete_listing(request, listing_id):
 
     return redirect('admin_home')
 
-@never_cache
+
 def admin_moderation_history(request):
     if 'bearer_token' not in request.session or not is_admin(request.user):
         return redirect('admin_login_page')

@@ -1,10 +1,17 @@
 from django.shortcuts import render
 from listings.models import Listing, SavedListing
-
+from listings.models import Listing
+from django.db.models import Q
 
 def homepage(request):
-    listings = Listing.objects.filter(is_active=True, is_sold=False, is_approved=True, approval_pending=False).order_by('-created_at')
+    listings = Listing.objects.filter(
+        is_active=True,
+        is_sold=False,
+        is_approved=True,
+        approval_pending=False
+    )
 
+    # FILTERING
     location = request.GET.get('location', '').strip()
     style = request.GET.get('style', '').strip()
     min_price = request.GET.get('min_price', '').strip()
@@ -17,36 +24,32 @@ def homepage(request):
         listings = listings.filter(style__icontains=style)
 
     if min_price:
-        try:
-            listings = listings.filter(price__gte=min_price)
-        except ValueError:
-            pass
+        listings = listings.filter(price__gte=min_price)
 
     if max_price:
-        try:
-            listings = listings.filter(price__lte=max_price)
-        except ValueError:
-            pass
+        listings = listings.filter(price__lte=max_price)
 
-    saved_items = []
-    is_buyer = False
+    # SORTING
+    sort = request.GET.get('sort')
 
-    if request.user.is_authenticated:
-        is_buyer = request.user.groups.filter(name='Buyer').exists()
-        if is_buyer:
-            saved_items = SavedListing.objects.filter(
-                buyer=request.user,
-                listing__is_sold=False
-            ).select_related('listing')
+    if sort == 'price_low':
+        listings = listings.order_by('price')
+    elif sort == 'price_high':
+        listings = listings.order_by('-price')
+    elif sort == 'newest':
+        listings = listings.order_by('-created_at')
+    elif sort == 'location':
+        listings = listings.order_by('location')
+    elif sort == 'style':
+        listings = listings.order_by('style')
 
     return render(request, 'core/homepage.html', {
-        'listings': listings[:10],
-        'saved_items': saved_items,
-        'is_buyer': is_buyer,
+        'listings': listings,
         'location': location,
         'style': style,
         'min_price': min_price,
         'max_price': max_price,
+        'sort': sort,
     })
 
 

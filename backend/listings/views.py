@@ -20,20 +20,55 @@ def is_seller(user):
 
 @never_cache
 def buyer_page(request):
-    search = request.GET.get('search', '').strip()
+    if not request.user.is_authenticated or not is_buyer(request.user):
+        return redirect('error_access_denied')
 
-    listings = Listing.objects.filter(is_active=True, is_sold=False, is_approved=True, approval_pending=False).order_by('-created_at')
+    listings = Listing.objects.filter(
+        is_active=True,
+        is_sold=False,
+        is_approved=True,
+        approval_pending=False
+    )
 
-    if search:
-        listings = listings.filter(
-            Q(title__icontains=search) |
-            Q(style__icontains=search) |
-            Q(location__icontains=search)
-        )
+    # FILTERING
+    location = request.GET.get('location', '').strip()
+    style = request.GET.get('style', '').strip()
+    min_price = request.GET.get('min_price', '').strip()
+    max_price = request.GET.get('max_price', '').strip()
+
+    if location:
+        listings = listings.filter(location__icontains=location)
+
+    if style:
+        listings = listings.filter(style__icontains=style)
+
+    if min_price:
+        listings = listings.filter(price__gte=min_price)
+
+    if max_price:
+        listings = listings.filter(price__lte=max_price)
+
+    # SORTING
+    sort = request.GET.get('sort')
+
+    if sort == 'price_low':
+        listings = listings.order_by('price')
+    elif sort == 'price_high':
+        listings = listings.order_by('-price')
+    elif sort == 'newest':
+        listings = listings.order_by('-created_at')
+    elif sort == 'location':
+        listings = listings.order_by('location')
+    elif sort == 'style':
+        listings = listings.order_by('style')
 
     return render(request, 'listings/buyer_page.html', {
         'listings': listings,
-        'search': search
+        'location': location,
+        'style': style,
+        'min_price': min_price,
+        'max_price': max_price,
+        'sort': sort,
     })
 
 @never_cache

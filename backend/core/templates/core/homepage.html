@@ -67,6 +67,18 @@
             <label for="searchCostMax">Max: $</label>
             <input type="text" id="searchCostMax" name="max_price" value="{{ max_price }}"><br><br>
 
+            <label for="sort">Sort By:</label>
+            <select name="sort">
+                <option value="">None</option>
+                <option value="price_low">Price (Low → High)</option>
+                <option value="price_high">Price (High → Low)</option>
+                <option value="newest">Newest</option>
+                <option value="location">Location</option>
+                <option value="style">Style</option>
+            </select>
+            
+<br><br>
+
             <input type="submit" value="Search">
         </form>
     </div>

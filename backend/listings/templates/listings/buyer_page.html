@@ -3,7 +3,10 @@
 <head>
     <title>Buyer Dashboard</title>
 </head>
+
 <body style="font-family: 'Times New Roman', serif; padding: 20px;">
+
+    <!-- NAVBAR -->
     <nav style="font-size: 16px; margin-bottom: 20px;">
         <strong>HomeZapp</strong> |
         <a href="{% url 'homepage' %}">Homepage</a> |
@@ -15,25 +18,72 @@
 
     <h1>Buyer Dashboard</h1>
 
-    <form method="get" action="{% url 'buyer_page' %}">
-        <input type="text" name="search" value="{{ search }}" placeholder="Search listing title, style, or location..." style="padding: 10px; width: 400px; margin-bottom: 20px;">
-        <button type="submit">Search</button>
+    <!-- FILTER + SORT FORM -->
+    <form method="get" action="{% url 'buyer_page' %}" style="margin-bottom: 30px;">
+
+        <label>Location:</label><br>
+        <input type="text" name="location" value="{{ location }}" placeholder="City, State">
+        <br><br>
+
+        <label>Style:</label><br>
+        <input type="text" name="style" value="{{ style }}" placeholder="Modern, Colonial, etc.">
+        <br><br>
+
+        <label>Min Price:</label><br>
+        <input type="number" name="min_price" value="{{ min_price }}">
+        <br><br>
+
+        <label>Max Price:</label><br>
+        <input type="number" name="max_price" value="{{ max_price }}">
+        <br><br>
+
+        <label>Sort By:</label><br>
+        <select name="sort">
+            <option value="">None</option>
+            <option value="price_low" {% if sort == "price_low" %}selected{% endif %}>Price (Low → High)</option>
+            <option value="price_high" {% if sort == "price_high" %}selected{% endif %}>Price (High → Low)</option>
+            <option value="newest" {% if sort == "newest" %}selected{% endif %}>Newest</option>
+            <option value="location" {% if sort == "location" %}selected{% endif %}>Location</option>
+            <option value="style" {% if sort == "style" %}selected{% endif %}>Style</option>
+        </select>
+
+        <br><br>
+
+        <button type="submit">Apply Filters</button>
     </form>
 
+    <!-- LISTINGS -->
     <section style="display: flex; flex-wrap: wrap; gap: 20px;">
+
         {% for listing in listings %}
             <div style="border: 1px solid #ccc; width: 280px; padding: 10px; box-shadow: 2px 2px 8px #ddd; border-radius: 8px;">
+
                 {% if listing.image %}
-                    <img src="{{ listing.image.url }}" style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                    <img src="{{ listing.image.url }}" 
+                         style="width: 100%; height: 180px; object-fit: cover; border-radius: 5px;">
+                {% else %}
+                    <p>No image available</p>
                 {% endif %}
+
                 <h3>{{ listing.title }}</h3>
-                <p><strong>{{ listing.style }}</strong> - ${{ listing.price }}</p>
+
+                <p>
+                    <strong>{{ listing.style }}</strong> - ${{ listing.price }}
+                </p>
+
                 <p>{{ listing.location }}</p>
-                <a href="{% url 'listing_details' listing.id %}" style="text-decoration: none; color: #007bff; font-weight: bold;">View Details</a>
+
+                <a href="{% url 'listing_details' listing.id %}" 
+                   style="text-decoration: none; color: #007bff; font-weight: bold;">
+                   View Details
+                </a>
+
             </div>
         {% empty %}
             <p>No listings found.</p>
         {% endfor %}
+
     </section>
+
 </body>
 </html>
