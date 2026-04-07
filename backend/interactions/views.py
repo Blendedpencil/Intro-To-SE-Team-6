@@ -44,7 +44,7 @@ def complaint_form(request):
             'success': 'Complaint submitted successfully.'
         })
 
-    return render(request, 'interactions/complaint_form.html', {
+    return render(request, 'interactions/complaint_submission.html', {
         'listing': listing
     })
 

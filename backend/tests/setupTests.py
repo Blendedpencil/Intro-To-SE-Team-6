@@ -7,13 +7,13 @@ from PIL import Image
 
 #database seeding
 #admin
-'''for i in range(5):
+for i in range(5):
     person = 'admin' + str(i)
     person_email = person + '@gmail.com'
     user = User.objects.create_user(
-                username=person,
+                username=person_email,
                 email=person_email,
-                password="group6homezapp",
+                password="test",
                 is_active=True
             )
     group, _ = Group.objects.get_or_create(name="Admin")
@@ -25,15 +25,16 @@ from PIL import Image
                 seller_approved=False,
                 seller_request_pending=False
             )
+
 print("Test")
 i = 0
 for i in range(5):
     person = 'buyer' + str(i)
     person_email = person + '@gmail.com'
     user = User.objects.create_user(
-                username=person,
+                username=person_email,
                 email=person_email,
-                password="group6homezapp",
+                password="test",
                 is_active=True
             )
     group, _ = Group.objects.get_or_create(name="Buyer")
@@ -43,16 +44,17 @@ for i in range(5):
                 role='Buyer',
                 login_status=False,
             )
-print("test")
-sellers = []    
+
+
+print("test")    
 i=0
 for i in range(7):
     person = 'seller' + str(i)
     person_email = person + '@gmail.com'
     user = User.objects.create_user(
-                username=person,
+                username=person_email,
                 email=person_email,
-                password="group6homezapp",
+                password="test",
                 is_active=True
             )
     group, _ = Group.objects.get_or_create(name="Seller")
@@ -61,12 +63,12 @@ for i in range(7):
                 user=user,
                 role='Seller',
                 login_status=False,
-                seller_approved=False,
+                seller_approved=True,
                 seller_request_pending=False
             )
-    sellers.append(sellerUser)
 print("test")
-print(sellers)
+
+'''
 i=0
 for i in range(7):
     id = i
