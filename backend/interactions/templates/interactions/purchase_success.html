@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Purchase Complete</title>
+</head>
+<body style="font-family: 'Times New Roman', serif; padding: 20px;">
+    <h1>Purchase Complete</h1>
+
+    <p>You successfully purchased <strong>{{ application.listing.title }}</strong>.</p>
+    <p>Location: {{ application.listing.location }}</p>
+    <p>Final Amount:
+        ${{ application.counter_amount|default:application.offer_amount|default:application.listing.price }}
+    </p>
+
+    <p><a href="{% url 'homepage' %}">Return Home</a></p>
+    <p><a href="{% url 'notifications_page' %}">View Notifications</a></p>
+</body>
+</html>

@@ -6,7 +6,11 @@
     <link rel="stylesheet" href="{% static 'adminpanel/css/adminPages.css' %}">
 </head>
 <body>
+
+    <a href="{% url 'dashboard_redirect' %}">Return to Dashboard</a> |
+
     <h1>Admin Search Users Page</h1>
+    
 
     <form method="get">
         <label for="searchUsers">Search User (email)</label>
@@ -26,5 +30,29 @@
             <p>No users found.</p>
         {% endfor %}
     {% endif %}
+
+    <hr>
+    <h2>Pending Seller Requests</h2>
+
+    {% for profile in seller_requests %}
+        <div style="margin-bottom: 15px; border: 1px solid #ccc; padding: 10px;">
+            <p><strong>Email:</strong> {{ profile.user.username }}</p>
+            <p><strong>Status:</strong> Pending Approval</p>
+
+            <form method="post" action="{% url 'approve_seller_request' profile.user.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">✔</button>
+            </form>
+
+            <form method="post" action="{% url 'reject_seller_request' profile.user.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">✘</button>
+            </form>
+        </div>
+    {% empty %}
+        <p>No pending seller requests.</p>
+    {% endfor %}
+
+    
 </body>
 </html>

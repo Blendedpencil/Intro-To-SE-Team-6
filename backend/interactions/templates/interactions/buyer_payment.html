@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
     <title>Secure Bank Transfer</title>
+=======
+    <title>Secure Checkout</title>
+>>>>>>> 16094ba83ebd3fc881e46e69f6681c5bade218ba
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .payment-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 400px; }
@@ -11,15 +15,25 @@
         .form-group { margin-bottom: 20px; }
         label { display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 8px; }
         input { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+<<<<<<< HEAD
         .pay-btn { width: 100%; background-color: #059669; color: white; padding: 14px; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 10px; }
         .pay-btn:hover { background-color: #047857; }
+=======
+        .row { display: flex; gap: 15px; }
+        .row div { flex: 1; }
+        .pay-btn { width: 100%; background-color: #2563eb; color: white; padding: 14px; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 10px; }
+>>>>>>> 16094ba83ebd3fc881e46e69f6681c5bade218ba
         .security-badge { text-align: center; margin-top: 20px; font-size: 0.75rem; color: #9ca3af; }
     </style>
 </head>
 <body>
 
 <div class="payment-card">
+<<<<<<< HEAD
     <h2>Bank Transfer Details</h2>
+=======
+    <h2>Secure Payment</h2>
+>>>>>>> 16094ba83ebd3fc881e46e69f6681c5bade218ba
 
     <p><strong>Property:</strong> {{ application.listing.title }}</p>
     <p><strong>Amount:</strong> ${{ application.counter_amount|default:application.offer_amount|default:application.listing.price }}</p>
@@ -28,6 +42,7 @@
         {% csrf_token %}
         
         <div class="form-group">
+<<<<<<< HEAD
             <label for="account-holder">Account Holder Name</label>
             <input type="text" id="account-holder" name="account_holder" placeholder="John or Jane Doe" required>
         </div>
@@ -46,6 +61,32 @@
         
         <div class="security-badge">
             🔒 Direct Bank Payment (ACH) Securely Encrypted
+=======
+            <label for="card-name">Cardholder Name</label>
+            <input type="text" id="card-name" name="card_name" placeholder="Jane Doe" required>
+        </div>
+
+        <div class="form-group">
+            <label for="card-number">Card Number</label>
+            <input type="text" id="card-number" name="card_number" placeholder="0000 0000 0000 0000" maxlength="16" required>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label for="expiry">Expiration Date</label>
+                <input type="text" id="expiry" name="expiry" placeholder="MM/YY" maxlength="5" required>
+            </div>
+            <div class="form-group">
+                <label for="cvv">CVV</label>
+                <input type="text" id="cvv" name="cvv" placeholder="123" maxlength="4" required>
+            </div>
+        </div>
+
+        <button type="submit" class="pay-btn">Pay Now</button>
+        
+        <div class="security-badge">
+            🔒 Encrypted & Secure Payment
+>>>>>>> 16094ba83ebd3fc881e46e69f6681c5bade218ba
         </div>
     </form>
 </div>
