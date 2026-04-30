@@ -3,26 +3,64 @@
 <html>
 <head>
     <title>Admin Login</title>
+    <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
     <link rel="stylesheet" href="{% static 'adminpanel/css/adminPages.css' %}">
 </head>
+
 <body>
-    <h1>Admin Login</h1>
-
-    {% if error %}
-        <p style="color:red;">{{ error }}</p>
-    {% endif %}
-
-    <div>
-        <form method="post">
-            {% csrf_token %}
-            <label for="adminEmail">Email:</label><br>
-            <input type="text" id="adminEmail" name="adminEmail"><br><br>
-
-            <label for="adminPass">Password:</label><br>
-            <input type="password" id="adminPass" name="adminPass"><br><br><br>
-
-            <input type="submit" value="Login">
-        </form>
+    <div class="navbarHome">
+        <h2>HomeZapp</h2>
+        <div>
+            <a href="{% url 'homepage' %}">Homepage</a> |
+            <a href="{% url 'loginPage' %}">Buyer Login</a> |
+            <a href="{% url 'seller_login_page' %}">Seller Login</a> |
+            <a href="{% url 'contact_page' %}">Contact</a>
+        </div>
     </div>
+
+    <main class="pageWrapper">
+        <h1 class="pageTitle">Admin Login</h1>
+        <p class="pageSubtitle">Sign in to access the HomeZapp admin dashboard.</p>
+
+        {% if error %}
+            <p class="errorMessage">{{ error }}</p>
+        {% endif %}
+
+        <section class="formCard" style="max-width: 520px; margin-left: auto; margin-right: auto;">
+            <h2>Admin Account</h2>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="formGroup">
+                    <label for="adminEmail">Email</label>
+                    <input
+                        class="formInput"
+                        type="text"
+                        id="adminEmail"
+                        name="adminEmail"
+                        placeholder="Enter admin email"
+                        required
+                    >
+                </div>
+
+                <div class="formGroup">
+                    <label for="adminPass">Password</label>
+                    <input
+                        class="formInput"
+                        type="password"
+                        id="adminPass"
+                        name="adminPass"
+                        placeholder="Enter password"
+                        required
+                    >
+                </div>
+
+                <button class="primaryButton" type="submit" style="width: 100%;">
+                    Login
+                </button>
+            </form>
+        </section>
+    </main>
 </body>
 </html>

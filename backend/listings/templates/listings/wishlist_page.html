@@ -1,38 +1,61 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>My Cart</title>
+    <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
 </head>
-<body style="font-family: 'Times New Roman', serif; padding: 20px;">
-    <h1>Your Saved Properties</h1>
 
-    <nav style="margin-bottom: 20px;">
-        <a href="{% url 'buyer_page' %}">Return to Dashboard</a> |
-        <a href="{% url 'notifications_page' %}">Notifications</a> |
-        <a href="{% url 'buyer_manageprofile' %}">Profile</a> |
-        <a href="{% url 'logoutPage' %}">Logout</a>
-    </nav>
-
-    {% for item in saved_items %}
-        <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; display: flex; align-items: center; gap: 20px; border-radius: 8px;">
-            {% if item.listing.image %}
-                <img src="{{ item.listing.image.url }}" style="width: 150px; height: 100px; object-fit: cover; border-radius: 4px;">
-            {% endif %}
-            <div>
-                <h3 style="margin: 0;">{{ item.listing.title }}</h3>
-                <p style="margin: 5px 0;">${{ item.listing.price }} - {{ item.listing.location }}</p>
-
-                <a href="{% url 'listing_details' item.listing.id %}">View Details</a> |
-                <a href="{% url 'buyer_application_form' item.listing.id %}">Apply</a>
-
-                <form method="post" action="{% url 'remove_saved_listing' item.listing.id %}" style="margin-top: 10px;">
-                    {% csrf_token %}
-                    <button type="submit">Remove</button>
-                </form>
-            </div>
+<body>
+    <div class="navbarHome">
+        <h2>HomeZapp</h2>
+        <div>
+            <a href="{% url 'buyer_page' %}">Dashboard</a> |
+            <a href="{% url 'notifications_page' %}">Notifications</a> |
+            <a href="{% url 'buyer_manageprofile' %}">Profile</a> |
+            <a href="{% url 'logoutPage' %}">Logout</a>
         </div>
-    {% empty %}
-        <p>Your cart is empty.</p>
-    {% endfor %}
+    </div>
+
+    <main class="pageWrapper">
+        <h1 class="pageTitle">Your Saved Properties</h1>
+
+        {% for item in saved_items %}
+            <section class="pageCard">
+                <div class="listingDetailsGrid">
+                    <div>
+                        {% if item.listing.image %}
+                            <div class="listingImage">
+                                <img src="{{ item.listing.image.url }}" alt="{{ item.listing.title }}">
+                            </div>
+                        {% else %}
+                            <div class="listingImage">
+                                <img src="{% static 'images/house-stock-photo.jpg' %}" alt="House">
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <h2>{{ item.listing.title }}</h2>
+                        <p><strong>Price:</strong> ${{ item.listing.price }}</p>
+                        <p><strong>Location:</strong> {{ item.listing.location }}</p>
+
+                        <a class="primaryButton" href="{% url 'listing_details' item.listing.id %}">View Details</a>
+                        <a class="secondaryButton" href="{% url 'buyer_application_form' item.listing.id %}">Apply</a>
+
+                        <form method="post" action="{% url 'remove_saved_listing' item.listing.id %}" style="margin-top: 16px;">
+                            {% csrf_token %}
+                            <button type="submit" class="dangerButton">Remove</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        {% empty %}
+            <div class="emptyMessage">
+                <p>Your cart is empty.</p>
+                <a class="primaryButton" href="{% url 'buyer_page' %}">Browse Listings</a>
+            </div>
+        {% endfor %}
+    </main>
 </body>
 </html>

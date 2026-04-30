@@ -1,51 +1,67 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Seller Negotiation</title>
+    <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
 </head>
+
 <body>
+    <div class="navbarHome">
+        <h2>HomeZapp</h2>
+        <div>
+            <a href="{% url 'homepage' %}">Homepage</a> |
+            <a href="{% url 'seller_dashboard' %}">Dashboard</a> |
+            <a href="{% url 'create_listing' %}">Create Listing</a> |
+            <a href="{% url 'logoutPage' %}">Logout</a>
+        </div>
+    </div>
 
-<h1>Negotiation / Offers</h1>
+    <main class="pageWrapper">
+        <h1 class="pageTitle">Negotiation / Offers</h1>
 
-<section>
-    <h2>Listing</h2>
-    <p>Property: {{ application.listing.title }}</p>
-    <p>Asking Price: ${{ application.listing.price }}</p>
-</section>
+        <section class="pageCard">
+            <h2>Listing</h2>
+            <p><strong>Property:</strong> {{ application.listing.title }}</p>
+            <p><strong>Asking Price:</strong> ${{ application.listing.price }}</p>
+            <p><strong>Status:</strong> {{ application.status }}</p>
+        </section>
 
-<section>
-    <h2>Buyer Offer</h2>
-    <p>Offer Amount: ${{ application.offer_amount|default:"Not provided" }}</p>
-    <p>Buyer Note: {{ application.buyer_note|default:"No note" }}</p>
+        <section class="pageCard">
+            <h2>Buyer Offer</h2>
+            <p><strong>Offer Amount:</strong> ${{ application.offer_amount|default:"Not provided" }}</p>
+            <p><strong>Buyer Note:</strong> {{ application.buyer_note|default:"No note" }}</p>
 
-    <form method="post" style="display:inline;">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="accept">
-        <button type="submit">Accept Offer</button>
-    </form>
+            <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="accept">
+                <button class="primaryButton" type="submit">Accept Offer</button>
+            </form>
 
-    <form method="post" style="display:inline;">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="reject">
-        <button type="submit">Reject Offer</button>
-    </form>
-</section>
+            <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reject">
+                <button class="dangerButton" type="submit">Reject Offer</button>
+            </form>
+        </section>
 
-<section>
-    <h2>Counter Offer</h2>
+        <section class="formCard">
+            <h2>Counter Offer</h2>
 
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="counter">
-        <input type="number" step="0.01" name="counter_amount" placeholder="Counter Offer Amount">
-        <br><br>
-        <button type="submit">Send Counter</button>
-    </form>
-</section>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="counter">
 
-<h3>Status: {{ application.status }}</h3>
+                <div class="formGroup">
+                    <label for="counter_amount">Counter Offer Amount</label>
+                    <input class="formInput" type="number" step="0.01" id="counter_amount" name="counter_amount" placeholder="Counter Offer Amount">
+                </div>
 
-<p><a href="{% url 'seller_dashboard' %}">Back to Dashboard</a></p>
+                <button class="primaryButton" type="submit">Send Counter</button>
+            </form>
+        </section>
 
+        <a class="secondaryButton" href="{% url 'seller_dashboard' %}">Back to Dashboard</a>
+    </main>
 </body>
 </html>

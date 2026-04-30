@@ -3,62 +3,140 @@
 <html>
 <head>
     <title>Admin Manage Profile</title>
+    <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
     <link rel="stylesheet" href="{% static 'adminpanel/css/adminPages.css' %}">
 </head>
+
 <body>
-    <a href="{% url 'dashboard_redirect' %}">Return to Dashboard</a> |
-
-    <h1>Admin Manage Profile</h1>
-
-    {% if error %}
-        <p style="color:red;">{{ error }}</p>
-    {% endif %}
-
-    {% if success %}
-        <p style="color:green;">{{ success }}</p>
-    {% endif %}
-
-    <div>
-        <div class="manageProfileSection">
-            <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="action" value="change_name">
-                <h3>Change Admin Name</h3>
-                <p>Current Admin Name: {{ request.user.first_name }} {{ request.user.last_name }}</p>
-                <label for="newAdminName">New Admin Name:</label><br>
-                <input type="text" id="newAdminName" name="newAdminName"><br><br>
-                <label for="adminPass1">Input Password for Verification:</label><br>
-                <input type="password" id="adminPass1" name="adminPass1"><br><br><br>
-                <input type="submit" value="Update Name">
-            </form>
-        </div>
-
-        <div class="manageProfileSection">
-            <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="action" value="change_email">
-                <h3>Change Email</h3>
-                <p>Current Email: {{ request.user.email }}</p>
-                <label for="adminEmail">New Email:</label><br>
-                <input type="text" id="adminEmail" name="adminEmail"><br><br>
-                <label for="adminPass2">Input Password for Verification:</label><br>
-                <input type="password" id="adminPass2" name="adminPass2"><br><br><br>
-                <input type="submit" value="Update Email">
-            </form>
-        </div>
-
-        <div class="manageProfileSection">
-            <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="action" value="change_password">
-                <h3>Change Password</h3>
-                <label for="adminPassNew">New Password:</label><br>
-                <input type="password" id="adminPassNew" name="adminPassNew"><br><br><br>
-                <label for="adminPass3">Input Current Password for Verification:</label><br>
-                <input type="password" id="adminPass3" name="adminPass3"><br><br><br>
-                <input type="submit" value="Update Password">
-            </form>
+    <div class="navbarHome">
+        <h2>HomeZapp</h2>
+        <div>
+            <a href="{% url 'dashboard_redirect' %}">Dashboard</a> |
+            <a href="{% url 'admin_search_user' %}">Search Users</a> |
+            <a href="{% url 'admin_ban_user' %}">Ban User</a> |
+            <a href="{% url 'admin_moderation_history' %}">Moderation History</a> |
+            <a href="{% url 'logoutPage' %}">Logout</a>
         </div>
     </div>
+
+    <main class="pageWrapper">
+        <h1 class="pageTitle">Admin Manage Profile</h1>
+        <p class="pageSubtitle">Update your admin name, email, or password.</p>
+
+        {% if error %}
+            <p class="errorMessage">{{ error }}</p>
+        {% endif %}
+
+        {% if success %}
+            <p class="successMessage">{{ success }}</p>
+        {% endif %}
+
+        <section class="pageCard">
+            <h2>Current Admin Information</h2>
+            <p><strong>Name:</strong> {{ request.user.first_name }} {{ request.user.last_name }}</p>
+            <p><strong>Email:</strong> {{ request.user.email }}</p>
+        </section>
+
+        <div class="listingGrid">
+            <section class="formCard">
+                <h2>Change Admin Name</h2>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="change_name">
+
+                    <div class="formGroup">
+                        <label for="newAdminName">New Admin Name</label>
+                        <input
+                            class="formInput"
+                            type="text"
+                            id="newAdminName"
+                            name="newAdminName"
+                            placeholder="Enter new admin name"
+                        >
+                    </div>
+
+                    <div class="formGroup">
+                        <label for="adminPass1">Password Verification</label>
+                        <input
+                            class="formInput"
+                            type="password"
+                            id="adminPass1"
+                            name="adminPass1"
+                            placeholder="Enter your password"
+                        >
+                    </div>
+
+                    <button class="primaryButton" type="submit">Update Name</button>
+                </form>
+            </section>
+
+            <section class="formCard">
+                <h2>Change Email</h2>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="change_email">
+
+                    <div class="formGroup">
+                        <label for="adminEmail">New Email</label>
+                        <input
+                            class="formInput"
+                            type="text"
+                            id="adminEmail"
+                            name="adminEmail"
+                            placeholder="Enter new email"
+                        >
+                    </div>
+
+                    <div class="formGroup">
+                        <label for="adminPass2">Password Verification</label>
+                        <input
+                            class="formInput"
+                            type="password"
+                            id="adminPass2"
+                            name="adminPass2"
+                            placeholder="Enter your password"
+                        >
+                    </div>
+
+                    <button class="primaryButton" type="submit">Update Email</button>
+                </form>
+            </section>
+
+            <section class="formCard">
+                <h2>Change Password</h2>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="change_password">
+
+                    <div class="formGroup">
+                        <label for="adminPassNew">New Password</label>
+                        <input
+                            class="formInput"
+                            type="password"
+                            id="adminPassNew"
+                            name="adminPassNew"
+                            placeholder="Enter new password"
+                        >
+                    </div>
+
+                    <div class="formGroup">
+                        <label for="adminPass3">Current Password Verification</label>
+                        <input
+                            class="formInput"
+                            type="password"
+                            id="adminPass3"
+                            name="adminPass3"
+                            placeholder="Enter current password"
+                        >
+                    </div>
+
+                    <button class="primaryButton" type="submit">Update Password</button>
+                </form>
+            </section>
+        </div>
+    </main>
 </body>
 </html>

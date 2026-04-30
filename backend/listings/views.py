@@ -1,14 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
+from django.views.decorators.cache import never_cache
+
 from .models import Listing, SavedListing
 from interactions.models import BuyerApplication, Notification
-from django.views.decorators.cache import never_cache
 from interactions.utils import (
     is_valid_uploaded_file,
     ALLOWED_LISTING_IMAGE_MIME_TYPES,
     ALLOWED_LISTING_IMAGE_EXTENSIONS,
 )
-
 
 
 def is_buyer(user):
@@ -18,11 +18,20 @@ def is_buyer(user):
 def is_seller(user):
     return user.groups.filter(name='Seller').exists()
 
+
 @never_cache
 def buyer_page(request):
     search = request.GET.get('search', '').strip()
 
-    listings = Listing.objects.filter(is_active=True, is_sold=False, is_approved=True, approval_pending=False).order_by('-created_at')
+    listings = Listing.objects.select_related(
+        'seller',
+        'seller__userprofile'
+    ).filter(
+        is_active=True,
+        is_sold=False,
+        is_approved=True,
+        approval_pending=False
+    ).order_by('-created_at')
 
     if search:
         listings = listings.filter(
@@ -36,9 +45,17 @@ def buyer_page(request):
         'search': search
     })
 
+
 @never_cache
 def listing_details(request, listing_id):
-    listing = get_object_or_404(Listing, id=listing_id, is_active=True, is_sold=False, is_approved=True, approval_pending=False)
+    listing = get_object_or_404(
+        Listing.objects.select_related('seller', 'seller__userprofile'),
+        id=listing_id,
+        is_active=True,
+        is_sold=False,
+        is_approved=True,
+        approval_pending=False
+    )
 
     saved_listings = []
     already_saved = False
@@ -63,7 +80,14 @@ def save_listing(request, listing_id):
     if not request.user.is_authenticated or not is_buyer(request.user):
         return redirect('error_access_denied')
 
-    listing = get_object_or_404(Listing, id=listing_id, is_active=True, is_sold=False, is_approved=True, approval_pending=False)
+    listing = get_object_or_404(
+        Listing,
+        id=listing_id,
+        is_active=True,
+        is_sold=False,
+        is_approved=True,
+        approval_pending=False
+    )
 
     SavedListing.objects.get_or_create(
         buyer=request.user,
@@ -71,6 +95,7 @@ def save_listing(request, listing_id):
     )
 
     return redirect('listing_details', listing_id=listing.id)
+
 
 @never_cache
 def wishlist_page(request):
@@ -80,7 +105,7 @@ def wishlist_page(request):
     saved_items = SavedListing.objects.filter(
         buyer=request.user,
         listing__is_sold=False
-    ).select_related('listing').order_by('-saved_at')
+    ).select_related('listing', 'listing__seller').order_by('-saved_at')
 
     return render(request, 'listings/wishlist_page.html', {
         'saved_items': saved_items
@@ -98,6 +123,7 @@ def remove_saved_listing(request, listing_id):
 
     return redirect('wishlist_page')
 
+
 @never_cache
 def comparison_page(request):
     if not request.user.is_authenticated or not is_buyer(request.user):
@@ -106,13 +132,29 @@ def comparison_page(request):
     first_id = request.GET.get('first')
     second_id = request.GET.get('second')
 
-    first_listing = get_object_or_404(Listing, id=first_id, is_active=True, is_sold=False, is_approved=True, approval_pending=False) if first_id else None
-    second_listing = get_object_or_404(Listing, id=second_id, is_active=True, is_sold=False, is_approved=True, approval_pending=False) if second_id else None
+    first_listing = get_object_or_404(
+        Listing,
+        id=first_id,
+        is_active=True,
+        is_sold=False,
+        is_approved=True,
+        approval_pending=False
+    ) if first_id else None
+
+    second_listing = get_object_or_404(
+        Listing,
+        id=second_id,
+        is_active=True,
+        is_sold=False,
+        is_approved=True,
+        approval_pending=False
+    ) if second_id else None
 
     return render(request, 'listings/comparison_page.html', {
         'first_listing': first_listing,
         'second_listing': second_listing
     })
+
 
 @never_cache
 def create_listing(request):
@@ -167,6 +209,7 @@ def create_listing(request):
 
     return render(request, 'listings/seller_create_listing.html')
 
+
 @never_cache
 def seller_dashboard(request):
     if not request.user.is_authenticated or not is_seller(request.user):
@@ -181,6 +224,7 @@ def seller_dashboard(request):
         'listings': listings,
         'applications': applications
     })
+
 
 @never_cache
 def seller_edit_listing(request):
@@ -233,6 +277,7 @@ def seller_edit_listing(request):
         'listings': listings,
         'selected_listing': selected_listing
     })
+
 
 @never_cache
 def seller_negotiation(request):

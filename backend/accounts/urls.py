@@ -16,6 +16,8 @@ urlpatterns = [
     path('admin-home/', views.admin_page, name='adminHome'),
 
     path('profile/', views.buyer_manageprofile, name='buyer_manageprofile'),
+    path('users/<int:user_id>/', views.public_profile, name='public_profile'),
+
     path('logout/', views.logout_bearer, name='logoutPage'),
     path('dashboard/', views.dashboard_redirect, name='dashboard_redirect'),
 ]

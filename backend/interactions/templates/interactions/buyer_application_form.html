@@ -1,55 +1,75 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Buyer Application Form</title>
+    <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
 </head>
-<body style="font-family: 'Times New Roman', serif; padding: 20px;">
-    <h1>Buyer Application Form</h1>
-{% if error %}
-    <p style="color:red;">{{ error }}</p>
-{% endif %}
 
-    <p><strong>Property:</strong> {{ listing.title }}</p>
-    <p><strong>Location:</strong> {{ listing.location }}</p>
-    <p><strong>Price:</strong> ${{ listing.price }}</p>
-
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-
-        <label for="fname">First name:</label><br>
-        <input type="text" id="fname" name="fname"><br><br>
-
-        <label for="lname">Last name:</label><br>
-        <input type="text" id="lname" name="lname"><br><br>
-
-        <label for="emailID">Email ID:</label><br>
-        <input type="text" id="emailID" name="emailID"><br><br>
-
+<body>
+    <div class="navbarHome">
+        <h2>HomeZapp</h2>
         <div>
-            <label for="gov-id">Government Issued ID:</label><br>
-            <input type="file" id="gov-id" name="gov_id" accept=".png,.jpg,.jpeg,.pdf,image/png,image/jpeg,application/pdf" required>
+            <a href="{% url 'homepage' %}">Homepage</a> |
+            <a href="{% url 'wishlist_page' %}">Cart</a> |
+            <a href="{% url 'notifications_page' %}">Notifications</a> |
+            <a href="{% url 'logoutPage' %}">Logout</a>
         </div>
+    </div>
 
-        <br>
+    <main class="pageWrapper">
+        <h1 class="pageTitle">Buyer Application Form</h1>
 
-        <div>
-            <label for="mortgage-docs">Mortgage Pre-approval Documents:</label><br>
-            <input type="file" id="mortgage-docs" name="mortgage_pre_approval" accept=".pdf,application/pdf" required>
-        </div>
+        {% if error %}
+            <p class="errorMessage">{{ error }}</p>
+        {% endif %}
 
-        <br>
+        <section class="pageCard">
+            <h2>{{ listing.title }}</h2>
+            <p><strong>Location:</strong> {{ listing.location }}</p>
+            <p><strong>Price:</strong> ${{ listing.price }}</p>
+        </section>
 
-        <div>
-            <label for="bank-statements">Bank Statements (Last 3 Months):</label><br>
-            <input type="file" id="bank-statements" name="bank_statements" multiple accept=".pdf,application/pdf">
-            <small>You can select multiple files at once.</small>
-        </div>
+        <section class="formCard">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
 
-        <br>
+                <div class="formGroup">
+                    <label for="fname">First Name</label>
+                    <input class="formInput" type="text" id="fname" name="fname" required>
+                </div>
 
-        <button type="submit">Submit Application</button>
-    </form>
+                <div class="formGroup">
+                    <label for="lname">Last Name</label>
+                    <input class="formInput" type="text" id="lname" name="lname" required>
+                </div>
 
-    <p><a href="{% url 'wishlist_page' %}">Back to Cart</a></p>
+                <div class="formGroup">
+                    <label for="emailID">Email ID</label>
+                    <input class="formInput" type="text" id="emailID" name="emailID" required>
+                </div>
+
+                <div class="formGroup">
+                    <label for="gov-id">Government Issued ID</label>
+                    <input class="formInput" type="file" id="gov-id" name="gov_id" accept=".png,.jpg,.jpeg,.pdf,image/png,image/jpeg,application/pdf" required>
+                </div>
+
+                <div class="formGroup">
+                    <label for="mortgage-docs">Mortgage Pre-approval Documents</label>
+                    <input class="formInput" type="file" id="mortgage-docs" name="mortgage_pre_approval" accept=".pdf,application/pdf" required>
+                </div>
+
+                <div class="formGroup">
+                    <label for="bank-statements">Bank Statements (Last 3 Months)</label>
+                    <input class="formInput" type="file" id="bank-statements" name="bank_statements" multiple accept=".pdf,application/pdf">
+                    <small>You can select multiple files at once.</small>
+                </div>
+
+                <button class="primaryButton" type="submit">Submit Application</button>
+            </form>
+        </section>
+
+        <a class="secondaryButton" href="{% url 'wishlist_page' %}">Back to Cart</a>
+    </main>
 </body>
 </html>

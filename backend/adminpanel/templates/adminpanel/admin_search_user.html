@@ -3,56 +3,90 @@
 <html>
 <head>
     <title>Admin Search User</title>
+    <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
     <link rel="stylesheet" href="{% static 'adminpanel/css/adminPages.css' %}">
 </head>
+
 <body>
-
-    <a href="{% url 'dashboard_redirect' %}">Return to Dashboard</a> |
-
-    <h1>Admin Search Users Page</h1>
-    
-
-    <form method="get">
-        <label for="searchUsers">Search User (email)</label>
-        <input type="search" id="searchUsers" name="searchUsers" value="{{ query }}">
-        <button type="submit">Search</button>
-    </form>
-
-    {% if query %}
-        <hr>
-        {% for user in users %}
-            <div style="margin-bottom: 15px; border: 1px solid #ccc; padding: 10px;">
-                <p><strong>Email:</strong> {{ user.username }}</p>
-                <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-                <p><strong>Active:</strong> {{ user.is_active }}</p>
-            </div>
-        {% empty %}
-            <p>No users found.</p>
-        {% endfor %}
-    {% endif %}
-
-    <hr>
-    <h2>Pending Seller Requests</h2>
-
-    {% for profile in seller_requests %}
-        <div style="margin-bottom: 15px; border: 1px solid #ccc; padding: 10px;">
-            <p><strong>Email:</strong> {{ profile.user.username }}</p>
-            <p><strong>Status:</strong> Pending Approval</p>
-
-            <form method="post" action="{% url 'approve_seller_request' profile.user.id %}" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit">✔</button>
-            </form>
-
-            <form method="post" action="{% url 'reject_seller_request' profile.user.id %}" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit">✘</button>
-            </form>
+    <div class="navbarHome">
+        <h2>HomeZapp</h2>
+        <div>
+            <a href="{% url 'dashboard_redirect' %}">Dashboard</a> |
+            <a href="{% url 'admin_search_user' %}">Search Users</a> |
+            <a href="{% url 'admin_ban_user' %}">Ban User</a> |
+            <a href="{% url 'admin_manage_profile' %}">Manage Profile</a> |
+            <a href="{% url 'admin_moderation_history' %}">Moderation History</a> |
+            <a href="{% url 'logoutPage' %}">Logout</a>
         </div>
-    {% empty %}
-        <p>No pending seller requests.</p>
-    {% endfor %}
+    </div>
 
-    
+    <main class="pageWrapper">
+        <h1 class="pageTitle">Admin Search Users</h1>
+        <p class="pageSubtitle">Search existing users and approve or reject seller account requests.</p>
+
+        <section class="formCard">
+            <h2>Search User</h2>
+
+            <form method="get">
+                <div class="formGroup">
+                    <label for="searchUsers">Search User by Email</label>
+                    <input
+                        class="formInput"
+                        type="search"
+                        id="searchUsers"
+                        name="searchUsers"
+                        value="{{ query }}"
+                        placeholder="Enter user email"
+                    >
+                </div>
+
+                <button class="primaryButton" type="submit">Search</button>
+            </form>
+        </section>
+
+        {% if query %}
+            <section class="pageCard">
+                <h2>Search Results</h2>
+
+                {% for user in users %}
+                    <div class="listingCard" style="margin-bottom: 16px;">
+                        <p><strong>Email:</strong> {{ user.username }}</p>
+                        <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+
+                        {% if user.is_active %}
+                            <p class="statusApproved">Active</p>
+                        {% else %}
+                            <p class="statusRejected">Inactive / Banned</p>
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <p>No users found.</p>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        <section class="pageCard">
+            <h2>Pending Seller Requests</h2>
+
+            {% for profile in seller_requests %}
+                <div class="listingCard" style="margin-bottom: 16px;">
+                    <p><strong>Email:</strong> {{ profile.user.username }}</p>
+                    <p class="statusPending">Pending Approval</p>
+
+                    <form method="post" action="{% url 'approve_seller_request' profile.user.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button class="primaryButton" type="submit">Approve</button>
+                    </form>
+
+                    <form method="post" action="{% url 'reject_seller_request' profile.user.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button class="dangerButton" type="submit">Reject</button>
+                    </form>
+                </div>
+            {% empty %}
+                <p>No pending seller requests.</p>
+            {% endfor %}
+        </section>
+    </main>
 </body>
 </html>

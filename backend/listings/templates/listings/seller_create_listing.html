@@ -1,62 +1,88 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Create Listing</title>
+    <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
 </head>
+
 <body>
+    <div class="navbarHome">
+        <h2>HomeZapp</h2>
+        <div>
+            <a href="{% url 'homepage' %}">Homepage</a> |
+            <a href="{% url 'seller_dashboard' %}">Dashboard</a> |
+            <a href="{% url 'seller_manage_profile' %}">Profile</a> |
+            <a href="{% url 'logoutPage' %}">Logout</a>
+        </div>
+    </div>
 
-<h1>Create Listing</h1>
+    <main class="pageWrapper">
+        <h1 class="pageTitle">Create Listing</h1>
 
-<section>
-<h2>Listing Info</h2>
+        {% if error %}
+            <p class="errorMessage">{{ error }}</p>
+        {% endif %}
 
-{% if error %}
-<p style="color:red;">{{ error }}</p>
-{% endif %}
+        {% if success %}
+            <p class="successMessage">{{ success }}</p>
+        {% endif %}
 
-{% if success %}
-<p style="color:green;">{{ success }}</p>
-{% endif %}
+        <section class="formCard">
+            <h2>Listing Info</h2>
 
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
 
-    <input type="text" name="title" placeholder="Property Title">
-    <br><br>
+                <div class="formGroup">
+                    <label>Property Title</label>
+                    <input class="formInput" type="text" name="title" placeholder="Property Title" required>
+                </div>
 
-    <input type="number" step="0.01" name="price" placeholder="Price">
-    <br><br>
+                <div class="formGroup">
+                    <label>Price</label>
+                    <input class="formInput" type="number" step="0.01" name="price" placeholder="Price" required>
+                </div>
 
-    <input type="text" name="location" placeholder="Location (City, State)">
-    <br><br>
+                <div class="formGroup">
+                    <label>Location</label>
+                    <input class="formInput" type="text" name="location" placeholder="Location (City, State)" required>
+                </div>
 
-    <input type="text" name="style" placeholder="Style (Modern, etc.)">
-    <br><br>
+                <div class="formGroup">
+                    <label>Style</label>
+                    <input class="formInput" type="text" name="style" placeholder="Style (Modern, etc.)">
+                </div>
 
-    <input type="number" name="bedrooms" placeholder="Bedrooms">
-    <br><br>
+                <div class="formGroup">
+                    <label>Bedrooms</label>
+                    <input class="formInput" type="number" name="bedrooms" placeholder="Bedrooms">
+                </div>
 
-    <input type="number" name="bathrooms" placeholder="Bathrooms">
-    <br><br>
+                <div class="formGroup">
+                    <label>Bathrooms</label>
+                    <input class="formInput" type="number" name="bathrooms" placeholder="Bathrooms">
+                </div>
 
-    <input type="number" name="square_footage" placeholder="Square Footage">
-    <br><br>
+                <div class="formGroup">
+                    <label>Square Footage</label>
+                    <input class="formInput" type="number" name="square_footage" placeholder="Square Footage">
+                </div>
 
-    <textarea name="description" placeholder="Description"></textarea>
-    <br><br>
+                <div class="formGroup">
+                    <label>Description</label>
+                    <textarea class="formTextarea" name="description" placeholder="Description" required></textarea>
+                </div>
 
-    <input type="file" name="image" accept=".png,.jpg,.jpeg,image/png,image/jpeg">
-    <br><br>
+                <div class="formGroup">
+                    <label>Listing Image</label>
+                    <input class="formInput" type="file" name="image" accept=".png,.jpg,.jpeg,image/png,image/jpeg">
+                </div>
 
-    <button type="submit">Create Listing</button>
-</form>
-</section>
-
-<hr>
-
-<p>
-    <a href="{% url 'seller_dashboard' %}">Back</a>
-</p>
-
+                <button class="primaryButton" type="submit">Create Listing</button>
+                <a class="secondaryButton" href="{% url 'seller_dashboard' %}">Back</a>
+            </form>
+        </section>
+    </main>
 </body>
 </html>

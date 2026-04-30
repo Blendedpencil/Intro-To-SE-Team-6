@@ -3,59 +3,86 @@
 <html>
 <head>
     <title>Admin Moderation History</title>
+    <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
     <link rel="stylesheet" href="{% static 'adminpanel/css/adminPages.css' %}">
 </head>
+
 <body>
-    <h1>Moderation History</h1>
+    <div class="navbarHome">
+        <h2>HomeZapp</h2>
+        <div>
+            <a href="{% url 'admin_home' %}">Dashboard</a> |
+            <a href="{% url 'admin_ban_user' %}">Ban / Unban User</a> |
+            <a href="{% url 'admin_search_user' %}">Search Users</a> |
+            <a href="{% url 'admin_manage_profile' %}">Manage Profile</a> |
+            <a href="{% url 'logoutPage' %}">Logout</a>
+        </div>
+    </div>
 
-    <nav style="margin-bottom: 20px;">
-        <a href="{% url 'admin_home' %}">Return to Dashboard</a> |
-        <a href="{% url 'admin_ban_user' %}">Ban / Unban User</a> |
-        <a href="{% url 'logoutPage' %}">Logout</a>
-    </nav>
+    <main class="pageWrapper">
+        <h1 class="pageTitle">Moderation History</h1>
+        <p class="pageSubtitle">Review admin actions such as bans, unbans, listing removals, and listing restorations.</p>
 
-    <table border="1" style="width: 100%;">
-        <tr>
-            <th>Date</th>
-            <th>Admin</th>
-            <th>Action</th>
-            <th>Target User</th>
-            <th>Target Listing</th>
-            <th>Reason</th>
-        </tr>
+        <section class="tableWrapper">
+            <table class="homezappTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Admin</th>
+                        <th>Action</th>
+                        <th>Target User</th>
+                        <th>Target Listing</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
 
-        {% for item in history %}
-        <tr>
-            <td>{{ item.created_at }}</td>
-            <td>
-                {% if item.admin_user %}
-                    {{ item.admin_user.username }}
-                {% else %}
-                    Unknown
-                {% endif %}
-            </td>
-            <td>{{ item.get_action_display }}</td>
-            <td>
-                {% if item.target_user %}
-                    {{ item.target_user.username }}
-                {% else %}
-                    None
-                {% endif %}
-            </td>
-            <td>
-                {% if item.target_listing_title %}
-                    {{ item.target_listing_title }}
-                {% else %}
-                    None
-                {% endif %}
-            </td>
-            <td>{{ item.reason }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="6">No moderation history yet.</td>
-        </tr>
-        {% endfor %}
-    </table>
+                <tbody>
+                    {% for item in history %}
+                        <tr>
+                            <td>{{ item.created_at }}</td>
+
+                            <td>
+                                {% if item.admin_user %}
+                                    {{ item.admin_user.username }}
+                                {% else %}
+                                    Unknown
+                                {% endif %}
+                            </td>
+
+                            <td>{{ item.get_action_display }}</td>
+
+                            <td>
+                                {% if item.target_user %}
+                                    {{ item.target_user.username }}
+                                {% else %}
+                                    None
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if item.target_listing_title %}
+                                    {{ item.target_listing_title }}
+                                {% else %}
+                                    None
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if item.reason %}
+                                    {{ item.reason }}
+                                {% else %}
+                                    No reason provided.
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align:center;">No moderation history yet.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
 </body>
 </html>

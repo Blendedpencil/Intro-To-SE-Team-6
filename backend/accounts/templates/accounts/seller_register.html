@@ -6,18 +6,19 @@
     <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
-        <div class="navbarHome">
-        <h2>HomeZapp</h1>
+    <div class="navbarHome">
+        <h2>HomeZapp</h2>
         <div>
             <a href="{% url 'homepage' %}">Homepage</a> |
             <a href="{% url 'loginPage' %}">Register/Login</a> |
             <a href="{% url 'seller_login_page' %}">Seller Login</a> |
             <a href="{% url 'dashboard_redirect' %}">Dashboard</a> |
             <a href="{% url 'contact_page' %}">Contact</a>
-            
         </div>
     </div>
+
     <h1 class="lesserTitle mt-3 mb-5">Create Seller Account</h1>
 
     {% if error %}
@@ -30,16 +31,29 @@
 
     <div class="smallForm">
         <div class="smallFormInner">
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+
                 <p>
                     <label>Email:</label><br>
-                    <input type="text" name="email">
+                    <input type="text" name="email" required>
                 </p>
+
                 <p>
                     <label>Password:</label><br>
-                    <input type="password" name="password">
+                    <input type="password" name="password" required>
                 </p>
+
+                <p>
+                    <label>Profile Picture:</label><br>
+                    <input
+                        type="file"
+                        name="profile_picture"
+                        accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+                        required
+                    >
+                </p>
+
                 <button type="submit" class="button_generic">Submit Seller Request</button>
             </form>
         </div>

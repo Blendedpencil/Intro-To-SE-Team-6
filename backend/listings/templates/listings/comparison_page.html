@@ -4,51 +4,75 @@
 <head>
     <title>Comparison Page</title>
     <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
-    <h1>Comparison Page</h1><br>
-
-    <div class="row">
-        <div class="col-sm-6">
-            {% if first_listing %}
-                {% if first_listing.image %}
-                    <div class="listingImage"><img src="{{ first_listing.image.url }}"></div>
-                {% endif %}
-                <p>Listing Number: {{ first_listing.id }}</p>
-                <p>Date Added: {{ first_listing.created_at }}</p>
-                <p>Address: {{ first_listing.location }}</p>
-                <p>Price: ${{ first_listing.price }}</p>
-                <p>Room Description:</p>
-                <ul>
-                    <li>Bedrooms: {{ first_listing.bedrooms }}</li>
-                    <li>Bathrooms: {{ first_listing.bathrooms }}</li>
-                    <li>Square Footage: {{ first_listing.square_footage }}</li>
-                </ul>
-                <p>Architecture Style: {{ first_listing.style }}</p>
-                <p>Seller Description: {{ first_listing.description }}</p>
-            {% endif %}
-        </div>
-
-        <div class="col-sm-6">
-            {% if second_listing %}
-                {% if second_listing.image %}
-                    <div class="listingImage"><img src="{{ second_listing.image.url }}"></div>
-                {% endif %}
-                <p>Listing Number: {{ second_listing.id }}</p>
-                <p>Date Added: {{ second_listing.created_at }}</p>
-                <p>Address: {{ second_listing.location }}</p>
-                <p>Price: ${{ second_listing.price }}</p>
-                <p>Room Description:</p>
-                <ul>
-                    <li>Bedrooms: {{ second_listing.bedrooms }}</li>
-                    <li>Bathrooms: {{ second_listing.bathrooms }}</li>
-                    <li>Square Footage: {{ second_listing.square_footage }}</li>
-                </ul>
-                <p>Architecture Style: {{ second_listing.style }}</p>
-                <p>Seller Description: {{ second_listing.description }}</p>
-            {% endif %}
+    <div class="navbarHome">
+        <h2>HomeZapp</h2>
+        <div>
+            <a href="{% url 'homepage' %}">Homepage</a> |
+            <a href="{% url 'buyer_page' %}">Dashboard</a> |
+            <a href="{% url 'wishlist_page' %}">Cart</a> |
+            <a href="{% url 'logoutPage' %}">Logout</a>
         </div>
     </div>
+
+    <main class="pageWrapper">
+        <h1 class="pageTitle">Comparison Page</h1>
+
+        <div class="listingDetailsGrid">
+            <section class="pageCard">
+                <h2>First Listing</h2>
+
+                {% if first_listing %}
+                    {% if first_listing.image %}
+                        <div class="listingImage"><img src="{{ first_listing.image.url }}" alt="{{ first_listing.title }}"></div>
+                    {% endif %}
+
+                    <p><strong>Listing Number:</strong> {{ first_listing.id }}</p>
+                    <p><strong>Date Added:</strong> {{ first_listing.created_at }}</p>
+                    <p><strong>Address:</strong> {{ first_listing.location }}</p>
+                    <p><strong>Price:</strong> ${{ first_listing.price }}</p>
+
+                    <ul>
+                        <li>Bedrooms: {{ first_listing.bedrooms }}</li>
+                        <li>Bathrooms: {{ first_listing.bathrooms }}</li>
+                        <li>Square Footage: {{ first_listing.square_footage }}</li>
+                    </ul>
+
+                    <p><strong>Architecture Style:</strong> {{ first_listing.style }}</p>
+                    <p><strong>Seller Description:</strong> {{ first_listing.description }}</p>
+                {% else %}
+                    <p>No first listing selected.</p>
+                {% endif %}
+            </section>
+
+            <section class="pageCard">
+                <h2>Second Listing</h2>
+
+                {% if second_listing %}
+                    {% if second_listing.image %}
+                        <div class="listingImage"><img src="{{ second_listing.image.url }}" alt="{{ second_listing.title }}"></div>
+                    {% endif %}
+
+                    <p><strong>Listing Number:</strong> {{ second_listing.id }}</p>
+                    <p><strong>Date Added:</strong> {{ second_listing.created_at }}</p>
+                    <p><strong>Address:</strong> {{ second_listing.location }}</p>
+                    <p><strong>Price:</strong> ${{ second_listing.price }}</p>
+
+                    <ul>
+                        <li>Bedrooms: {{ second_listing.bedrooms }}</li>
+                        <li>Bathrooms: {{ second_listing.bathrooms }}</li>
+                        <li>Square Footage: {{ second_listing.square_footage }}</li>
+                    </ul>
+
+                    <p><strong>Architecture Style:</strong> {{ second_listing.style }}</p>
+                    <p><strong>Seller Description:</strong> {{ second_listing.description }}</p>
+                {% else %}
+                    <p>No second listing selected.</p>
+                {% endif %}
+            </section>
+        </div>
+    </main>
 </body>
 </html>

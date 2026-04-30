@@ -1,52 +1,69 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
-<title>Complaint Submission</title>
+    <title>Complaint Submission</title>
+    <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
 </head>
 
 <body>
+    <div class="navbarHome">
+        <h2>HomeZapp</h2>
+        <div>
+            <a href="{% url 'homepage' %}">Homepage</a> |
+            <a href="{% url 'buyer_page' %}">Dashboard</a> |
+            <a href="{% url 'wishlist_page' %}">Cart</a> |
+            <a href="{% url 'logoutPage' %}">Logout</a>
+        </div>
+    </div>
 
-<h1>Submit Complaint</h1>
+    <main class="pageWrapper">
+        <h1 class="pageTitle">Submit Complaint</h1>
 
-<!-- Complaint Form -->
-<section>
+        {% if success %}
+            <p class="successMessage">{{ success }}</p>
+        {% endif %}
 
-<h2>Complaint Details</h2>
+        {% if error %}
+            <p class="errorMessage">{{ error }}</p>
+        {% endif %}
 
-<input type="text" placeholder="Your Name">
-<br><br>
+        <section class="formCard">
+            <h2>Complaint Details</h2>
 
-<input type="email" placeholder="Your Email">
-<br><br>
+            {% if listing %}
+                <p><strong>Listing:</strong> {{ listing.title }}</p>
+                <p><strong>Seller:</strong> {{ listing.seller.username }}</p>
+            {% endif %}
 
-<input type="text" placeholder="Listing ID or Seller Name">
-<br><br>
+            <form method="post">
+                {% csrf_token %}
 
-<select>
-<option>Select Complaint Type</option>
-<option>Fraud</option>
-<option>Misleading Listing</option>
-<option>Spam</option>
-<option>Other</option>
-</select>
+                {% if listing %}
+                    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                {% endif %}
 
-<br><br>
+                <div class="formGroup">
+                    <label for="subject">Complaint Type / Subject</label>
+                    <select class="formSelect" id="subject" name="subject" required>
+                        <option value="">Select Complaint Type</option>
+                        <option value="Fraud">Fraud</option>
+                        <option value="Misleading Listing">Misleading Listing</option>
+                        <option value="Spam">Spam</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
 
-<textarea placeholder="Describe the issue"></textarea>
+                <div class="formGroup">
+                    <label for="message">Describe the issue</label>
+                    <textarea class="formTextarea" id="message" name="message" placeholder="Describe the issue" required></textarea>
+                </div>
 
-<br><br>
+                <button class="primaryButton" type="submit">Submit Complaint</button>
+            </form>
+        </section>
 
-<input type="file">
-
-<br><br>
-
-<button>Submit Complaint</button>
-
-</section>
-
-<section>
-<a href="buyer_page.html">Return to Dashboard</a>
-</section>
-
+        <a class="secondaryButton" href="{% url 'buyer_page' %}">Return to Dashboard</a>
+    </main>
 </body>
 </html>

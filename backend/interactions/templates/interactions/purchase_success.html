@@ -1,18 +1,35 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Purchase Complete</title>
+    <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
 </head>
-<body style="font-family: 'Times New Roman', serif; padding: 20px;">
-    <h1>Purchase Complete</h1>
 
-    <p>You successfully purchased <strong>{{ application.listing.title }}</strong>.</p>
-    <p>Location: {{ application.listing.location }}</p>
-    <p>Final Amount:
-        ${{ application.counter_amount|default:application.offer_amount|default:application.listing.price }}
-    </p>
+<body>
+    <div class="navbarHome">
+        <h2>HomeZapp</h2>
+        <div>
+            <a href="{% url 'homepage' %}">Homepage</a> |
+            <a href="{% url 'notifications_page' %}">Notifications</a> |
+            <a href="{% url 'logoutPage' %}">Logout</a>
+        </div>
+    </div>
 
-    <p><a href="{% url 'homepage' %}">Return Home</a></p>
-    <p><a href="{% url 'notifications_page' %}">View Notifications</a></p>
+    <main class="pageWrapper">
+        <section class="pageCard" style="text-align: center;">
+            <h1 class="pageTitle">Purchase Complete</h1>
+
+            <p>You successfully purchased <strong>{{ application.listing.title }}</strong>.</p>
+            <p><strong>Location:</strong> {{ application.listing.location }}</p>
+            <p>
+                <strong>Final Amount:</strong>
+                ${{ application.counter_amount|default:application.offer_amount|default:application.listing.price }}
+            </p>
+
+            <a class="primaryButton" href="{% url 'homepage' %}">Return Home</a>
+            <a class="secondaryButton" href="{% url 'notifications_page' %}">View Notifications</a>
+        </section>
+    </main>
 </body>
 </html>

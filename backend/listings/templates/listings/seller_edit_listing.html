@@ -1,79 +1,113 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Edit Listing</title>
+    <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
 </head>
+
 <body>
+    <div class="navbarHome">
+        <h2>HomeZapp</h2>
+        <div>
+            <a href="{% url 'homepage' %}">Homepage</a> |
+            <a href="{% url 'seller_dashboard' %}">Dashboard</a> |
+            <a href="{% url 'create_listing' %}">Create Listing</a> |
+            <a href="{% url 'seller_manage_profile' %}">Profile</a> |
+            <a href="{% url 'logoutPage' %}">Logout</a>
+        </div>
+    </div>
 
-<h1>Edit Listing</h1>
+    <main class="pageWrapper">
+        <h1 class="pageTitle">Edit Listing</h1>
 
-{% if error %}
-    <p style="color:red;">{{ error }}</p>
-{% endif %}
+        {% if error %}
+            <p class="errorMessage">{{ error }}</p>
+        {% endif %}
 
-{% if success %}
-    <p style="color:green;">{{ success }}</p>
-{% endif %}
+        {% if success %}
+            <p class="successMessage">{{ success }}</p>
+        {% endif %}
 
-<section>
-    <h2>Choose Listing</h2>
+        <section class="pageCard">
+            <h2>Choose Listing</h2>
 
-    <form method="get">
-        <select name="listing_id">
-            <option value="">Select a listing</option>
-            {% for listing in listings %}
-                <option value="{{ listing.id }}" {% if selected_listing and listing.id == selected_listing.id %}selected{% endif %}>
-                    {{ listing.title }}
-                </option>
-            {% endfor %}
-        </select>
+            <form method="get">
+                <div class="formGroup">
+                    <select class="formSelect" name="listing_id">
+                        <option value="">Select a listing</option>
+                        {% for listing in listings %}
+                            <option value="{{ listing.id }}" {% if selected_listing and listing.id == selected_listing.id %}selected{% endif %}>
+                                {{ listing.title }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-        <button type="submit">Load</button>
-    </form>
-</section>
+                <button class="primaryButton" type="submit">Load</button>
+            </form>
+        </section>
 
-{% if selected_listing %}
-<section>
-    <h2>Update Details</h2>
+        {% if selected_listing %}
+            <section class="formCard">
+                <h2>Update Details</h2>
 
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="hidden" name="listing_id" value="{{ selected_listing.id }}">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="listing_id" value="{{ selected_listing.id }}">
 
-        <label>Title</label><br>
-        <input type="text" name="title" value="{{ selected_listing.title }}"><br><br>
+                    <div class="formGroup">
+                        <label>Title</label>
+                        <input class="formInput" type="text" name="title" value="{{ selected_listing.title }}">
+                    </div>
 
-        <label>Price</label><br>
-        <input type="number" step="0.01" name="price" value="{{ selected_listing.price }}"><br><br>
+                    <div class="formGroup">
+                        <label>Price</label>
+                        <input class="formInput" type="number" step="0.01" name="price" value="{{ selected_listing.price }}">
+                    </div>
 
-        <label>Location</label><br>
-        <input type="text" name="location" value="{{ selected_listing.location }}"><br><br>
+                    <div class="formGroup">
+                        <label>Location</label>
+                        <input class="formInput" type="text" name="location" value="{{ selected_listing.location }}">
+                    </div>
 
-        <label>Style</label><br>
-        <input type="text" name="style" value="{{ selected_listing.style }}"><br><br>
+                    <div class="formGroup">
+                        <label>Style</label>
+                        <input class="formInput" type="text" name="style" value="{{ selected_listing.style }}">
+                    </div>
 
-        <label>Bedrooms</label><br>
-        <input type="number" name="bedrooms" value="{{ selected_listing.bedrooms }}"><br><br>
+                    <div class="formGroup">
+                        <label>Bedrooms</label>
+                        <input class="formInput" type="number" name="bedrooms" value="{{ selected_listing.bedrooms }}">
+                    </div>
 
-        <label>Bathrooms</label><br>
-        <input type="number" name="bathrooms" value="{{ selected_listing.bathrooms }}"><br><br>
+                    <div class="formGroup">
+                        <label>Bathrooms</label>
+                        <input class="formInput" type="number" name="bathrooms" value="{{ selected_listing.bathrooms }}">
+                    </div>
 
-        <label>Square Footage</label><br>
-        <input type="number" name="square_footage" value="{{ selected_listing.square_footage }}"><br><br>
+                    <div class="formGroup">
+                        <label>Square Footage</label>
+                        <input class="formInput" type="number" name="square_footage" value="{{ selected_listing.square_footage }}">
+                    </div>
 
-        <label>Description</label><br>
-        <textarea name="description">{{ selected_listing.description }}</textarea><br><br>
+                    <div class="formGroup">
+                        <label>Description</label>
+                        <textarea class="formTextarea" name="description">{{ selected_listing.description }}</textarea>
+                    </div>
 
-        <label>Replace Image</label><br>
-        <input type="file" name="image" accept=".png,.jpg,.jpeg,image/png,image/jpeg">
+                    <div class="formGroup">
+                        <label>Replace Image</label>
+                        <input class="formInput" type="file" name="image" accept=".png,.jpg,.jpeg,image/png,image/jpeg">
+                    </div>
 
-        <button type="submit">Save Changes</button>
-        <a href="{% url 'seller_dashboard' %}">Cancel</a>
-    </form>
-</section>
-{% endif %}
+                    <button class="primaryButton" type="submit">Save Changes</button>
+                    <a class="secondaryButton" href="{% url 'seller_dashboard' %}">Cancel</a>
+                </form>
+            </section>
+        {% endif %}
 
-<p><a href="{% url 'seller_dashboard' %}">Back to Dashboard</a></p>
-
+        <a class="secondaryButton" href="{% url 'seller_dashboard' %}">Back to Dashboard</a>
+    </main>
 </body>
 </html>

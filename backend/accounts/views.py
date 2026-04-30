@@ -1,9 +1,29 @@
+from pathlib import Path
+
 from django.views.decorators.cache import never_cache
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
 from rest_framework.authtoken.models import Token
-from .models import UserProfile
+
+from .models import UserProfile, UserReview
+
+
+ALLOWED_PROFILE_IMAGE_MIME_TYPES = {'image/png', 'image/jpeg'}
+ALLOWED_PROFILE_IMAGE_EXTENSIONS = {'.png', '.jpg', '.jpeg'}
+
+
+def is_valid_profile_picture(uploaded_file):
+    if not uploaded_file:
+        return False
+
+    extension = Path(uploaded_file.name).suffix.lower()
+    content_type = getattr(uploaded_file, 'content_type', '')
+
+    return (
+        extension in ALLOWED_PROFILE_IMAGE_EXTENSIONS
+        and content_type in ALLOWED_PROFILE_IMAGE_MIME_TYPES
+    )
 
 
 def is_buyer(user):
@@ -16,6 +36,7 @@ def is_seller(user):
 
 def is_admin(user):
     return user.groups.filter(name='Admin').exists()
+
 
 def login_bearer(request):
     if request.user.is_authenticated:
@@ -76,15 +97,20 @@ def login_bearer(request):
     return render(request, 'accounts/auth.html')
 
 
-
 def register_page(request):
     if request.method == 'POST':
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '').strip()
+        profile_picture = request.FILES.get('profile_picture')
 
-        if not email or not password:
+        if not email or not password or not profile_picture:
             return render(request, 'accounts/auth.html', {
-                'error': 'Email and password are required.'
+                'error': 'Please fill out all fields.'
+            })
+
+        if not is_valid_profile_picture(profile_picture):
+            return render(request, 'accounts/auth.html', {
+                'error': 'Profile picture must be a PNG, JPG, or JPEG file.'
             })
 
         if User.objects.filter(username=email).exists():
@@ -106,7 +132,8 @@ def register_page(request):
             role='Buyer',
             login_status=False,
             seller_approved=False,
-            seller_request_pending=False
+            seller_request_pending=False,
+            profile_picture=profile_picture
         )
 
         return render(request, 'accounts/auth.html', {
@@ -120,10 +147,16 @@ def seller_register_page(request):
     if request.method == 'POST':
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '').strip()
+        profile_picture = request.FILES.get('profile_picture')
 
-        if not email or not password:
+        if not email or not password or not profile_picture:
             return render(request, 'accounts/seller_register.html', {
-                'error': 'Email and password are required.'
+                'error': 'Please fill out all fields.'
+            })
+
+        if not is_valid_profile_picture(profile_picture):
+            return render(request, 'accounts/seller_register.html', {
+                'error': 'Profile picture must be a PNG, JPG, or JPEG file.'
             })
 
         if User.objects.filter(username=email).exists():
@@ -146,7 +179,8 @@ def seller_register_page(request):
             role='Seller',
             login_status=False,
             seller_approved=False,
-            seller_request_pending=True
+            seller_request_pending=True,
+            profile_picture=profile_picture
         )
 
         return render(request, 'accounts/seller_register.html', {
@@ -281,8 +315,7 @@ def buyer_page(request):
     if not is_buyer(request.user):
         return redirect('loginPage')
 
-    return render(request, 'listings/buyer_page.html')
-
+    return redirect('buyer_page')
 
 
 def seller_page(request):
@@ -296,7 +329,8 @@ def seller_page(request):
     if not profile or not profile.seller_approved:
         return redirect('seller_login_page')
 
-    return render(request, 'listings/seller_dashboard.html')
+    return redirect('seller_dashboard')
+
 
 def admin_page(request):
     if 'bearer_token' not in request.session or not request.user.is_authenticated:
@@ -312,20 +346,39 @@ def buyer_manageprofile(request):
     if 'bearer_token' not in request.session or not request.user.is_authenticated:
         return redirect('loginPage')
 
+    profile, _ = UserProfile.objects.get_or_create(
+        user=request.user,
+        defaults={
+            'role': 'Buyer',
+            'login_status': False,
+            'seller_approved': False,
+            'seller_request_pending': False,
+        }
+    )
+
     if request.method == 'POST':
         first_name = request.POST.get('first_name', '').strip()
         last_name = request.POST.get('last_name', '').strip()
         email = request.POST.get('email', '').strip()
+        profile_picture = request.FILES.get('profile_picture')
 
         if not first_name or not last_name or not email:
             return render(request, 'accounts/buyer_manageprofile.html', {
-                'error': 'All fields are required.'
+                'error': 'All fields are required.',
+                'profile': profile
+            })
+
+        if profile_picture and not is_valid_profile_picture(profile_picture):
+            return render(request, 'accounts/buyer_manageprofile.html', {
+                'error': 'Profile picture must be a PNG, JPG, or JPEG file.',
+                'profile': profile
             })
 
         existing_user = User.objects.filter(username=email).exclude(id=request.user.id).first()
         if existing_user:
             return render(request, 'accounts/buyer_manageprofile.html', {
-                'error': 'That email is already being used.'
+                'error': 'That email is already being used.',
+                'profile': profile
             })
 
         request.user.first_name = first_name
@@ -334,13 +387,21 @@ def buyer_manageprofile(request):
         request.user.username = email
         request.user.save()
 
+        if profile_picture:
+            profile.profile_picture = profile_picture
+            profile.save()
+
         request.session['bearer_email'] = email
 
         return render(request, 'accounts/buyer_manageprofile.html', {
-            'success': 'Profile updated successfully.'
+            'success': 'Profile updated successfully.',
+            'profile': profile
         })
 
-    return render(request, 'accounts/buyer_manageprofile.html')
+    return render(request, 'accounts/buyer_manageprofile.html', {
+        'profile': profile
+    })
+
 
 def seller_manage_profile(request):
     if 'bearer_token' not in request.session or not request.user.is_authenticated:
@@ -349,17 +410,32 @@ def seller_manage_profile(request):
     if not is_seller(request.user):
         return redirect('seller_login_page')
 
-    profile = UserProfile.objects.filter(user=request.user).first()
+    profile, _ = UserProfile.objects.get_or_create(
+        user=request.user,
+        defaults={
+            'role': 'Seller',
+            'login_status': False,
+            'seller_approved': True,
+            'seller_request_pending': False,
+        }
+    )
 
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
         email = request.POST.get('email', '').strip()
         phone = request.POST.get('phone', '').strip()
         bio = request.POST.get('bio', '').strip()
+        profile_picture = request.FILES.get('profile_picture')
 
         if not name or not email or not phone:
             return render(request, 'accounts/seller_manage_profile.html', {
                 'error': 'Fill in required fields.',
+                'profile': profile
+            })
+
+        if profile_picture and not is_valid_profile_picture(profile_picture):
+            return render(request, 'accounts/seller_manage_profile.html', {
+                'error': 'Profile picture must be a PNG, JPG, or JPEG file.',
                 'profile': profile
             })
 
@@ -377,10 +453,13 @@ def seller_manage_profile(request):
         request.user.username = email
         request.user.save()
 
-        if profile:
-            profile.phone = phone
-            profile.bio = bio
-            profile.save()
+        profile.phone = phone
+        profile.bio = bio
+
+        if profile_picture:
+            profile.profile_picture = profile_picture
+
+        profile.save()
 
         request.session['bearer_email'] = email
 
@@ -392,6 +471,81 @@ def seller_manage_profile(request):
     return render(request, 'accounts/seller_manage_profile.html', {
         'profile': profile
     })
+
+
+def public_profile(request, user_id):
+    profile_user = get_object_or_404(User, id=user_id)
+
+    profile, _ = UserProfile.objects.get_or_create(
+        user=profile_user,
+        defaults={
+            'role': 'Buyer',
+            'login_status': False,
+            'seller_approved': False,
+            'seller_request_pending': False,
+        }
+    )
+
+    def build_context(error=None):
+        thumbs_up_count = UserReview.objects.filter(
+            reviewed_user=profile_user,
+            vote=UserReview.THUMBS_UP
+        ).count()
+
+        thumbs_down_count = UserReview.objects.filter(
+            reviewed_user=profile_user,
+            vote=UserReview.THUMBS_DOWN
+        ).count()
+
+        existing_review = None
+        if request.user.is_authenticated:
+            existing_review = UserReview.objects.filter(
+                reviewer=request.user,
+                reviewed_user=profile_user
+            ).first()
+
+        return {
+            'profile_user': profile_user,
+            'profile': profile,
+            'thumbs_up_count': thumbs_up_count,
+            'thumbs_down_count': thumbs_down_count,
+            'existing_review': existing_review,
+            'error': error,
+        }
+
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return redirect('loginPage')
+
+        if request.user.id == profile_user.id:
+            return render(
+                request,
+                'accounts/public_profile.html',
+                build_context(error='You cannot review your own profile.')
+            )
+
+        vote = request.POST.get('vote')
+
+        if vote == 'up':
+            vote_value = UserReview.THUMBS_UP
+        elif vote == 'down':
+            vote_value = UserReview.THUMBS_DOWN
+        else:
+            return render(
+                request,
+                'accounts/public_profile.html',
+                build_context(error='Invalid review option.')
+            )
+
+        UserReview.objects.update_or_create(
+            reviewer=request.user,
+            reviewed_user=profile_user,
+            defaults={'vote': vote_value}
+        )
+
+        return redirect('public_profile', user_id=profile_user.id)
+
+    return render(request, 'accounts/public_profile.html', build_context())
 
 
 def logout_bearer(request):
@@ -410,6 +564,7 @@ def logout_bearer(request):
     logout(request)
     request.session.flush()
     return redirect('homepage')
+
 
 def dashboard_redirect(request):
     if not request.user.is_authenticated:

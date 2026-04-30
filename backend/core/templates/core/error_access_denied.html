@@ -1,14 +1,31 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Access Denied</title>
+    <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
 </head>
-<body style="font-family: 'Times New Roman', serif; padding: 20px;">
-    <h1>Please Login</h1>
-    <p>You must be logged in to save or compare listings.</p>
 
-    <p><a href="{% url 'loginPage' %}">Buyer Login</a></p>
-    <p><a href="{% url 'seller_login_page' %}">Seller Login</a></p>
-    <p><a href="{% url 'homepage' %}">Return Home</a></p>
+<body>
+    <div class="navbarHome">
+        <h2>HomeZapp</h2>
+        <div>
+            <a href="{% url 'homepage' %}">Homepage</a> |
+            <a href="{% url 'loginPage' %}">Buyer Login</a> |
+            <a href="{% url 'seller_login_page' %}">Seller Login</a> |
+            <a href="{% url 'contact_page' %}">Contact</a>
+        </div>
+    </div>
+
+    <main class="pageWrapper">
+        <section class="pageCard" style="text-align: center;">
+            <h1 class="pageTitle">Please Login</h1>
+            <p>You must be logged in to access this page.</p>
+
+            <a class="primaryButton" href="{% url 'loginPage' %}">Buyer Login</a>
+            <a class="secondaryButton" href="{% url 'seller_login_page' %}">Seller Login</a>
+            <a class="secondaryButton" href="{% url 'homepage' %}">Return Home</a>
+        </section>
+    </main>
 </body>
 </html>

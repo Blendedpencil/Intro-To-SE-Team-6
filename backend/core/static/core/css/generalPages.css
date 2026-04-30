@@ -1,85 +1,382 @@
-.listingImage{
-    width: 300px;
+/* ---------- Global HomeZapp Style ---------- */
+
+* {
+    box-sizing: border-box;
 }
 
-.listingImage img{
-    width: 100%;
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f6f8;
+    color: #20242a;
 }
 
-.listingComparisonWrapper{
-    background-color: #EEE;
-    padding: 10px;
-    margin-top: 10px;
-    margin-bottom: 20px;
+a {
+    color: #005ecb;
+    font-weight: 600;
 }
 
-p{
-    padding-top: 0 !important;
-    padding-bottom: 10px;
-    margin-block-start: 0 !important;
-    margin-block-end: 0 !important;
+a:hover {
+    color: blue;
 }
 
-.houseListingHomeImageWrapper{
-    width: 100%;
-}
+/* ---------- Navbar ---------- */
 
-.houseListingHomeImageWrapper img{
-    width: 100%;
-}
-
-.houseListingHomeWrapper{
-    padding-left: 30px;
-    padding-right: 30px;
-    padding-top: 30px;
-    padding-bottom: 30px;
-    background-color: #EEE;
-    margin-top: 50px;
-}
-
-.houseListingHome{
-    margin-top: 20px;
-    margin-bottom: 20px;
-    padding: 20px;
-    background-color: #FFF;
-}
-
-.navbarHome{
+.navbarHome {
     background-color: blue;
-    height: 50px;
-    width: 100 vw;
+    min-height: 70px;
+    width: 100%;
     color: white;
-    text-align: center;
     display: flex;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding: 0 24px;
     align-items: center;
     justify-content: space-between;
 }
 
-.navbarHome a{
+.navbarHome h1,
+.navbarHome h2 {
+    margin: 0;
+    color: white;
+    font-weight: 700;
+}
+
+.navbarHome a {
     color: white;
 }
 
-.topSection{
-    background-color: yellow;
+.navbarHome a:hover {
+    color: #d7f3ff;
+}
+
+/* ---------- Page Layout ---------- */
+
+.pageWrapper {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+}
+
+.pageTitle,
+.lesserTitle {
+    text-align: center;
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin: 24px 0 28px;
+}
+
+.pageSubtitle {
+    text-align: center;
+    color: #555;
+    margin-top: -15px;
+    margin-bottom: 30px;
+}
+
+.pageCard {
+    background-color: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.formCard,
+.smallForm {
+    background-color: lightgray;
+    border-radius: 8px;
+    padding: 28px;
+    margin: 16px 0;
+}
+
+.smallForm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.smallFormInner {
+    width: 100%;
+    max-width: 520px;
+}
+
+.formGrid {
+    display: grid;
+    gap: 18px;
+}
+
+.formGroup {
+    margin-bottom: 16px;
+}
+
+.formGroup label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+}
+
+input,
+select,
+textarea {
+    max-width: 100%;
+}
+
+.formInput,
+.formSelect,
+.formTextarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    background-color: white;
+}
+
+.formTextarea {
+    min-height: 110px;
+}
+
+/* ---------- Buttons ---------- */
+
+.button,
+.button_generic,
+.primaryButton {
+    background-color: lightblue;
+    color: black;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 8px 14px;
+    min-width: 90px;
+    transition: 0.2s;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.button:hover,
+.button_generic:hover,
+.primaryButton:hover {
+    background-color: blue;
+    color: white;
+}
+
+.button_danger,
+.dangerButton {
+    background-color: lightcoral;
+    color: black;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 8px 14px;
+    min-width: 90px;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.button_danger:hover,
+.dangerButton:hover {
+    background-color: red;
+    color: white;
+}
+
+.secondaryButton {
+    background-color: white;
+    color: #222;
+    border: 1px solid #999;
+    border-radius: 6px;
+    padding: 8px 14px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.secondaryButton:hover {
+    background-color: #e8f3ff;
+}
+
+/* ---------- Messages ---------- */
+
+.errorMessage {
+    color: #b00020;
+    font-weight: 700;
+    text-align: center;
+}
+
+.successMessage {
+    color: green;
+    font-weight: 700;
+    text-align: center;
+}
+
+.emptyMessage {
+    background-color: white;
+    border-radius: 10px;
+    padding: 22px;
+    text-align: center;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* ---------- Tables ---------- */
+
+.tableWrapper {
+    overflow-x: auto;
+    background-color: white;
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+table.homezappTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table.homezappTable th,
+table.homezappTable td {
+    border: 1px solid #ccc;
+    padding: 12px;
+    vertical-align: top;
+}
+
+table.homezappTable th {
+    background-color: #e9eef3;
+}
+
+/* ---------- Listing Cards ---------- */
+
+.listingGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 22px;
+}
+
+.listingCard {
+    background-color: white;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.10);
+}
+
+.listingCard img {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 14px;
+}
+
+.listingImage {
+    width: 100%;
+    max-width: 520px;
+}
+
+.listingImage img {
+    width: 100%;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.listingDetailsGrid {
+    display: grid;
+    grid-template-columns: minmax(280px, 520px) 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+.listingComparisonWrapper {
+    background-color: #eef1f5;
+    padding: 18px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+
+/* ---------- Status ---------- */
+
+.statusApproved {
+    color: green;
+    font-weight: 700;
+}
+
+.statusPending {
+    color: #b36b00;
+    font-weight: 700;
+}
+
+.statusRejected {
+    color: red;
+    font-weight: 700;
+}
+
+/* ---------- Homepage Existing Classes ---------- */
+
+.houseListingHomeImageWrapper {
+    width: 100%;
+}
+
+.houseListingHomeImageWrapper img {
+    width: 100%;
+}
+
+.houseListingHomeWrapper {
+    padding: 30px;
+    background-color: #eee;
+}
+
+.houseListingHome {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #fff;
+}
+
+.topSection {
+    background-image: url("/media/listing_images/Random_House.jpg");
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
 }
 
-.searchHomeWrapper{
-    padding-left: 20px;
-    padding-right: 20px;
+.searchHomeWrapper {
+    padding: 20px 20px 50px;
     margin-top: 40px;
-    background-color: #EEE;
-    border-radius: 5px;
+    margin-bottom: 40px;
+    background-color: #eee;
+    border-radius: 8px;
 }
 
-.homeTitle{
+.searchHomeSubmitWrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.homeTitle {
     font-size: 350%;
     text-align: center;
     margin-top: 50px !important;
     font-weight: bold;
+    color: white;
+}
+
+.padding_generic {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 800px) {
+    .navbarHome {
+        flex-direction: column;
+        gap: 10px;
+        padding: 16px;
+        text-align: center;
+    }
+
+    .listingDetailsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .pageTitle,
+    .lesserTitle {
+        font-size: 2rem;
+    }
 }

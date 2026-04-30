@@ -5,66 +5,114 @@
     <title>Listing Details Page</title>
     <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
 </head>
+
 <body>
-    <h1>Listing Details Page</h1>
-
-    {% if listing.image %}
-        <div class="listingImage"><img src="{{ listing.image.url }}"></div>
-    {% endif %}
-
-    <p>Listing Number: {{ listing.id }}</p>
-    <p>Date Added: {{ listing.created_at }}</p>
-    <p>Address: {{ listing.location }}</p>
-    <p>Price: ${{ listing.price }}</p>
-    <p>Room Description:</p>
-    <ul>
-        <li>Bedrooms: {{ listing.bedrooms }}</li>
-        <li>Bathrooms: {{ listing.bathrooms }}</li>
-        <li>Square Footage: {{ listing.square_footage }}</li>
-    </ul>
-    <p>Architecture Style: {{ listing.style }}</p>
-    <p>Seller Description: {{ listing.description }}</p>
-
-    <div class="listingComparisonWrapper">
-        <p>Compare Listing</p>
-
-        {% if request.user.is_authenticated and can_compare %}
-            <form method="get" action="{% url 'comparison_page' %}">
-                <input type="hidden" name="first" value="{{ listing.id }}">
-
-                <label for="compareTo">Select Saved Listing:</label><br>
-                <select id="compareTo" name="second">
-                    {% for item in saved_listings %}
-                        {% if item.listing.id != listing.id %}
-                            <option value="{{ item.listing.id }}">{{ item.listing.title }}</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-
-                <br><br><br>
-                <input type="submit" value="Compare">
-            </form>
-        {% elif request.user.is_authenticated %}
-            <p>Save another listing first to compare.</p>
-        {% else %}
-            <p><a href="{% url 'error_access_denied' %}">Compare</a></p>
-        {% endif %}
+    <div class="navbarHome">
+        <h2>HomeZapp</h2>
+        <div>
+            <a href="{% url 'homepage' %}">Homepage</a> |
+            <a href="{% url 'buyer_page' %}">Buyer Dashboard</a> |
+            <a href="{% url 'wishlist_page' %}">Cart</a> |
+            <a href="{% url 'notifications_page' %}">Notifications</a> |
+            <a href="{% url 'logoutPage' %}">Logout</a>
+        </div>
     </div>
 
-    {% if request.user.is_authenticated %}
-        {% if already_saved %}
-            <p>This listing is already saved.</p>
-        {% else %}
-            <form method="post" action="{% url 'save_listing' listing.id %}">
-                {% csrf_token %}
-                <button type="submit">Save Listing</button>
-            </form>
-        {% endif %}
-    {% else %}
-        <p><a href="{% url 'error_access_denied' %}">Save Listing</a></p>
-    {% endif %}
+    <main class="pageWrapper">
+        <h1 class="pageTitle">Listing Details</h1>
 
-    <p><a href="{% url 'complaint_form' %}?listing_id={{ listing.id }}">Report Listing</a></p>
-    <p><a href="{% url 'buyer_page' %}">Back to Listings</a></p>
+        <section class="pageCard listingDetailsGrid">
+            <div>
+                {% if listing.image %}
+                    <div class="listingImage">
+                        <img src="{{ listing.image.url }}" alt="{{ listing.title }}">
+                    </div>
+                {% else %}
+                    <div class="listingImage">
+                        <img src="{% static 'images/house-stock-photo.jpg' %}" alt="House">
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                <h2>{{ listing.title }}</h2>
+
+                <p><strong>Listing Number:</strong> {{ listing.id }}</p>
+                <p><strong>Date Added:</strong> {{ listing.created_at }}</p>
+
+                <p>
+                    <strong>Posted By:</strong>
+                    <a href="{% url 'public_profile' listing.seller.id %}">
+                        {% if listing.seller.get_full_name %}
+                            {{ listing.seller.get_full_name }}
+                        {% else %}
+                            {{ listing.seller.username }}
+                        {% endif %}
+                    </a>
+                </p>
+
+                <p><strong>Address:</strong> {{ listing.location }}</p>
+                <p><strong>Price:</strong> ${{ listing.price }}</p>
+                <p><strong>Architecture Style:</strong> {{ listing.style }}</p>
+
+                <h3>Room Description</h3>
+                <ul>
+                    <li>Bedrooms: {{ listing.bedrooms }}</li>
+                    <li>Bathrooms: {{ listing.bathrooms }}</li>
+                    <li>Square Footage: {{ listing.square_footage }}</li>
+                </ul>
+
+                <h3>Seller Description</h3>
+                <p>{{ listing.description }}</p>
+            </div>
+        </section>
+
+        <section class="listingComparisonWrapper">
+            <h2>Compare Listing</h2>
+
+            {% if request.user.is_authenticated and can_compare %}
+                <form method="get" action="{% url 'comparison_page' %}">
+                    <input type="hidden" name="first" value="{{ listing.id }}">
+
+                    <div class="formGroup">
+                        <label for="compareTo">Select Saved Listing:</label>
+                        <select class="formSelect" id="compareTo" name="second">
+                            {% for item in saved_listings %}
+                                {% if item.listing.id != listing.id %}
+                                    <option value="{{ item.listing.id }}">{{ item.listing.title }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button class="primaryButton" type="submit">Compare</button>
+                </form>
+            {% elif request.user.is_authenticated %}
+                <p>Save another listing first to compare.</p>
+            {% else %}
+                <p><a href="{% url 'error_access_denied' %}">Compare</a></p>
+            {% endif %}
+        </section>
+
+        <section class="pageCard">
+            {% if request.user.is_authenticated %}
+                {% if already_saved %}
+                    <p><strong>This listing is already saved.</strong></p>
+                {% else %}
+                    <form method="post" action="{% url 'save_listing' listing.id %}">
+                        {% csrf_token %}
+                        <button class="primaryButton" type="submit">Save Listing</button>
+                    </form>
+                {% endif %}
+            {% else %}
+                <p><a href="{% url 'error_access_denied' %}">Save Listing</a></p>
+            {% endif %}
+
+            <br>
+
+            <a class="secondaryButton" href="{% url 'complaint_form' %}?listing_id={{ listing.id }}">Report Listing</a>
+            <a class="secondaryButton" href="{% url 'buyer_page' %}">Back to Listings</a>
+        </section>
+    </main>
 </body>
 </html>
