@@ -8,18 +8,17 @@
 </head>
 <body>
         <div class="navbarHome">
-        <h1>HomeZapp</h1>
+        <h2>HomeZapp</h1>
         <div>
             <a href="{% url 'homepage' %}">Homepage</a> |
             <a href="{% url 'loginPage' %}">Register/Login</a> |
             <a href="{% url 'seller_login_page' %}">Seller Login</a> |
-            <a href="{% url 'seller_register_page' %}">Create Seller Account</a> |
             <a href="{% url 'dashboard_redirect' %}">Dashboard</a> |
             <a href="{% url 'contact_page' %}">Contact</a>
             
         </div>
     </div>
-    <h1>Create Seller Account</h1>
+    <h1 class="lesserTitle mt-3 mb-5">Create Seller Account</h1>
 
     {% if error %}
         <p style="color:red;">{{ error }}</p>
@@ -29,17 +28,21 @@
         <p style="color:green;">{{ success }}</p>
     {% endif %}
 
-    <form method="post">
-        {% csrf_token %}
-        <p>
-            <label>Email:</label><br>
-            <input type="text" name="email">
-        </p>
-        <p>
-            <label>Password:</label><br>
-            <input type="password" name="password">
-        </p>
-        <button type="submit">Submit Seller Request</button>
-    </form>
+    <div class="smallForm">
+        <div class="smallFormInner">
+            <form method="post">
+                {% csrf_token %}
+                <p>
+                    <label>Email:</label><br>
+                    <input type="text" name="email">
+                </p>
+                <p>
+                    <label>Password:</label><br>
+                    <input type="password" name="password">
+                </p>
+                <button type="submit" class="button_generic">Submit Seller Request</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

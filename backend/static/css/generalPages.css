@@ -72,7 +72,7 @@ p{
     padding-left: 20px;
     padding-right: 20px;
     padding-top: 20px;
-    padding-bottom: 40px;
+    padding-bottom: 50px;
     margin-top: 40px;
     margin-bottom: 40px;
     background-color: #EEE;
@@ -94,19 +94,22 @@ p{
 }
 
 .button{
-    background-color: #dddd00;
+    background-color: lightblue;
     transition: 0.3s;
     height: 30px;
     width: 62px;
     position: absolute;
+    border-radius: 5px;
+    margin-top: 5px;
 }
 
 .button:hover{
     background-color: blue;
     color: white;
-    height: 32px;
-    width: 65px;
+    height: 33px;
+    width: 68px;
     position: absolute;
+    margin-top: 0;
 }
 
 @keyframes confetti-fall{
@@ -127,12 +130,47 @@ p{
 
 }
 
+/*generic*/
+
 .smallForm{
     padding: 10px;
     margin: 10px;
+    padding-bottom: 40px;
     border-radius: 5px;
+    background-color: lightgray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
 .smallFormInner{
     padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.lesserTitle{
+    text-align: center;
+}
+
+.button_generic{
+    background-color: lightblue;
+    transition: 0.3s;
+    height: 30px;
+    min-width: 62px;
+    position: absolute;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.button_generic:hover{
+    background-color: blue;
+    color: white;
+    height: 33px;
+    min-width: 68px;
+    position: absolute;
+    margin-top: 0;
 }
