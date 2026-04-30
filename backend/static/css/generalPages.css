@@ -156,6 +156,11 @@ p{
     text-align: center;
 }
 
+.padding_generic{
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
 .button_generic{
     background-color: lightblue;
     transition: 0.3s;
@@ -173,4 +178,45 @@ p{
     min-width: 68px;
     position: absolute;
     margin-top: 0;
+}
+
+.button_danger{
+    background-color: lightcoral;
+    transition: 0.3s;
+    height: 30px;
+    min-width: 62px;
+    position: absolute;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.button_danger:hover{
+    background-color: red;
+    height: 33px;
+    min-width: 68px;
+    position: absolute;
+    margin-top: 0;
+}
+
+.button_table{
+    background-color: lightblue;
+    transition: 0.3s;
+    border-radius: 5px;
+    color: black
+}
+
+.button_table:hover{
+    background-color: blue;
+    color: white
+}
+
+.button_table_danger{
+    background-color: lightcoral;
+    transition: 0.3s;
+    border-radius: 5px;
+    color: black;
+}
+
+.button_table_danger:hover{
+    background-color: red;
 }
