@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from listings.models import Listing
-import uuid
+import uuid  # ADD THIS IMPORT
+
 
 class Complaint(models.Model):
     reporter = models.ForeignKey(
@@ -98,7 +99,16 @@ class BuyerApplication(models.Model):
     def __str__(self):
         return f"{self.buyer.username} -> {self.listing.title} ({self.status})"
 
+
+# ─── NEW CLASS ADDED BELOW ────────────────────────────────────────────────────
+
 class SellerFeedToken(models.Model):
+    """
+    Gives each seller a unique private RSS feed URL.
+    Their warehousing software subscribes to this URL to receive
+    incoming buyer applications with product name, ship-to address,
+    and date/time of order.
+    """
     seller = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -110,4 +120,3 @@ class SellerFeedToken(models.Model):
 
     def __str__(self):
         return f"Feed token for {self.seller.username}"
-    

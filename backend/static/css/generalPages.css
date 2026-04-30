@@ -34,11 +34,9 @@ p{
     padding-top: 30px;
     padding-bottom: 30px;
     background-color: #EEE;
-    margin-top: 50px;
 }
 
 .houseListingHome{
-    margin-top: 20px;
     margin-bottom: 20px;
     padding: 20px;
     background-color: #FFF;
@@ -46,7 +44,7 @@ p{
 
 .navbarHome{
     background-color: blue;
-    height: 50px;
+    height: 70px;
     width: 100 vw;
     color: white;
     text-align: center;
@@ -61,15 +59,164 @@ p{
     color: white;
 }
 
+.topSection{
+    background-image: url("/media/listing_images/Random_House.jpg");
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+}
+
 .searchHomeWrapper{
     padding-left: 20px;
     padding-right: 20px;
+    padding-top: 20px;
+    padding-bottom: 50px;
     margin-top: 40px;
+    margin-bottom: 40px;
+    background-color: #EEE;
+    border-radius: 5px;
 }
+
+.searchHomeSubmitWrapper{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+} 
 
 .homeTitle{
     font-size: 350%;
     text-align: center;
     margin-top: 50px !important;
     font-weight: bold;
+    color: white;
+}
+
+.button{
+    background-color: lightblue;
+    transition: 0.3s;
+    height: 30px;
+    width: 62px;
+    position: absolute;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.button:hover{
+    background-color: blue;
+    color: white;
+    height: 33px;
+    width: 68px;
+    position: absolute;
+    margin-top: 0;
+}
+
+@keyframes confetti-fall{
+    0%{    
+    transform: translateY(-100%)
+    }
+    100%{
+        transform: translateY(100vh)
+    }
+    
+}
+
+.confetti{
+    position: absolute;
+    top: 0;
+    font-size: 1.6 rem;
+    animation: confetti-fall linear 5s animation;
+
+}
+
+/*generic*/
+
+.smallForm{
+    padding: 10px;
+    margin: 10px;
+    padding-bottom: 40px;
+    border-radius: 5px;
+    background-color: lightgray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.smallFormInner{
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.lesserTitle{
+    text-align: center;
+}
+
+.padding_generic{
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.button_generic{
+    background-color: lightblue;
+    transition: 0.3s;
+    height: 30px;
+    min-width: 62px;
+    position: absolute;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.button_generic:hover{
+    background-color: blue;
+    color: white;
+    height: 33px;
+    min-width: 68px;
+    position: absolute;
+    margin-top: 0;
+}
+
+.button_danger{
+    background-color: lightcoral;
+    transition: 0.3s;
+    height: 30px;
+    min-width: 62px;
+    position: absolute;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.button_danger:hover{
+    background-color: red;
+    height: 33px;
+    min-width: 68px;
+    position: absolute;
+    margin-top: 0;
+}
+
+.button_table{
+    background-color: lightblue;
+    transition: 0.3s;
+    border-radius: 5px;
+    color: black
+}
+
+.button_table:hover{
+    background-color: blue;
+    color: white
+}
+
+.button_table_danger{
+    background-color: lightcoral;
+    transition: 0.3s;
+    border-radius: 5px;
+    color: black;
+}
+
+.button_table_danger:hover{
+    background-color: red;
 }

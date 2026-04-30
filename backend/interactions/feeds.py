@@ -33,7 +33,7 @@ class SellerApplicationsFeed(Feed):
         return f"/seller/dashboard/"
 
     def items(self, feed_token):
-        # ONLY returns this seller's applications
+        # ONLY returns this seller's applications — no other seller's data
         return BuyerApplication.objects.filter(
             seller=feed_token.seller
         ).exclude(
@@ -45,7 +45,7 @@ class SellerApplicationsFeed(Feed):
         return f"New Application: {item.listing.title}"
 
     def item_description(self, item):
-        # All 3  requirements included here
+        # All 3 TA requirements included here
         return (
             f"Product: {item.listing.title} | "                                         # TA requirement #1
             f"Ship To: {item.listing.address} | "                                       # TA requirement #2
@@ -56,7 +56,7 @@ class SellerApplicationsFeed(Feed):
         )
 
     def item_pubdate(self, item):
-        # Date and time of the order (TA requirement #3)
+        # Date and time of the order 
         return item.created_at
 
     def item_link(self, item):

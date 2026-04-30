@@ -1,11 +1,25 @@
 <!DOCTYPE html>
+{% load static %}
 <html>
 <head>
     <title>Manage Seller Profile</title>
+    <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
 <body>
 
-<h1>Manage Profile</h1>
+   <div class="navbarHome">
+        <h2>HomeZapp</h2>
+        <div>
+            <a href="{% url 'homepage' %}">Homepage</a> |
+            <a href="{% url 'dashboard_redirect' %}">Dashboard</a> |
+            <a href="{% url 'contact_page' %}">Contact</a>
+        </div>
+    </div>
+    
+
+<h1 class="lesserTitle mt-3 mb-5">Manage Profile</h1>
 
 {% if error %}
 <p style="color:red;">{{ error }}</p>
@@ -16,8 +30,9 @@
 {% endif %}
 
 <section>
+    <div class="smallForm">
     <h2>Profile</h2>
-
+<div class="smallFormInner">
     <form method="post">
         {% csrf_token %}
 
@@ -33,8 +48,9 @@
         <textarea name="bio" placeholder="Bio / About Seller">{{ profile.bio|default:'' }}</textarea>
         <br><br>
 
-        <button type="submit">Save Profile</button>
+        <button type="submit" class="button_generic">Save Profile</button>
     </form>
+    </div></div>
 </section>
 
 <section>
@@ -42,7 +58,6 @@
     <p>Password change can be added later.</p>
 </section>
 
-<p><a href="{% url 'seller_dashboard' %}">Back to Dashboard</a></p>
 
 </body>
 </html>

@@ -4,11 +4,13 @@
 <head>
     <title>User Login</title>
     <link rel="stylesheet" href="{% static 'accounts/css/loginPage.css' %}">
+    <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
     <div class="navbarHome">
-        <h1>HomeZapp</h1>
+        <h2>HomeZapp</h2>
         <div>
             <a href="{% url 'homepage' %}">Homepage</a> |
             <a href="{% url 'loginPage' %}">Register/Login</a> |
@@ -20,7 +22,12 @@
         </div>
     </div>
 
-    <h1>Login to HomeZapp</h1>
+    <h1 class="lesserTitle mt-3 w-100">Login or Create your Account Today!</h1>
+
+    <div class="row">
+    <div class="col-lg-6">
+    <div class="smallForm">
+    <h2>Login to HomeZapp</h2>
 
     {% if error %}
         <p style="color:red;">{{ error }}</p>
@@ -30,6 +37,7 @@
         <p style="color:green;">{{ success }}</p>
     {% endif %}
 
+    <div class="smallFormInner">
     <div>
         <form action="{% url 'loginPage' %}" method="post">
             {% csrf_token %}
@@ -45,15 +53,19 @@
             </p>
 
             <p>
-                <button type="submit">Login</button>
+                <button type="submit" class="button_generic">Login</button>
             </p>
 
         </form>
     </div>
+    </div>
+    </div>
+    </div>
 
+    <div class="col-lg-6">
+    <div class="smallForm">
     <h2>Create your HomeZapp account!</h2>
-
-    <div>
+    <div class="smallFormInner">
         <form action="{% url 'registerPage' %}" method="post">
             {% csrf_token %}
 
@@ -68,29 +80,16 @@
             </p>
 
             <p>
-                <button type="submit">Register</button>
+                <button type="submit" class="button_generic">Register</button>
             </p>
 
         </form>
     </div>
+    </div>
+    </div>
+    </div>
 
     <hr>
-
-    <h2>Admin Access</h2>
-
-    <div>
-        <p>
-            <a href="{% url 'admin_login_page' %}">
-                <button type="button">Admin Login</button>
-            </a>
-        </p>
-
-        <p>
-            <a href="{% url 'admin_create_account_page' %}">
-                <button type="button">Create Admin Account</button>
-            </a>
-        </p>
-    </div>
 
 </body>
 </html>

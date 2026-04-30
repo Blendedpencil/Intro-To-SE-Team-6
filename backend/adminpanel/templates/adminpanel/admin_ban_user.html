@@ -1,15 +1,54 @@
-{% load static %}
 <!DOCTYPE html>
+{% load static %}
 <html>
 <head>
     <title>Admin Ban User</title>
     <link rel="stylesheet" href="{% static 'adminpanel/css/adminPages.css' %}">
+    <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="{% static 'js/general.js' %}"></script>
+
 </head>
 <body>
     
-    <a href="{% url 'dashboard_redirect' %}">Return to Dashboard</a> |
+<div class="navbarHome">
+        <h2>HomeZapp</h2>
 
-    <h1>Ban User</h1>
+        <div>
+            {% if not nav_is_authenticated %}
+                <a href="{% url 'loginPage' %}">Buyer Login</a> |
+                <a href="{% url 'registerPage' %}">Buyer Register</a> |
+                <a href="{% url 'seller_login_page' %}">Seller Login</a> |
+                <a href="{% url 'seller_register_page' %}">Create Seller Account</a> |
+                <a href="{% url 'admin_login_page' %}">Admin Login</a> |
+                <a href="{% url 'contact_page' %}">Contact</a>
+            {% elif nav_is_buyer %}
+                <a href="{% url 'dashboard_redirect' %}">Dashboard</a> |
+                <a href="{% url 'wishlist_page' %}">Cart</a> |
+                <a href="{% url 'notifications_page' %}">Notifications</a> |
+                <a href="{% url 'buyer_manageprofile' %}">Profile</a> |
+                <a href="{% url 'contact_page' %}">Contact</a> |
+                <a href="{% url 'logoutPage' %}">Logout</a>
+            {% elif nav_is_seller %}
+                <a href="{% url 'dashboard_redirect' %}">Dashboard</a> |
+                <a href="{% url 'create_listing' %}">Create Listing</a> |
+                <a href="{% url 'seller_manage_profile' %}">Profile</a> |
+                <a href="{% url 'contact_page' %}">Contact</a> |
+                <a href="{% url 'logoutPage' %}">Logout</a>
+            {% elif nav_is_admin %}
+                <a href="{% url 'dashboard_redirect' %}">Dashboard</a> |
+                <a href="{% url 'admin_search_user' %}">Search Users</a> |
+                <a href="{% url 'admin_ban_user' %}">Ban User</a> |
+                <a href="{% url 'admin_manage_profile' %}">Manage Profile</a> |
+                <a href="{% url 'contact_page' %}">Contact</a> |
+                <a href="{% url 'logoutPage' %}">Logout</a>
+            {% endif %}
+        </div>
+    </div>
+
+
+    
+    <h1 class="lesserTitle">Ban User</h1>
 
     {% if error %}
         <p style="color:red;">{{ error }}</p>
@@ -20,6 +59,7 @@
     {% endif %}
 
     <!-- BAN FORM -->
+     <div class="smallForm"><div class="smallFormInner">
     <div>
         <form method="post">
             {% csrf_token %}
@@ -30,15 +70,15 @@
             <label>Reason for ban:</label><br>
             <input type="text" name="banReason"><br><br>
 
-            <button type="submit" name="ban_user">Ban User</button>
+            <button type="submit" name="ban_user" class="button_danger">Ban User</button>
         </form>
     </div>
-
-    <hr>
+</div></div>
 
     <!-- UNBAN SECTION -->
-    <h2>Banned Users</h2>
-
+    
+    <h2 class="lesserTitle">Banned Users</h2>
+<div class="padding_generic">
     <table border="1" style="width: 100%;">
         <tr>
             <th>User</th>
@@ -64,6 +104,6 @@
         </tr>
         {% endfor %}
     </table>
-
+</div>
 </body>
 </html>
