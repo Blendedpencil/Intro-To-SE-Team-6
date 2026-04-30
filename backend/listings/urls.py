@@ -7,4 +7,7 @@ urlpatterns = [
     path('compare/', views.comparison_page, name='comparison_page'),
     path('wishlist/', views.wishlist_page, name='wishlist_page'),
     path('create/', views.create_listing, name='create_listing'),
+
+    path('orders/rss/', views.seller_orders_rss, name='seller_orders_rss'),
+    path('seller/<int:seller_id>/orders/rss/', views.seller_orders_rss, name='seller_orders_rss_by_seller'),
 ]

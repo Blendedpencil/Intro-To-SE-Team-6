@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect
-from .models import Listing
+from .models import Listing, Order
+from django.http import HttpResponse
+from django.urls import reverse
+from django.utils.feedgenerator import Rss201rev2Feed
 
 # Create your views here.
 
@@ -45,14 +48,45 @@ def create_listing(request):
             })
 
         Listing.objects.create(
-            title=title,
-            price=price,
-            location=location,
-            style=style,
-            description=description,
-            image=image
-        )
+             seller=request.user if request.user.is_authenticated else None,
+             title=title,
+             price=price,
+             location=location,
+             style=style,
+             description=description,
+             image=image
+)
+
 
         return redirect('seller_dashboard')  # make sure this exists
 
     return render(request, 'listings/create_listing.html')
+
+def seller_orders_rss(request, seller_id=None):
+    orders = Order.objects.select_related('seller', 'listing').order_by('-placed_at')
+
+    if seller_id is not None:
+        orders = orders.filter(seller_id=seller_id)
+
+    feed = Rss201rev2Feed(
+        title='Seller Order Feed',
+        link=request.build_absolute_uri(reverse('seller_orders_rss')),
+        description='Recent orders for seller warehousing software.'
+    )
+
+    for order in orders:
+        feed.add_item(
+            title=order.product_name,
+            link=request.build_absolute_uri(reverse('seller_orders_rss')),
+            description=(
+                f"Product: {order.product_name}\n"
+                f"Ship-to address: {order.ship_to_address}\n"
+                f"Order placed: {order.placed_at.isoformat()}"
+            ),
+            pubdate=order.placed_at,
+            unique_id=f"order-{order.id}"
+        )
+
+    response = HttpResponse(content_type='application/rss+xml')
+    feed.write(response, 'utf-8')
+    return response
