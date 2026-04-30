@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .feeds import SellerApplicationsFeed
 
 urlpatterns = [
     path('complaint/', views.complaint_form, name='complaint_form'),
@@ -9,4 +10,7 @@ urlpatterns = [
     path('notifications/', views.notifications_page, name='notifications_page'),
     path('notifications/read/<int:notification_id>/', views.mark_notification_read, name='mark_notification_read'),
     path('purchase-success/<int:application_id>/', views.purchase_success, name='purchase_success'),
+    path('seller/dashboard/', views.seller_dashboard, name='seller_dashboard'),
+    path('feeds/seller/regenerate/', views.regenerate_feed_token, name='regenerate_feed_token'),
+    path('feeds/seller/<uuid:token>/', SellerApplicationsFeed(), name='seller-feed'),
 ]

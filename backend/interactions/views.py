@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from listings.models import Listing
-from .models import BuyerApplication, Notification, Complaint
+from .models import BuyerApplication, Notification, Complaint, SellerFeedToken
 from .utils import (
     is_valid_uploaded_file,
     ALLOWED_GOV_ID_MIME_TYPES,
@@ -9,10 +9,15 @@ from .utils import (
     ALLOWED_PDF_MIME_TYPES,
     ALLOWED_PDF_EXTENSIONS,
 )
-# Create your views here.
+import uuid
+
 
 def is_buyer(user):
     return user.groups.filter(name='Buyer').exists()
+
+
+def is_seller(user):
+    return user.groups.filter(name='Seller').exists()
 
 
 def complaint_form(request):
@@ -287,3 +292,38 @@ def notify_seller(request):
         })
 
     return render(request, 'interactions/notify_seller.html')
+
+
+# ─── NEW: RSS FEED VIEWS ──────────────────────────────────────────────────────
+
+def seller_dashboard(request):
+    if not request.user.is_authenticated or not is_seller(request.user):
+        return redirect('error_access_denied')
+
+    # auto-create RSS token if seller doesn't have one yet
+    feed_token, created = SellerFeedToken.objects.get_or_create(
+        seller=request.user
+    )
+
+    # build the full subscribable URL for the seller's warehousing software
+    feed_url = request.build_absolute_uri(
+        f'/feeds/seller/{feed_token.token}/'
+    )
+
+    return render(request, 'interactions/seller_dashboard.html', {
+        'feed_url': feed_url,
+    })
+
+
+def regenerate_feed_token(request):
+    if not request.user.is_authenticated or not is_seller(request.user):
+        return redirect('error_access_denied')
+
+    if request.method == 'POST':
+        feed_token, created = SellerFeedToken.objects.get_or_create(
+            seller=request.user
+        )
+        feed_token.token = uuid.uuid4()  # old URL immediately stops working
+        feed_token.save()
+
+    return redirect('seller_dashboard')

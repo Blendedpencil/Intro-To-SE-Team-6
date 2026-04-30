@@ -2,54 +2,490 @@
 <html>
 <head>
     <title>Buyer Application Form</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Lora:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --blue-deep:   #1A3A5C;
+            --blue-mid:    #2563A8;
+            --blue-light:  #3B82F6;
+            --blue-pale:   #EFF6FF;
+            --blue-border: #BFDBFE;
+            --white:       #FFFFFF;
+            --gray-text:   #64748B;
+            --text:        #1E293B;
+            --error:       #DC2626;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(160deg, #EFF6FF 0%, #F0F4FF 50%, #E8F0FE 100%);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        /* NAV */
+        .navbar {
+            background: var(--blue-deep);
+            padding: 0 40px;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(26,58,92,0.18);
+        }
+        .nav-brand {
+            font-family: 'Lora', serif;
+            font-size: 1.15rem;
+            color: white;
+            letter-spacing: 0.04em;
+            text-decoration: none;
+        }
+        .nav-actions { display: flex; gap: 10px; }
+
+        /* BUTTON SYSTEM */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            padding: 9px 20px;
+            border-radius: 6px;
+            border: 1.5px solid transparent;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.12s, box-shadow 0.18s;
+            white-space: nowrap;
+            line-height: 1;
+        }
+        .btn:active { transform: scale(0.97); }
+
+        .btn-ghost {
+            background: transparent;
+            border-color: rgba(255,255,255,0.3);
+            color: rgba(255,255,255,0.85);
+        }
+        .btn-ghost:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.6);
+            color: white;
+        }
+
+        .btn-outline {
+            background: white;
+            border-color: var(--blue-border);
+            color: var(--blue-mid);
+        }
+        .btn-outline:hover {
+            background: var(--blue-pale);
+            border-color: var(--blue-light);
+            box-shadow: 0 2px 8px rgba(37,99,168,0.12);
+        }
+
+        .btn-primary {
+            background: var(--blue-mid);
+            border-color: var(--blue-mid);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: var(--blue-deep);
+            border-color: var(--blue-deep);
+            box-shadow: 0 4px 14px rgba(26,58,92,0.28);
+        }
+        .btn-primary:disabled {
+            background: #93C5FD;
+            border-color: #93C5FD;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-danger {
+            background: white;
+            border-color: #FECACA;
+            color: #B91C1C;
+        }
+        .btn-danger:hover {
+            background: #FEF2F2;
+            border-color: #FCA5A5;
+            box-shadow: 0 2px 8px rgba(220,38,38,0.1);
+        }
+
+        /* CARD */
+        .page-wrapper { max-width: 680px; margin: 0 auto; padding: 44px 20px 72px; }
+
+        .card {
+            background: var(--white);
+            border-radius: 14px;
+            box-shadow: 0 4px 32px rgba(37,99,168,0.09), 0 1px 4px rgba(37,99,168,0.06);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: var(--blue-deep);
+            padding: 28px 32px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-header::after {
+            content: '';
+            position: absolute;
+            top: -40px; right: -40px;
+            width: 160px; height: 160px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+        }
+        .card-header h1 {
+            font-family: 'Lora', serif;
+            font-size: 1.55rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 4px;
+            position: relative;
+        }
+        .card-header p {
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.6);
+            font-weight: 300;
+            position: relative;
+        }
+
+        .card-body { padding: 28px 32px 32px; }
+
+        /* PROPERTY INFO */
+        .property-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            background: var(--blue-pale);
+            border: 1px solid var(--blue-border);
+            border-radius: 8px;
+            margin-bottom: 28px;
+            overflow: hidden;
+        }
+        .prop-cell {
+            padding: 12px 16px;
+            border-right: 1px solid var(--blue-border);
+        }
+        .prop-cell:last-child { border-right: none; }
+        .prop-cell dt {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--blue-mid);
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        .prop-cell dd {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--blue-deep);
+        }
+
+        /* ERROR */
+        .error-box {
+            background: #FEF2F2;
+            border: 1px solid #FCA5A5;
+            border-radius: 6px;
+            padding: 11px 16px;
+            margin-bottom: 20px;
+            color: var(--error);
+            font-size: 0.84rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* FORM */
+        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+        .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+        .field label {
+            font-size: 0.76rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--gray-text);
+        }
+        .field input[type="text"] {
+            padding: 10px 13px;
+            border: 1.5px solid #CBD5E1;
+            border-radius: 7px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text);
+            background: white;
+            transition: border-color 0.18s, box-shadow 0.18s;
+            outline: none;
+        }
+        .field input[type="text"]:focus {
+            border-color: var(--blue-light);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+
+        /* FILE UPLOAD */
+        .file-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+        .file-field > label {
+            font-size: 0.76rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--gray-text);
+        }
+        .file-zone {
+            position: relative;
+            border: 1.5px dashed var(--blue-border);
+            border-radius: 8px;
+            background: var(--blue-pale);
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            transition: border-color 0.18s, background 0.18s;
+        }
+        .file-zone:hover {
+            border-color: var(--blue-light);
+            background: #DBEAFE;
+        }
+        .file-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+        .file-icon-wrap {
+            width: 36px; height: 36px;
+            border-radius: 7px;
+            background: white;
+            border: 1px solid var(--blue-border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+            transition: background 0.18s, border-color 0.18s;
+        }
+        .file-meta { pointer-events: none; }
+        .file-meta strong { display: block; font-size: 0.86rem; font-weight: 500; color: var(--blue-deep); margin-bottom: 2px; }
+        .file-meta span { font-size: 0.74rem; color: var(--gray-text); }
+
+        .file-zone.has-file { border-color: #86EFAC; border-style: solid; background: #F0FDF4; }
+        .file-zone.has-file .file-icon-wrap { background: #DCFCE7; border-color: #86EFAC; }
+
+        /* SECTION DIVIDER */
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--blue-mid);
+            border-bottom: 1px solid var(--blue-border);
+            padding-bottom: 8px;
+            margin: 24px 0 16px;
+        }
+
+        /* FORM ACTIONS */
+        .form-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 28px;
+            padding-top: 22px;
+            border-top: 1px solid #E2E8F0;
+            flex-wrap: wrap;
+        }
+        .actions-group { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        @media (max-width: 560px) {
+            .field-row { grid-template-columns: 1fr; }
+            .property-row { grid-template-columns: 1fr; }
+            .prop-cell { border-right: none; border-bottom: 1px solid var(--blue-border); }
+            .prop-cell:last-child { border-bottom: none; }
+            .card-body { padding: 22px 18px 24px; }
+            .card-header { padding: 22px 18px 18px; }
+            .form-actions { flex-direction: column; }
+            .actions-group { width: 100%; }
+            .btn { width: 100%; justify-content: center; }
+            .navbar { padding: 0 18px; }
+        }
+    </style>
 </head>
-<body style="font-family: 'Times New Roman', serif; padding: 20px;">
-    <h1>Buyer Application Form</h1>
-{% if error %}
-    <p style="color:red;">{{ error }}</p>
-{% endif %}
+<body>
 
-    <p><strong>Property:</strong> {{ listing.title }}</p>
-    <p><strong>Location:</strong> {{ listing.location }}</p>
-    <p><strong>Price:</strong> ${{ listing.price }}</p>
+<nav class="navbar">
+    <a href="#" class="nav-brand">HomeZapp</a>
+    <div class="nav-actions">
+        <a href="{% url 'wishlist_page' %}" class="btn btn-ghost">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg>
+            Cart
+        </a>
+        <a href="#" class="btn btn-ghost">My Applications</a>
+    </div>
+</nav>
 
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
+<div class="page-wrapper">
+    <div class="card">
 
-        <label for="fname">First name:</label><br>
-        <input type="text" id="fname" name="fname"><br><br>
-
-        <label for="lname">Last name:</label><br>
-        <input type="text" id="lname" name="lname"><br><br>
-
-        <label for="emailID">Email ID:</label><br>
-        <input type="text" id="emailID" name="emailID"><br><br>
-
-        <div>
-            <label for="gov-id">Government Issued ID:</label><br>
-            <input type="file" id="gov-id" name="gov_id" accept=".png,.jpg,.jpeg,.pdf,image/png,image/jpeg,application/pdf" required>
+        <div class="card-header">
+            <h1>Buyer Application</h1>
+            <p>Complete the form below to apply for this property.</p>
         </div>
 
-        <br>
+        <div class="card-body">
 
-        <div>
-            <label for="mortgage-docs">Mortgage Pre-approval Documents:</label><br>
-            <input type="file" id="mortgage-docs" name="mortgage_pre_approval" accept=".pdf,application/pdf" required>
+            {% if error %}
+            <div class="error-box">
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm-.75 4a.75.75 0 011.5 0v3.5a.75.75 0 01-1.5 0V5zm.75 7a1 1 0 110-2 1 1 0 010 2z"/></svg>
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <dl class="property-row">
+                <div class="prop-cell">
+                    <dt>Property</dt>
+                    <dd>{{ listing.title }}</dd>
+                </div>
+                <div class="prop-cell">
+                    <dt>Location</dt>
+                    <dd>{{ listing.location }}</dd>
+                </div>
+                <div class="prop-cell">
+                    <dt>Price</dt>
+                    <dd>${{ listing.price }}</dd>
+                </div>
+            </dl>
+
+            <form method="POST" enctype="multipart/form-data" id="appForm">
+                {% csrf_token %}
+
+                <div class="section-label">Personal Information</div>
+
+                <div class="field-row">
+                    <div class="field">
+                        <label for="fname">First Name</label>
+                        <input type="text" id="fname" name="fname" placeholder="Jane">
+                    </div>
+                    <div class="field">
+                        <label for="lname">Last Name</label>
+                        <input type="text" id="lname" name="lname" placeholder="Smith">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="emailID">Email Address</label>
+                    <input type="text" id="emailID" name="emailID" placeholder="jane@example.com">
+                </div>
+
+                <div class="section-label">Required Documents</div>
+
+                <div class="file-field">
+                    <label for="gov-id">Government Issued ID</label>
+                    <div class="file-zone" id="zone-gov">
+                        <input type="file" id="gov-id" name="gov_id"
+                               accept=".png,.jpg,.jpeg,.pdf,image/png,image/jpeg,application/pdf"
+                               required
+                               onchange="markFile(this,'zone-gov','icon-gov','label-gov')">
+                        <div class="file-icon-wrap" id="icon-gov">🪪</div>
+                        <div class="file-meta">
+                            <strong id="label-gov">Click to upload ID</strong>
+                            <span>PNG, JPG or PDF</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="file-field">
+                    <label for="mortgage-docs">Mortgage Pre-approval Documents</label>
+                    <div class="file-zone" id="zone-mort">
+                        <input type="file" id="mortgage-docs" name="mortgage_pre_approval"
+                               accept=".pdf,application/pdf"
+                               required
+                               onchange="markFile(this,'zone-mort','icon-mort','label-mort')">
+                        <div class="file-icon-wrap" id="icon-mort">📄</div>
+                        <div class="file-meta">
+                            <strong id="label-mort">Click to upload letter</strong>
+                            <span>PDF only</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="file-field">
+                    <label for="bank-statements">Bank Statements — Last 3 Months <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+                    <div class="file-zone" id="zone-bank">
+                        <input type="file" id="bank-statements" name="bank_statements"
+                               multiple
+                               accept=".pdf,application/pdf"
+                               onchange="markFile(this,'zone-bank','icon-bank','label-bank',true)">
+                        <div class="file-icon-wrap" id="icon-bank">🏦</div>
+                        <div class="file-meta">
+                            <strong id="label-bank">Click to upload statements</strong>
+                            <span>PDF only · Multiple files allowed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <div class="actions-group">
+                        <a href="{% url 'wishlist_page' %}" class="btn btn-outline">
+                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg>
+                            Back to Cart
+                        </a>
+                        <button type="button" class="btn btn-danger" onclick="clearForm()">
+                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l10 10M13 3L3 13"/></svg>
+                            Clear Form
+                        </button>
+                    </div>
+                    <div class="actions-group">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            Submit Application
+                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+            </form>
         </div>
+    </div>
+</div>
 
-        <br>
+<script>
+    function markFile(input, zoneId, iconId, labelId, multi) {
+        const zone  = document.getElementById(zoneId);
+        const icon  = document.getElementById(iconId);
+        const label = document.getElementById(labelId);
+        const files = input.files;
+        if (!files || files.length === 0) return;
+        zone.classList.add('has-file');
+        icon.textContent = '✅';
+        if (multi && files.length > 1) {
+            label.textContent = files.length + ' files selected';
+        } else {
+            const n = files[0].name;
+            label.textContent = n.length > 32 ? n.slice(0, 29) + '…' : n;
+        }
+    }
 
-        <div>
-            <label for="bank-statements">Bank Statements (Last 3 Months):</label><br>
-            <input type="file" id="bank-statements" name="bank_statements" multiple accept=".pdf,application/pdf">
-            <small>You can select multiple files at once.</small>
-        </div>
+    function clearForm() {
+        if (!confirm('Clear all fields and selected files?')) return;
+        document.getElementById('appForm').reset();
+        [['zone-gov','icon-gov','label-gov','🪪','Click to upload ID'],
+         ['zone-mort','icon-mort','label-mort','📄','Click to upload letter'],
+         ['zone-bank','icon-bank','label-bank','🏦','Click to upload statements']
+        ].forEach(([z,i,l,emoji,text]) => {
+            document.getElementById(z).classList.remove('has-file');
+            document.getElementById(i).textContent = emoji;
+            document.getElementById(l).textContent = text;
+        });
+    }
 
-        <br>
+    document.getElementById('appForm').addEventListener('submit', function() {
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = 'Submitting…';
+    });
+</script>
 
-        <button type="submit">Submit Application</button>
-    </form>
-
-    <p><a href="{% url 'wishlist_page' %}">Back to Cart</a></p>
 </body>
 </html>

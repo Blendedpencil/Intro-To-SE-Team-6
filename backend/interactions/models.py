@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from listings.models import Listing
-
+import uuid
 
 class Complaint(models.Model):
     reporter = models.ForeignKey(
@@ -97,3 +97,17 @@ class BuyerApplication(models.Model):
 
     def __str__(self):
         return f"{self.buyer.username} -> {self.listing.title} ({self.status})"
+
+class SellerFeedToken(models.Model):
+    seller = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='feed_token'
+    )
+    token = models.UUIDField(default=uuid.uuid4, unique=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Feed token for {self.seller.username}"
+    

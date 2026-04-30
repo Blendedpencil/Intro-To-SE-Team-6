@@ -4,51 +4,409 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Bank Transfer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Lora:wght@500;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .payment-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 400px; }
-        h2 { margin-top: 0; color: #1a1a1a; font-size: 1.5rem; text-align: center; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 8px; }
-        input { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
-        .pay-btn { width: 100%; background-color: #059669; color: white; padding: 14px; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 10px; }
-        .pay-btn:hover { background-color: #047857; }
-        .security-badge { text-align: center; margin-top: 20px; font-size: 0.75rem; color: #9ca3af; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --blue-deep:   #1A3A5C;
+            --blue-mid:    #2563A8;
+            --blue-light:  #3B82F6;
+            --blue-pale:   #EFF6FF;
+            --blue-border: #BFDBFE;
+            --white:       #FFFFFF;
+            --gray-text:   #64748B;
+            --text:        #1E293B;
+            --green:       #059669;
+            --green-dark:  #047857;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(160deg, #EFF6FF 0%, #F0F4FF 50%, #E8F0FE 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--text);
+        }
+
+        /* NAV */
+        .navbar {
+            background: var(--blue-deep);
+            padding: 0 40px;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(26,58,92,0.18);
+            flex-shrink: 0;
+        }
+        .nav-brand {
+            font-family: 'Lora', serif;
+            font-size: 1.15rem;
+            color: white;
+            letter-spacing: 0.04em;
+            text-decoration: none;
+        }
+        .nav-actions { display: flex; gap: 10px; }
+
+        /* BUTTON SYSTEM */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            padding: 9px 20px;
+            border-radius: 6px;
+            border: 1.5px solid transparent;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.12s, box-shadow 0.18s;
+            white-space: nowrap;
+            line-height: 1;
+        }
+        .btn:active { transform: scale(0.97); }
+
+        .btn-ghost {
+            background: transparent;
+            border-color: rgba(255,255,255,0.3);
+            color: rgba(255,255,255,0.85);
+        }
+        .btn-ghost:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.6);
+            color: white;
+        }
+
+        .btn-outline {
+            background: white;
+            border-color: var(--blue-border);
+            color: var(--blue-mid);
+        }
+        .btn-outline:hover {
+            background: var(--blue-pale);
+            border-color: var(--blue-light);
+            box-shadow: 0 2px 8px rgba(37,99,168,0.12);
+        }
+
+        .btn-danger {
+            background: white;
+            border-color: #FECACA;
+            color: #B91C1C;
+        }
+        .btn-danger:hover {
+            background: #FEF2F2;
+            border-color: #FCA5A5;
+            box-shadow: 0 2px 8px rgba(220,38,38,0.1);
+        }
+
+        .btn-green {
+            background: var(--green);
+            border-color: var(--green);
+            color: white;
+            font-size: 0.9rem;
+            padding: 13px 24px;
+            width: 100%;
+            justify-content: center;
+            border-radius: 7px;
+        }
+        .btn-green:hover {
+            background: var(--green-dark);
+            border-color: var(--green-dark);
+            box-shadow: 0 4px 14px rgba(5,150,105,0.28);
+        }
+        .btn-green:disabled {
+            background: #6EE7B7;
+            border-color: #6EE7B7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* CARD */
+        .page-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 14px;
+            box-shadow: 0 4px 32px rgba(37,99,168,0.09), 0 1px 4px rgba(37,99,168,0.06);
+            overflow: hidden;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .card-header {
+            background: var(--blue-deep);
+            padding: 24px 28px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-header::after {
+            content: '';
+            position: absolute;
+            top: -40px; right: -40px;
+            width: 140px; height: 140px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+        }
+        .card-header h2 {
+            font-family: 'Lora', serif;
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: white;
+            position: relative;
+            text-align: left;
+        }
+
+        .card-body { padding: 24px 28px 28px; }
+
+        /* PROPERTY ROW */
+        .property-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: var(--blue-pale);
+            border: 1px solid var(--blue-border);
+            border-radius: 8px;
+            margin-bottom: 22px;
+            overflow: hidden;
+        }
+        .prop-cell {
+            padding: 10px 14px;
+            border-right: 1px solid var(--blue-border);
+        }
+        .prop-cell:last-child { border-right: none; }
+        .prop-cell dt {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--blue-mid);
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .prop-cell dd {
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--blue-deep);
+        }
+
+        /* FORM */
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--blue-mid);
+            border-bottom: 1px solid var(--blue-border);
+            padding-bottom: 7px;
+            margin: 0 0 14px;
+        }
+
+        .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+        .field label {
+            font-size: 0.76rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--gray-text);
+        }
+        .field input {
+            width: 100%;
+            padding: 10px 13px;
+            border: 1.5px solid #CBD5E1;
+            border-radius: 7px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text);
+            background: white;
+            transition: border-color 0.18s, box-shadow 0.18s;
+            outline: none;
+        }
+        .field input:focus {
+            border-color: var(--blue-light);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+        .field input.invalid {
+            border-color: #F87171;
+            box-shadow: 0 0 0 3px rgba(248,113,113,0.15);
+        }
+        .field .hint {
+            font-size: 0.72rem;
+            color: #F87171;
+            display: none;
+        }
+        .field input.invalid + .hint { display: block; }
+
+        /* FORM ACTIONS */
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+            margin-bottom: 16px;
+        }
+
+        .security-badge {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
     </style>
 </head>
 <body>
 
-<div class="payment-card">
-    <h2>Bank Transfer Details</h2>
+<nav class="navbar">
+    <a href="#" class="nav-brand">HomeZapp</a>
+    <div class="nav-actions">
+        <a href="#" class="btn btn-ghost">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg>
+            Back
+        </a>
+        <a href="#" class="btn btn-ghost">My Applications</a>
+    </div>
+</nav>
 
-    <p><strong>Property:</strong> {{ application.listing.title }}</p>
-    <p><strong>Amount:</strong> ${{ application.counter_amount|default:application.offer_amount|default:application.listing.price }}</p>
+<div class="page-wrapper">
+    <div class="card">
 
-    <form method="POST">
-        {% csrf_token %}
-        
-        <div class="form-group">
-            <label for="account-holder">Account Holder Name</label>
-            <input type="text" id="account-holder" name="account_holder" placeholder="John or Jane Doe" required>
+        <div class="card-header">
+            <h2>Bank Transfer Details</h2>
         </div>
 
-        <div class="form-group">
-            <label for="routing-number">Routing Number</label>
-            <input type="text" id="routing-number" name="routing_number" placeholder="9-digit routing number" maxlength="9" pattern="\d{9}" title="Please enter a valid 9-digit routing number" required>
-        </div>
+        <div class="card-body">
 
-        <div class="form-group">
-            <label for="account-number">Account Number</label>
-            <input type="text" id="account-number" name="account_number" placeholder="Bank account number" maxlength="17" required>
-        </div>
+            <dl class="property-row">
+                <div class="prop-cell">
+                    <dt>Property</dt>
+                    <dd>{{ application.listing.title }}</dd>
+                </div>
+                <div class="prop-cell">
+                    <dt>Amount</dt>
+                    <dd>${{ application.counter_amount|default:application.offer_amount|default:application.listing.price }}</dd>
+                </div>
+            </dl>
 
-        <button type="submit" class="pay-btn">Authorize Transfer</button>
-        
-        <div class="security-badge">
-            🔒 Direct Bank Payment (ACH) Securely Encrypted
+            <form method="POST" id="transferForm" novalidate>
+                {% csrf_token %}
+
+                <div class="section-label">Account Details</div>
+
+                <div class="field">
+                    <label for="account-holder">Account Holder Name</label>
+                    <input type="text" id="account-holder" name="account_holder" placeholder="John or Jane Doe" required>
+                    <span class="hint">Please enter the account holder name.</span>
+                </div>
+
+                <div class="field">
+                    <label for="routing-number">Routing Number</label>
+                    <input type="text" id="routing-number" name="routing_number" placeholder="9-digit routing number" maxlength="9" pattern="\d{9}" title="Please enter a valid 9-digit routing number" required inputmode="numeric">
+                    <span class="hint">Must be exactly 9 digits.</span>
+                </div>
+
+                <div class="field">
+                    <label for="account-number">Account Number</label>
+                    <input type="text" id="account-number" name="account_number" placeholder="Bank account number" maxlength="17" required inputmode="numeric">
+                    <span class="hint">Please enter a valid account number.</span>
+                </div>
+
+                <!-- Interactive buttons -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="clearTransferForm()" style="flex:1;justify-content:center;">
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l10 10M13 3L3 13"/></svg>
+                        Clear
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="validateOnly()" style="flex:1;justify-content:center;">
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8l4 4 8-8"/></svg>
+                        Validate
+                    </button>
+                </div>
+
+                <button type="submit" class="btn btn-green" id="submitBtn" onclick="return handleSubmit(event)">
+                    🔒 Authorize Transfer
+                </button>
+
+                <div class="security-badge">
+                    Direct Bank Payment (ACH) · Securely Encrypted
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
+
+<script>
+    const fields = {
+        'account-holder': {
+            validate: v => v.trim().length > 1,
+        },
+        'routing-number': {
+            validate: v => /^\d{9}$/.test(v.trim()),
+        },
+        'account-number': {
+            validate: v => /^\d{4,17}$/.test(v.trim()),
+        }
+    };
+
+    function validateField(id) {
+        const input = document.getElementById(id);
+        const ok = fields[id].validate(input.value);
+        input.classList.toggle('invalid', !ok);
+        return ok;
+    }
+
+    // Live validation on blur
+    Object.keys(fields).forEach(id => {
+        const input = document.getElementById(id);
+        input.addEventListener('blur', () => validateField(id));
+        input.addEventListener('input', () => {
+            if (input.classList.contains('invalid')) validateField(id);
+        });
+    });
+
+    // Routing: digits only
+    document.getElementById('routing-number').addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '');
+    });
+    document.getElementById('account-number').addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '');
+    });
+
+    function validateOnly() {
+        const results = Object.keys(fields).map(id => validateField(id));
+        const allOk = results.every(Boolean);
+        if (allOk) {
+            alert('✅ All fields look good! You can now authorize the transfer.');
+        } else {
+            alert('⚠️ Please fix the highlighted fields before submitting.');
+        }
+    }
+
+    function clearTransferForm() {
+        if (!confirm('Clear all fields?')) return;
+        document.getElementById('transferForm').reset();
+        Object.keys(fields).forEach(id => {
+            document.getElementById(id).classList.remove('invalid');
+        });
+    }
+
+    function handleSubmit(e) {
+        const allOk = Object.keys(fields).map(id => validateField(id)).every(Boolean);
+        if (!allOk) {
+            e.preventDefault();
+            return false;
+        }
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.textContent = 'Processing…';
+        return true;
+    }
+</script>
 
 </body>
 </html>

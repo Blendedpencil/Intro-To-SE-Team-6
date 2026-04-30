@@ -1,41 +1,123 @@
 from django.db import models
 from django.contrib.auth.models import User
+from listings.models import Listing
+import uuid  
 
 
-class Listing(models.Model):
-    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name='listings')
+class Complaint(models.Model):
+    reporter = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='complaints_made'
+    )
+    reported_user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='complaints_received',
+        null=True,
+        blank=True
+    )
+    listing = models.ForeignKey(
+        Listing,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.subject
+
+
+class Notification(models.Model):
+    recipient = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='notifications'
+    )
+    sender = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='sent_notifications'
+    )
     title = models.CharField(max_length=200)
-    price = models.DecimalField(max_digits=12, decimal_places=2)
-    location = models.CharField(max_length=200)
-    style = models.CharField(max_length=100, default='Other')
-    description = models.TextField()
-
-    bedrooms = models.PositiveIntegerField(default=0)
-    bathrooms = models.PositiveIntegerField(default=0)
-    square_footage = models.PositiveIntegerField(default=0)
-
-    image = models.ImageField(upload_to='listing_images/', blank=True, null=True)
-
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    application = models.ForeignKey(
+        'BuyerApplication',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='notifications'
+    )
+
+    def __str__(self):
+        return f"{self.recipient.username} - {self.title}"
+
+
+class BuyerApplication(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('RejectedBySeller', 'Rejected By Seller'),
+        ('AcceptedBySeller', 'Accepted By Seller'),
+        ('RejectedByBuyer', 'Rejected By Buyer'),
+        ('AcceptedByBuyer', 'Accepted By Buyer'),
+        ('CounterSent', 'Counter Sent'),
+        ('Deleted', 'Deleted'),
+        ('Paid', 'Paid'),
+    ]
+
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='buyer_applications')
+    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name='seller_applications')
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='applications')
+
+    first_name = models.CharField(max_length=100, blank=True)
+    last_name = models.CharField(max_length=100, blank=True)
+    email = models.EmailField(blank=True)
+
+    gov_id = models.FileField(upload_to='applications/gov_ids/', blank=True, null=True)
+    mortgage_pre_approval = models.FileField(upload_to='applications/mortgage_docs/', blank=True, null=True)
+    bank_statement_1 = models.FileField(upload_to='applications/bank_statements/', blank=True, null=True)
+    bank_statement_2 = models.FileField(upload_to='applications/bank_statements/', blank=True, null=True)
+    bank_statement_3 = models.FileField(upload_to='applications/bank_statements/', blank=True, null=True)
+
+    buyer_note = models.TextField(blank=True)
+    offer_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    counter_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='Pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.buyer.username} -> {self.listing.title} ({self.status})"
+
+
+
+
+class SellerFeedToken(models.Model):
+    """
+    Gives each seller a unique private RSS feed URL.
+    Their warehousing software subscribes to this URL to receive
+    incoming buyer applications with product name, ship-to address,
+    and date/time of order.
+    """
+    seller = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='feed_token'
+    )
+    token = models.UUIDField(default=uuid.uuid4, unique=True)
     is_active = models.BooleanField(default=True)
-    is_sold = models.BooleanField(default=False)
-
-    is_approved = models.BooleanField(default=False)
-    approval_pending = models.BooleanField(default=True)
-    rejection_reason = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.title
-
-
-class SavedListing(models.Model):
-    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved_listings')
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='saved_by')
-    saved_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ('buyer', 'listing')
-
-    def __str__(self):
-        return f"{self.buyer.username} saved {self.listing.title}"
+        return f"Feed token for {self.seller.username}"
+    
