@@ -17,6 +17,10 @@
       <p>
         Major Project Features- allows buyers and sellers to connect, helps buyers browse based on architectural styles and not just prices, educated buyers about architectural types so that they can make an informed decision
       </p>
+
+      <p>Instructions for running:</p>
+      <p>Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass</p>
+      <p>./setup.ps1</p>
         
       
       

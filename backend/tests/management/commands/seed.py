@@ -6,6 +6,77 @@ from django.contrib.auth.models import User, Group
 from PIL import Image
 from django.core.management.base import BaseCommand
 
+
+
+
+#admin
+for i in range(5):
+    person = 'admin' + str(i)
+    person_email = person + '@gmail.com'
+    user = User.objects.create_user(
+                username=person_email,
+                email=person_email,
+                password="test",
+                is_active=True
+            )
+    group, _ = Group.objects.get_or_create(name="Admin")
+    user.groups.add(group)
+    UserProfile.objects.create(
+                user=user,
+                role='Admin',
+                login_status=False,
+                seller_approved=False,
+                seller_request_pending=False
+            )
+
+print("Test")
+i = 0
+for i in range(5):
+    person = 'buyer' + str(i)
+    person_email = person + '@gmail.com'
+    user = User.objects.create_user(
+                username=person_email,
+                email=person_email,
+                password="test",
+                is_active=True
+            )
+    group, _ = Group.objects.get_or_create(name="Buyer")
+    user.groups.add(group)
+    UserProfile.objects.create(
+                user=user,
+                role='Buyer',
+                login_status=False,
+            )
+
+
+print("test")    
+i=0
+for i in range(7):
+    person = 'seller' + str(i)
+    person_email = person + '@gmail.com'
+    user = User.objects.create_user(
+                username=person_email,
+                email=person_email,
+                password="test",
+                is_active=True
+            )
+    group, _ = Group.objects.get_or_create(name="Seller")
+    user.groups.add(group)
+    sellerUser = UserProfile.objects.create(
+                user=user,
+                role='Seller',
+                login_status=False,
+                seller_approved=True,
+                seller_request_pending=False
+            )
+
+
+
+
+
+
+
+
 #database seeding
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
