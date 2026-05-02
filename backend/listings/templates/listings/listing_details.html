@@ -7,6 +7,7 @@
 </head>
 
 <body>
+    <script src="{% static 'js/general.js' %}"></script>
     <div class="navbarHome">
         <h2>HomeZapp</h2>
         <div>
@@ -25,7 +26,7 @@
             <div>
                 {% if listing.image %}
                     <div class="listingImage">
-                        <img src="{{ listing.image.url }}" alt="{{ listing.title }}">
+                        <img src="{{ listing.image.url }}" alt="{{ listing.title }}" title="{{ item.listing.title }}">
                     </div>
                 {% else %}
                     <div class="listingImage">

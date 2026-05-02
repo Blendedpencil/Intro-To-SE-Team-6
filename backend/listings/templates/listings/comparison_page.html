@@ -7,6 +7,7 @@
 </head>
 
 <body>
+    <script src="{% static 'js/general.js' %}"></script>
     <div class="navbarHome">
         <h2>HomeZapp</h2>
         <div>
@@ -26,7 +27,7 @@
 
                 {% if first_listing %}
                     {% if first_listing.image %}
-                        <div class="listingImage"><img src="{{ first_listing.image.url }}" alt="{{ first_listing.title }}"></div>
+                        <div class="listingImage"><img src="{{ first_listing.image.url }}" alt="{{ first_listing.title }}" title="{{ item.listing.title }}"></div>
                     {% endif %}
 
                     <p><strong>Listing Number:</strong> {{ first_listing.id }}</p>
@@ -52,7 +53,7 @@
 
                 {% if second_listing %}
                     {% if second_listing.image %}
-                        <div class="listingImage"><img src="{{ second_listing.image.url }}" alt="{{ second_listing.title }}"></div>
+                        <div class="listingImage"><img src="{{ second_listing.image.url }}" alt="{{ second_listing.title }}" title="{{ item.listing.title }}"></div>
                     {% endif %}
 
                     <p><strong>Listing Number:</strong> {{ second_listing.id }}</p>
