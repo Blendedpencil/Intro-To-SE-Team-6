@@ -113,9 +113,10 @@
                     class="profilePicture"
                     src="{{ profile.profile_picture.url }}"
                     alt="{{ profile_user.username }} profile picture"
+                    title="{{ profile_user.username }} profile picture"
                 >
             {% else %}
-                <div class="profilePlaceholder">
+                <div class="profilePlaceholder" title="{{ profile_user.username }} profile picture">
                     {{ profile_user.username|first|upper }}
                 </div>
             {% endif %}

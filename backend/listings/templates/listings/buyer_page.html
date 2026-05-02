@@ -4,6 +4,7 @@
 <head>
     <title>Buyer Dashboard</title>
     <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
+    <script src="{% static 'js/general.js' %}" defer></script>
 </head>
 
 <body>
@@ -42,7 +43,7 @@
             {% for listing in listings %}
                 <div class="listingCard">
                     {% if listing.image %}
-                        <img src="{{ listing.image.url }}" alt="{{ listing.title }}">
+                        <img src="{{ listing.image.url }}" alt="{{ listing.title }}" title="{{ item.listing.title }}">
                     {% else %}
                         <img src="{% static 'images/house-stock-photo.jpg' %}" alt="House">
                     {% endif %}
