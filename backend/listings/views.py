@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.views.decorators.cache import never_cache
-
+from django.http import HttpResponse
+from django.urls import reverse
+from django.utils.feedgenerator import Rss201rev2Feed
 from .models import Listing, SavedListing
 from interactions.models import BuyerApplication, Notification
 from interactions.utils import (
@@ -158,7 +160,10 @@ def comparison_page(request):
 
 @never_cache
 def create_listing(request):
-    if not request.user.is_authenticated or not is_seller(request.user):
+    if 'bearer_token' not in request.session or not request.user.is_authenticated:
+        return redirect('seller_login_page')
+
+    if not is_seller(request.user):
         return redirect('seller_login_page')
 
     if request.method == 'POST':
@@ -177,6 +182,20 @@ def create_listing(request):
                 'error': 'Please fill in all required fields.'
             })
 
+        try:
+            bedrooms = int(bedrooms) if bedrooms else 0
+            bathrooms = int(bathrooms) if bathrooms else 0
+            square_footage = int(square_footage) if square_footage else 0
+        except ValueError:
+            return render(request, 'listings/seller_create_listing.html', {
+                'error': 'Bedrooms, bathrooms, and square footage must be whole numbers.'
+            })
+
+        if bedrooms < 0 or bathrooms < 0 or square_footage < 0:
+            return render(request, 'listings/seller_create_listing.html', {
+                'error': 'Bedrooms, bathrooms, and square footage cannot be negative.'
+            })
+
         if image and not is_valid_uploaded_file(
             image,
             ALLOWED_LISTING_IMAGE_MIME_TYPES,
@@ -193,9 +212,9 @@ def create_listing(request):
             location=location,
             style=style if style else 'Other',
             description=description,
-            bedrooms=bedrooms or 0,
-            bathrooms=bathrooms or 0,
-            square_footage=square_footage or 0,
+            bedrooms=bedrooms,
+            bathrooms=bathrooms,
+            square_footage=square_footage,
             image=image,
             is_active=True,
             is_sold=False,
@@ -228,53 +247,93 @@ def seller_dashboard(request):
 
 @never_cache
 def seller_edit_listing(request):
-    if not request.user.is_authenticated or not is_seller(request.user):
+    if 'bearer_token' not in request.session or not request.user.is_authenticated:
         return redirect('seller_login_page')
 
-    listings = Listing.objects.filter(seller=request.user).order_by('-created_at')
+    if not is_seller(request.user):
+        return redirect('seller_login_page')
+
+    seller_listings = Listing.objects.filter(
+        seller=request.user
+    ).order_by('-created_at')
+
+    listing_id = request.GET.get('listing_id') or request.POST.get('listing_id')
     selected_listing = None
 
-    listing_id = request.GET.get('listing_id')
     if listing_id:
-        selected_listing = get_object_or_404(Listing, id=listing_id, seller=request.user)
+        selected_listing = get_object_or_404(
+            Listing,
+            id=listing_id,
+            seller=request.user
+        )
 
     if request.method == 'POST':
-        listing_id = request.POST.get('listing_id')
-        selected_listing = get_object_or_404(Listing, id=listing_id, seller=request.user)
+        if not selected_listing:
+            return render(request, 'listings/seller_edit_listing.html', {
+                'listings': seller_listings,
+                'error': 'Please choose a listing to edit.'
+            })
 
-        selected_listing.title = request.POST.get('title', '').strip()
-        selected_listing.price = request.POST.get('price', '').strip()
-        selected_listing.location = request.POST.get('location', '').strip()
-        selected_listing.style = request.POST.get('style', '').strip()
-        selected_listing.description = request.POST.get('description', '').strip()
-        selected_listing.bedrooms = request.POST.get('bedrooms', '0').strip() or 0
-        selected_listing.bathrooms = request.POST.get('bathrooms', '0').strip() or 0
-        selected_listing.square_footage = request.POST.get('square_footage', '0').strip() or 0
+        if not selected_listing.is_active or selected_listing.is_sold:
+            return render(request, 'listings/seller_edit_listing.html', {
+                'listings': seller_listings,
+                'selected_listing': selected_listing,
+                'error': 'This listing can no longer be edited.'
+            })
 
-        new_image = request.FILES.get('image')
-        if new_image:
-            if not is_valid_uploaded_file(
-                new_image,
-                ALLOWED_LISTING_IMAGE_MIME_TYPES,
-                ALLOWED_LISTING_IMAGE_EXTENSIONS
-            ):
-                return render(request, 'listings/seller_edit_listing.html', {
-                    'listings': listings,
-                    'selected_listing': selected_listing,
-                    'error': 'Listing images must be PNG, JPG, or JPEG files only.'
-                })
-            selected_listing.image = new_image
+        title = request.POST.get('title', '').strip()
+        price = request.POST.get('price', '').strip()
+        location = request.POST.get('location', '').strip()
+        style = request.POST.get('style', '').strip()
+        bedrooms = request.POST.get('bedrooms', '0').strip()
+        bathrooms = request.POST.get('bathrooms', '0').strip()
+        square_footage = request.POST.get('square_footage', '0').strip()
+        description = request.POST.get('description', '').strip()
+        image = request.FILES.get('image')
+
+        if not title or not price or not location or not description:
+            return render(request, 'listings/seller_edit_listing.html', {
+                'listings': seller_listings,
+                'selected_listing': selected_listing,
+                'error': 'Please fill in all required fields.'
+            })
+
+        try:
+            bedrooms = int(bedrooms) if bedrooms else 0
+            bathrooms = int(bathrooms) if bathrooms else 0
+            square_footage = int(square_footage) if square_footage else 0
+        except ValueError:
+            return render(request, 'listings/seller_edit_listing.html', {
+                'listings': seller_listings,
+                'selected_listing': selected_listing,
+                'error': 'Bedrooms, bathrooms, and square footage must be whole numbers.'
+            })
+
+        if bedrooms < 0 or bathrooms < 0 or square_footage < 0:
+            return render(request, 'listings/seller_edit_listing.html', {
+                'listings': seller_listings,
+                'selected_listing': selected_listing,
+                'error': 'Bedrooms, bathrooms, and square footage cannot be negative.'
+            })
+
+        selected_listing.title = title
+        selected_listing.price = price
+        selected_listing.location = location
+        selected_listing.style = style
+        selected_listing.bedrooms = bedrooms
+        selected_listing.bathrooms = bathrooms
+        selected_listing.square_footage = square_footage
+        selected_listing.description = description
+
+        if image:
+            selected_listing.image = image
 
         selected_listing.save()
 
-        return render(request, 'listings/seller_edit_listing.html', {
-            'listings': listings,
-            'selected_listing': selected_listing,
-            'success': 'Listing updated successfully.'
-        })
+        return redirect('seller_dashboard')
 
     return render(request, 'listings/seller_edit_listing.html', {
-        'listings': listings,
+        'listings': seller_listings,
         'selected_listing': selected_listing
     })
 
@@ -285,13 +344,29 @@ def seller_negotiation(request):
         return redirect('seller_login_page')
 
     application_id = request.GET.get('application_id')
+
     application = get_object_or_404(
-        BuyerApplication.objects.select_related('listing', 'buyer'),
+        BuyerApplication.objects.select_related('listing', 'buyer', 'seller'),
         id=application_id,
         seller=request.user
     )
 
+    locked_statuses = [
+        'AcceptedBySeller',
+        'RejectedBySeller',
+        'RejectedByBuyer',
+        'AcceptedByBuyer',
+        'Deleted',
+        'Paid',
+    ]
+
     if request.method == 'POST':
+        if application.status in locked_statuses:
+            return render(request, 'listings/seller_negotiation.html', {
+                'application': application,
+                'error': 'This decision has already been finalized and cannot be changed.'
+            })
+
         action = request.POST.get('action')
 
         if action == 'accept':
@@ -314,7 +389,8 @@ def seller_negotiation(request):
                 recipient=application.buyer,
                 sender=request.user,
                 title='Application Rejected',
-                message=f'Your application for "{application.listing.title}" was rejected by the seller.'
+                message=f'Your application for "{application.listing.title}" was rejected by the seller.',
+                application=application
             )
 
         elif action == 'counter':
@@ -336,4 +412,55 @@ def seller_negotiation(request):
 
     return render(request, 'listings/seller_negotiation.html', {
         'application': application
+    })
+
+def latest_listings_rss(request):
+    listings = Listing.objects.select_related('seller').filter(
+        is_active=True,
+        is_sold=False,
+        is_approved=True,
+        approval_pending=False
+    ).order_by('-created_at')[:25]
+
+    feed_url = request.build_absolute_uri(reverse('latest_listings_rss'))
+
+    feed = Rss201rev2Feed(
+        title='HomeZapp Latest Listings',
+        link=feed_url,
+        description='Latest approved public home listings on HomeZapp.'
+    )
+
+    for listing in listings:
+        listing_url = request.build_absolute_uri(
+            reverse('listing_details', kwargs={'listing_id': listing.id})
+        )
+
+        feed.add_item(
+            title=listing.title,
+            link=listing_url,
+            description=(
+                f"Price: ${listing.price}\n"
+                f"Location: {listing.location}\n"
+                f"Style: {listing.style}\n"
+                f"Posted by: {listing.seller.username}\n\n"
+                f"{listing.description}"
+            ),
+            pubdate=listing.created_at,
+            unique_id=f"homezapp-listing-{listing.id}"
+        )
+
+    response = HttpResponse(content_type='application/rss+xml')
+    feed.write(response, 'utf-8')
+    return response
+
+def latest_listings_page(request):
+    listings = Listing.objects.select_related('seller').filter(
+        is_active=True,
+        is_sold=False,
+        is_approved=True,
+        approval_pending=False
+    ).order_by('-created_at')[:25]
+
+    return render(request, 'listings/latest_listings_page.html', {
+        'listings': listings
     })

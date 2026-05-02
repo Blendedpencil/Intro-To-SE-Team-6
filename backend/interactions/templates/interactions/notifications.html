@@ -27,6 +27,32 @@
                 <p><small>{{ notification.created_at }}</small></p>
 
                 {% if notification.application %}
+                    {% if notification.application.status == 'Deleted' %}
+                        <p class="statusRejected">
+                            This application has been cancelled because the listing is no longer available.
+                        </p>
+                    {% elif notification.application.status == 'Paid' %}
+                        <p class="statusApproved">
+                            Purchase completed.
+                        </p>
+                    {% elif notification.application.status == 'AcceptedBySeller' and request.user == notification.application.buyer %}
+                        <p class="statusPending">
+                            Your application was accepted by the seller. You can continue to payment or reject the offer.
+                        </p>
+                    {% elif notification.application.status == 'RejectedBySeller' %}
+                        <p class="statusRejected">
+                            Your application was rejected by the seller.
+                        </p>
+                    {% elif notification.application.status == 'RejectedByBuyer' %}
+                        <p class="statusRejected">
+                            This offer was rejected by the buyer.
+                        </p>
+                    {% elif notification.application.status == 'CounterSent' %}
+                        <p class="statusPending">
+                            A counter offer has been sent.
+                        </p>
+                    {% endif %}
+
                     {% if notification.application.status == 'AcceptedBySeller' and request.user == notification.application.buyer %}
                         <form method="post" action="{% url 'buyer_application_decision' notification.application.id %}" style="display:inline;">
                             {% csrf_token %}

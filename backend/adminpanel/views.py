@@ -5,8 +5,8 @@ from django.db.models import Q
 from django.views.decorators.cache import never_cache
 
 from accounts.models import UserProfile
-from interactions.models import Complaint, Notification
-from listings.models import Listing
+from interactions.models import Complaint, Notification, BuyerApplication
+from listings.models import Listing, SavedListing
 from .models import BanRecord, ModerationHistory
 
 
@@ -102,6 +102,7 @@ def admin_create_account_page(request):
 
     return render(request, 'adminpanel/admin_create_account.html')
 
+
 @never_cache
 def admin_home(request):
     if 'bearer_token' not in request.session or not is_admin(request.user):
@@ -137,6 +138,7 @@ def admin_home(request):
         'listings': active_listings,
         'listing_search': search,
     })
+
 
 @never_cache
 def admin_ban_user(request):
@@ -210,6 +212,7 @@ def admin_ban_user(request):
         'error': error
     })
 
+
 @never_cache
 def admin_manage_profile(request):
     if 'bearer_token' not in request.session or not is_admin(request.user):
@@ -279,6 +282,7 @@ def admin_manage_profile(request):
 
     return render(request, 'adminpanel/admin_manage_profile.html')
 
+
 @never_cache
 def admin_report_detail(request, complaint_id):
     if 'bearer_token' not in request.session or not is_admin(request.user):
@@ -289,6 +293,7 @@ def admin_report_detail(request, complaint_id):
     return render(request, 'adminpanel/admin_report.html', {
         'complaint': complaint
     })
+
 
 @never_cache
 def admin_search_user(request):
@@ -352,6 +357,7 @@ def reject_seller_request(request, user_id):
     profile.user.delete()
     return redirect('admin_search_user')
 
+
 def approve_listing(request, listing_id):
     if 'bearer_token' not in request.session or not is_admin(request.user):
         return redirect('admin_login_page')
@@ -411,6 +417,8 @@ def reject_listing(request, listing_id):
 
     return redirect('admin_home')
 
+
+@never_cache
 def admin_delete_listing(request, listing_id):
     if 'bearer_token' not in request.session or not is_admin(request.user):
         return redirect('admin_login_page')
@@ -421,6 +429,40 @@ def admin_delete_listing(request, listing_id):
         listing.is_active = False
         listing.save()
 
+        # Remove deleted listing from every buyer's cart.
+        SavedListing.objects.filter(listing=listing).delete()
+
+        # Cancel all in-process applications for this deleted listing.
+        applications_to_cancel = BuyerApplication.objects.filter(
+            listing=listing
+        ).exclude(
+            status__in=[
+                'Paid',
+                'RejectedBySeller',
+                'RejectedByBuyer',
+                'Deleted',
+            ]
+        )
+
+        for application in applications_to_cancel:
+            application.status = 'Deleted'
+            application.save()
+
+            Notification.objects.create(
+                recipient=application.buyer,
+                sender=request.user,
+                title='Application Cancelled',
+                message=f'Sorry, "{listing.title}" is no longer available because the listing was deleted.',
+                application=application
+            )
+
+        Notification.objects.create(
+            recipient=listing.seller,
+            sender=request.user,
+            title='Listing Deleted',
+            message=f'Your listing "{listing.title}" was removed by an admin.'
+        )
+
         ModerationHistory.objects.create(
             admin_user=request.user,
             action='DELETE_LISTING',
@@ -429,6 +471,7 @@ def admin_delete_listing(request, listing_id):
         )
 
     return redirect('admin_home')
+
 
 @never_cache
 def admin_moderation_history(request):

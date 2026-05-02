@@ -19,18 +19,21 @@
                 <a href="{% url 'seller_login_page' %}">Seller Login</a> |
                 <a href="{% url 'seller_register_page' %}">Create Seller Account</a> |
                 <a href="{% url 'admin_login_page' %}">Admin Login</a> |
+                <a href="{% url 'latest_listings_page' %}">RSS Feed</a> |
                 <a href="{% url 'contact_page' %}">Contact</a>
             {% elif nav_is_buyer %}
                 <a href="{% url 'dashboard_redirect' %}">Dashboard</a> |
                 <a href="{% url 'wishlist_page' %}">Cart</a> |
                 <a href="{% url 'notifications_page' %}">Notifications</a> |
                 <a href="{% url 'buyer_manageprofile' %}">Profile</a> |
+                <a href="{% url 'latest_listings_page' %}">RSS Feed</a> |
                 <a href="{% url 'contact_page' %}">Contact</a> |
                 <a href="{% url 'logoutPage' %}">Logout</a>
             {% elif nav_is_seller %}
                 <a href="{% url 'dashboard_redirect' %}">Dashboard</a> |
                 <a href="{% url 'create_listing' %}">Create Listing</a> |
                 <a href="{% url 'seller_manage_profile' %}">Profile</a> |
+                <a href="{% url 'latest_listings_page' %}">RSS Feed</a> |
                 <a href="{% url 'contact_page' %}">Contact</a> |
                 <a href="{% url 'logoutPage' %}">Logout</a>
             {% elif nav_is_admin %}
@@ -38,6 +41,7 @@
                 <a href="{% url 'admin_search_user' %}">Search Users</a> |
                 <a href="{% url 'admin_ban_user' %}">Ban User</a> |
                 <a href="{% url 'admin_manage_profile' %}">Manage Profile</a> |
+                <a href="{% url 'latest_listings_page' %}">RSS Feed</a> |
                 <a href="{% url 'contact_page' %}">Contact</a> |
                 <a href="{% url 'logoutPage' %}">Logout</a>
             {% endif %}

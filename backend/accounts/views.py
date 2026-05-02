@@ -38,6 +38,7 @@ def is_admin(user):
     return user.groups.filter(name='Admin').exists()
 
 
+@never_cache
 def login_bearer(request):
     if request.user.is_authenticated:
         if is_admin(request.user):
@@ -54,6 +55,17 @@ def login_bearer(request):
         user = authenticate(request, username=email, password=password)
 
         if user is None:
+            inactive_user = User.objects.filter(username=email).first()
+
+            if (
+                inactive_user
+                and inactive_user.check_password(password)
+                and not inactive_user.is_active
+            ):
+                return render(request, 'accounts/auth.html', {
+                    'error': 'This account has been banned or disabled.'
+                })
+
             return render(request, 'accounts/auth.html', {
                 'error': 'Invalid email or password.'
             })
@@ -190,6 +202,7 @@ def seller_register_page(request):
     return render(request, 'accounts/seller_register.html')
 
 
+@never_cache
 def seller_login_page(request):
     if request.user.is_authenticated:
         if is_admin(request.user):
@@ -206,6 +219,26 @@ def seller_login_page(request):
         user = authenticate(request, username=email, password=password)
 
         if user is None:
+            inactive_user = User.objects.filter(username=email).first()
+
+            if inactive_user and inactive_user.check_password(password):
+                profile = UserProfile.objects.filter(user=inactive_user).first()
+
+                if (
+                    profile
+                    and profile.role == 'Seller'
+                    and profile.seller_request_pending
+                    and not profile.seller_approved
+                ):
+                    return render(request, 'accounts/seller_login.html', {
+                        'error': 'Your seller account is still waiting for admin approval.'
+                    })
+
+                if not inactive_user.is_active:
+                    return render(request, 'accounts/seller_login.html', {
+                        'error': 'This account has been banned or disabled.'
+                    })
+
             return render(request, 'accounts/seller_login.html', {
                 'error': 'Invalid email or password.'
             })
@@ -244,7 +277,6 @@ def seller_login_page(request):
         return redirect('seller_dashboard')
 
     return render(request, 'accounts/seller_login.html')
-
 
 def admin_create_account(request):
     if not request.user.is_authenticated or not is_admin(request.user):
@@ -308,6 +340,7 @@ def admin_create_account(request):
     return render(request, 'accounts/admin_create_account.html')
 
 
+@never_cache
 def buyer_page(request):
     if 'bearer_token' not in request.session or not request.user.is_authenticated:
         return redirect('loginPage')
@@ -318,6 +351,7 @@ def buyer_page(request):
     return redirect('buyer_page')
 
 
+@never_cache
 def seller_page(request):
     if 'bearer_token' not in request.session or not request.user.is_authenticated:
         return redirect('seller_login_page')
@@ -332,6 +366,7 @@ def seller_page(request):
     return redirect('seller_dashboard')
 
 
+@never_cache
 def admin_page(request):
     if 'bearer_token' not in request.session or not request.user.is_authenticated:
         return redirect('admin_login_page')
@@ -342,6 +377,7 @@ def admin_page(request):
     return redirect('admin_home')
 
 
+@never_cache
 def buyer_manageprofile(request):
     if 'bearer_token' not in request.session or not request.user.is_authenticated:
         return redirect('loginPage')
@@ -403,6 +439,7 @@ def buyer_manageprofile(request):
     })
 
 
+@never_cache
 def seller_manage_profile(request):
     if 'bearer_token' not in request.session or not request.user.is_authenticated:
         return redirect('seller_login_page')
@@ -473,6 +510,7 @@ def seller_manage_profile(request):
     })
 
 
+@never_cache
 def public_profile(request, user_id):
     profile_user = get_object_or_404(User, id=user_id)
 
@@ -548,6 +586,7 @@ def public_profile(request, user_id):
     return render(request, 'accounts/public_profile.html', build_context())
 
 
+@never_cache
 def logout_bearer(request):
     if request.user.is_authenticated:
         profile, _ = UserProfile.objects.get_or_create(
@@ -566,6 +605,7 @@ def logout_bearer(request):
     return redirect('homepage')
 
 
+@never_cache
 def dashboard_redirect(request):
     if not request.user.is_authenticated:
         return redirect('error_access_denied')

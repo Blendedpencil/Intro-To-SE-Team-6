@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Latest Listings - HomeZapp</title>
+    <link rel="stylesheet" href="{% static 'css/generalPages.css' %}">
+</head>
+
+<body>
+    <div class="navbarHome">
+        <h2>HomeZapp</h2>
+        <div>
+            <a href="{% url 'homepage' %}">Homepage</a> |
+            <a href="{% url 'buyer_page' %}">Buyer Dashboard</a> |
+            <a href="{% url 'latest_listings_rss' %}">RSS Feed</a> |
+            <a href="{% url 'contact_page' %}">Contact</a>
+        </div>
+    </div>
+
+    <main class="pageWrapper">
+        <h1 class="pageTitle">Latest Published Listings</h1>
+        <p class="pageSubtitle">
+            These are the newest approved HomeZapp listings. You can also subscribe using the RSS feed.
+        </p>
+
+        <section class="pageCard" style="text-align: center;">
+            <h2>Subscribe to Listing Updates</h2>
+            <p>
+                Copy or open the RSS feed link to subscribe in an RSS reader.
+            </p>
+            <a class="primaryButton" href="{% url 'latest_listings_rss' %}">
+                Open RSS Feed
+            </a>
+        </section>
+
+        <section class="listingGrid">
+            {% for listing in listings %}
+                <div class="listingCard">
+                    {% if listing.image %}
+                        <img src="{{ listing.image.url }}" alt="{{ listing.title }}">
+                    {% else %}
+                        <img src="{% static 'images/house-stock-photo.jpg' %}" alt="House">
+                    {% endif %}
+
+                    <h3>{{ listing.title }}</h3>
+
+                    <p>
+                        <strong>By:</strong>
+                        <a href="{% url 'public_profile' listing.seller.id %}">
+                            {% if listing.seller.get_full_name %}
+                                {{ listing.seller.get_full_name }}
+                            {% else %}
+                                {{ listing.seller.username }}
+                            {% endif %}
+                        </a>
+                    </p>
+
+                    <p><strong>Price:</strong> ${{ listing.price }}</p>
+                    <p><strong>Location:</strong> {{ listing.location }}</p>
+                    <p><strong>Style:</strong> {{ listing.style }}</p>
+
+                    <a class="primaryButton" href="{% url 'listing_details' listing.id %}">
+                        View Details
+                    </a>
+                </div>
+            {% empty %}
+                <div class="emptyMessage">
+                    <p>No published listings are available yet.</p>
+                </div>
+            {% endfor %}
+        </section>
+    </main>
+</body>
+</html>

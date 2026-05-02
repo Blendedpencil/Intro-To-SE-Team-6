@@ -37,7 +37,11 @@
                     <p><strong>Price:</strong> ${{ listing.price }}</p>
                     <p><strong>Location:</strong> {{ listing.location }}</p>
 
-                    {% if listing.is_approved %}
+                    {% if listing.is_sold %}
+                        <p class="statusApproved">Purchased</p>
+                    {% elif not listing.is_active %}
+                        <p class="statusRejected">Deleted by Admin</p>
+                    {% elif listing.is_approved %}
                         <p class="statusApproved">Approved</p>
                     {% elif listing.approval_pending %}
                         <p class="statusPending">Pending Admin Approval</p>
@@ -48,7 +52,11 @@
                         {% endif %}
                     {% endif %}
 
-                    <a class="primaryButton" href="{% url 'seller_edit_listing' %}?listing_id={{ listing.id }}">Edit Listing</a>
+                    {% if listing.is_active and not listing.is_sold %}
+                        <a class="primaryButton" href="{% url 'seller_edit_listing' %}?listing_id={{ listing.id }}">Edit Listing</a>
+                    {% else %}
+                        <p><em>This listing can no longer be edited.</em></p>
+                    {% endif %}
                 </div>
             {% empty %}
                 <p>You do not have any listings yet.</p>
@@ -62,8 +70,30 @@
                 <div class="listingCard" style="margin-bottom: 16px;">
                     <p><strong>Listing:</strong> {{ application.listing.title }}</p>
                     <p><strong>Buyer:</strong> {{ application.buyer.username }}</p>
-                    <p><strong>Status:</strong> {{ application.status }}</p>
-                    <a class="primaryButton" href="{% url 'seller_negotiation' %}?application_id={{ application.id }}">Open Negotiation</a>
+
+                    {% if application.status == 'Paid' %}
+                        <p class="statusApproved"><strong>Status:</strong> Purchased / Paid</p>
+                    {% elif application.status == 'Deleted' %}
+                        <p class="statusRejected"><strong>Status:</strong> Listing Deleted</p>
+                    {% elif application.status == 'AcceptedBySeller' %}
+                        <p class="statusPending"><strong>Status:</strong> Accepted by Seller</p>
+                    {% elif application.status == 'RejectedBySeller' %}
+                        <p class="statusRejected"><strong>Status:</strong> Rejected by Seller</p>
+                    {% elif application.status == 'AcceptedByBuyer' %}
+                        <p class="statusPending"><strong>Status:</strong> Accepted by Buyer</p>
+                    {% elif application.status == 'RejectedByBuyer' %}
+                        <p class="statusRejected"><strong>Status:</strong> Rejected by Buyer</p>
+                    {% elif application.status == 'CounterSent' %}
+                        <p class="statusPending"><strong>Status:</strong> Counter Offer Sent</p>
+                    {% else %}
+                        <p><strong>Status:</strong> {{ application.status }}</p>
+                    {% endif %}
+
+                    {% if application.status == 'Pending' or application.status == 'CounterSent' %}
+                        <a class="primaryButton" href="{% url 'seller_negotiation' %}?application_id={{ application.id }}">Open Negotiation</a>
+                    {% else %}
+                        <p><em>This decision is finalized.</em></p>
+                    {% endif %}
                 </div>
             {% empty %}
                 <p>No buyer applications yet.</p>

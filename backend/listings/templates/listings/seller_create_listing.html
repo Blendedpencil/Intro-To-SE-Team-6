@@ -19,6 +19,9 @@
 
     <main class="pageWrapper">
         <h1 class="pageTitle">Create Listing</h1>
+        <p class="pageSubtitle">
+            Submit a new property listing for admin approval.
+        </p>
 
         {% if error %}
             <p class="errorMessage">{{ error }}</p>
@@ -35,48 +38,111 @@
                 {% csrf_token %}
 
                 <div class="formGroup">
-                    <label>Property Title</label>
-                    <input class="formInput" type="text" name="title" placeholder="Property Title" required>
+                    <label for="title">Property Title</label>
+                    <input
+                        class="formInput"
+                        type="text"
+                        id="title"
+                        name="title"
+                        placeholder="Property Title"
+                        required
+                    >
                 </div>
 
                 <div class="formGroup">
-                    <label>Price</label>
-                    <input class="formInput" type="number" step="0.01" name="price" placeholder="Price" required>
+                    <label for="price">Price</label>
+                    <input
+                        class="formInput"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        id="price"
+                        name="price"
+                        placeholder="Price"
+                        required
+                    >
                 </div>
 
                 <div class="formGroup">
-                    <label>Location</label>
-                    <input class="formInput" type="text" name="location" placeholder="Location (City, State)" required>
+                    <label for="location">Location</label>
+                    <input
+                        class="formInput"
+                        type="text"
+                        id="location"
+                        name="location"
+                        placeholder="Location (City, State)"
+                        required
+                    >
                 </div>
 
                 <div class="formGroup">
-                    <label>Style</label>
-                    <input class="formInput" type="text" name="style" placeholder="Style (Modern, etc.)">
+                    <label for="style">Architecture Style</label>
+                    <input
+                        class="formInput"
+                        type="text"
+                        id="style"
+                        name="style"
+                        placeholder="Style (Modern, Colonial, Farm, etc.)"
+                    >
                 </div>
 
                 <div class="formGroup">
-                    <label>Bedrooms</label>
-                    <input class="formInput" type="number" name="bedrooms" placeholder="Bedrooms">
+                    <label for="bedrooms">Bedrooms</label>
+                    <input
+                        class="formInput"
+                        type="number"
+                        id="bedrooms"
+                        name="bedrooms"
+                        placeholder="Bedrooms"
+                        min="0"
+                    >
                 </div>
 
                 <div class="formGroup">
-                    <label>Bathrooms</label>
-                    <input class="formInput" type="number" name="bathrooms" placeholder="Bathrooms">
+                    <label for="bathrooms">Bathrooms</label>
+                    <input
+                        class="formInput"
+                        type="number"
+                        id="bathrooms"
+                        name="bathrooms"
+                        placeholder="Bathrooms"
+                        min="0"
+                    >
                 </div>
 
                 <div class="formGroup">
-                    <label>Square Footage</label>
-                    <input class="formInput" type="number" name="square_footage" placeholder="Square Footage">
+                    <label for="square_footage">Square Footage</label>
+                    <input
+                        class="formInput"
+                        type="number"
+                        id="square_footage"
+                        name="square_footage"
+                        placeholder="Square Footage"
+                        min="0"
+                    >
                 </div>
 
                 <div class="formGroup">
-                    <label>Description</label>
-                    <textarea class="formTextarea" name="description" placeholder="Description" required></textarea>
+                    <label for="description">Description</label>
+                    <textarea
+                        class="formTextarea"
+                        id="description"
+                        name="description"
+                        placeholder="Describe the property"
+                        required
+                    ></textarea>
                 </div>
 
                 <div class="formGroup">
-                    <label>Listing Image</label>
-                    <input class="formInput" type="file" name="image" accept=".png,.jpg,.jpeg,image/png,image/jpeg">
+                    <label for="image">Listing Image</label>
+                    <input
+                        class="formInput"
+                        type="file"
+                        id="image"
+                        name="image"
+                        accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+                    >
+                    <small>Accepted image types: PNG, JPG, JPEG.</small>
                 </div>
 
                 <button class="primaryButton" type="submit">Create Listing</button>

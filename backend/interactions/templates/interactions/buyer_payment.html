@@ -12,44 +12,85 @@
         <div>
             <a href="{% url 'homepage' %}">Homepage</a> |
             <a href="{% url 'notifications_page' %}">Notifications</a> |
+            <a href="{% url 'wishlist_page' %}">Cart</a> |
             <a href="{% url 'logoutPage' %}">Logout</a>
         </div>
     </div>
 
     <main class="pageWrapper">
-        <h1 class="pageTitle">Secure Bank Transfer</h1>
-
-        <section class="formCard" style="max-width: 520px; margin-left: auto; margin-right: auto;">
-            <h2>Bank Transfer Details</h2>
-
-            <p><strong>Property:</strong> {{ application.listing.title }}</p>
-            <p><strong>Amount:</strong> ${{ application.counter_amount|default:application.offer_amount|default:application.listing.price }}</p>
-
-            <form method="POST">
-                {% csrf_token %}
-
-                <div class="formGroup">
-                    <label for="account-holder">Account Holder Name</label>
-                    <input class="formInput" type="text" id="account-holder" name="account_holder" placeholder="John or Jane Doe" required>
-                </div>
-
-                <div class="formGroup">
-                    <label for="routing-number">Routing Number</label>
-                    <input class="formInput" type="text" id="routing-number" name="routing_number" placeholder="9-digit routing number" maxlength="9" pattern="\d{9}" title="Please enter a valid 9-digit routing number" required>
-                </div>
-
-                <div class="formGroup">
-                    <label for="account-number">Account Number</label>
-                    <input class="formInput" type="text" id="account-number" name="account_number" placeholder="Bank account number" maxlength="17" required>
-                </div>
-
-                <button type="submit" class="primaryButton" style="width: 100%;">Authorize Transfer</button>
-
-                <p style="text-align: center; margin-top: 18px;">
-                    🔒 Direct Bank Payment (ACH) Securely Encrypted
+        {% if unavailable_message %}
+            <section class="pageCard" style="text-align: center;">
+                <h1 class="pageTitle">House No Longer Available</h1>
+                <p class="errorMessage">{{ unavailable_message }}</p>
+                <p>
+                    This listing may have been deleted by an admin or purchased by another buyer.
                 </p>
-            </form>
-        </section>
+
+                <a class="primaryButton" href="{% url 'buyer_page' %}">Browse Other Listings</a>
+                <a class="secondaryButton" href="{% url 'notifications_page' %}">Back to Notifications</a>
+            </section>
+        {% else %}
+            <h1 class="pageTitle">Secure Bank Transfer</h1>
+
+            <section class="formCard" style="max-width: 520px; margin-left: auto; margin-right: auto;">
+                <h2>Bank Transfer Details</h2>
+
+                <p><strong>Property:</strong> {{ application.listing.title }}</p>
+                <p><strong>Amount:</strong> ${{ application.counter_amount|default:application.offer_amount|default:application.listing.price }}</p>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="formGroup">
+                        <label for="account-holder">Account Holder Name</label>
+                        <input
+                            class="formInput"
+                            type="text"
+                            id="account-holder"
+                            name="account_holder"
+                            placeholder="John or Jane Doe"
+                            required
+                        >
+                    </div>
+
+                    <div class="formGroup">
+                        <label for="routing-number">Routing Number</label>
+                        <input
+                            class="formInput"
+                            type="text"
+                            id="routing-number"
+                            name="routing_number"
+                            placeholder="9-digit routing number"
+                            maxlength="9"
+                            pattern="\d{9}"
+                            title="Please enter a valid 9-digit routing number"
+                            required
+                        >
+                    </div>
+
+                    <div class="formGroup">
+                        <label for="account-number">Account Number</label>
+                        <input
+                            class="formInput"
+                            type="text"
+                            id="account-number"
+                            name="account_number"
+                            placeholder="Bank account number"
+                            maxlength="17"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="primaryButton" style="width: 100%;">
+                        Authorize Transfer
+                    </button>
+
+                    <p style="text-align: center; margin-top: 18px;">
+                        🔒 Direct Bank Payment (ACH) Securely Encrypted
+                    </p>
+                </form>
+            </section>
+        {% endif %}
     </main>
 </body>
 </html>

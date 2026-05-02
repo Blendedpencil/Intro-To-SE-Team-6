@@ -13,4 +13,7 @@ urlpatterns = [
     path('seller/dashboard/', views.seller_dashboard, name='seller_dashboard'),
     path('seller/edit/', views.seller_edit_listing, name='seller_edit_listing'),
     path('seller/negotiation/', views.seller_negotiation, name='seller_negotiation'),
+
+    path('latest/', views.latest_listings_page, name='latest_listings_page'),
+    path('latest/rss/', views.latest_listings_rss, name='latest_listings_rss'),
 ]

@@ -2,15 +2,22 @@ from django.contrib.sessions.models import Session
 from django.utils.deprecation import MiddlewareMixin
 
 
-class SingleSessionMiddleware(MiddlewareMixin):
-    def process_request(self, request):
+class SingleSessionMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
         if request.user.is_authenticated:
-            current_session_key = request.session.session_key
+            profile = getattr(request.user, 'userprofile', None)
 
-            user_profile = request.user.userprofile
+            if profile and profile.session_key:
+                if profile.session_key != request.session.session_key:
+                    from django.contrib.auth import logout
+                    logout(request)
 
-            if user_profile.session_key and user_profile.session_key != current_session_key:
-                Session.objects.filter(session_key=user_profile.session_key).delete()
+            if profile:
+                profile.session_key = request.session.session_key
+                profile.save()
 
-            user_profile.session_key = current_session_key
-            user_profile.save()
+        response = self.get_response(request)
+        return response
